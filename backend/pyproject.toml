@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gip-assistant-backend"
+version = "0.1.0"
+description = "GIP Assistant — backend (FastAPI + PostgreSQL)"
+requires-python = ">=3.12"
+authors = [{ name = "GIP-Assistant Team" }]
+
+dependencies = [
+    # --- Web ---
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+
+    # --- DB ---
+    "sqlalchemy>=2.0.36",
+    "alembic>=1.14",
+    "asyncpg>=0.30",
+    "psycopg2-binary>=2.9",
+
+    # --- Config / Validation ---
+    "pydantic>=2.10",
+    "pydantic-settings>=2.6",
+
+    # --- Auth ---
+    "python-jose[cryptography]>=3.3",
+    "passlib[argon2]>=1.7",
+
+    # --- Telegram ---
+    "aiogram>=3.15",
+
+    # --- Excel ---
+    "openpyxl>=3.1",
+    "pandas>=2.2",
+
+    # --- HTTP client ---
+    "httpx>=0.28",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8",
+    "black>=24.10",
+    "isort>=5.13",
+    "mypy>=1.13",
+]
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["backend*"]
+
+# --- Ruff ---
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".venv", "alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B", "UP"]
+ignore = ["E501"]
+
+# --- Black ---
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+# --- isort ---
+[tool.isort]
+profile = "black"
+line_length = 100
+
+# --- pytest ---
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]

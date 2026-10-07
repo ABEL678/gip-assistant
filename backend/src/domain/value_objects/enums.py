@@ -15,12 +15,12 @@ class StageType(StrEnum):
 class TaskStatus(StrEnum):
     """Статус задачи."""
 
-    NOT_STARTED = "NOT_STARTED"
-    IN_PROGRESS = "IN_PROGRESS"
-    REVIEW = "REVIEW"
-    REWORK = "REWORK"
-    DONE = "DONE"
-    CANCELLED = "CANCELLED"
+    NOT_STARTED = "NOT_STARTED"  # Не начата
+    IN_PROGRESS = "IN_PROGRESS"  # В работе
+    REVIEW = "REVIEW"            # На проверке
+    REWORK = "REWORK"            # На доработке
+    DONE = "DONE"                # Завершена
+    CANCELLED = "CANCELLED"      # Отменена
 
 
 class CrossTaskStatus(StrEnum):

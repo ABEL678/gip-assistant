@@ -1,15 +1,20 @@
 """Настройки приложения. Загружаются из .env в корне репо."""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Корень проекта: settings.py → config/ → src/ → backend/ → gip-assistant/
+BASE_DIR = Path(__file__).resolve().parents[3]
+ENV_FILE = BASE_DIR / ".env"
 
 
 class Settings(BaseSettings):
     """Все настройки ГИП-Ассистента."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(ENV_FILE),
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore",

@@ -4,7 +4,13 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_offline import FastAPIOffline
 
+from backend.src.adapters.api.routes import (  # noqa: E402
+    import_excel_router,
+    projects_router,
+    tasks_router,
+)
 from backend.src.bootstrap import get_container
 
 logging.basicConfig(
@@ -15,7 +21,7 @@ logging.basicConfig(
 container = get_container()
 settings = container.settings
 
-app = FastAPI(
+app = FastAPIOffline(
     title=settings.APP_NAME,
     version="0.1.0",
     description="GIP Assistant — backend (MVP)",
@@ -32,6 +38,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ---------- API routers ----------
+
+app.include_router(projects_router)
+app.include_router(import_excel_router)
+app.include_router(tasks_router)
+
 
 
 # ---------- System routes ----------

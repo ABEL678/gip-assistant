@@ -12,6 +12,8 @@ authors = [{ name = "GIP-Assistant Team" }]
 dependencies = [
     # --- Web ---
     "fastapi>=0.115",
+    "python-multipart>=0.0.20",
+    "fastapi-offline>=1.5",
     "uvicorn[standard]>=0.32",
 
     # --- DB ---
@@ -62,7 +64,10 @@ exclude = [".venv", "alembic/versions"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "B", "UP"]
-ignore = ["E501"]
+ignore = [
+    "E501",  # line too long — Black всё равно форматирует
+    "B008",  # FastAPI: Depends(), File(), Query() в аргументах — это норма
+]
 
 # --- Black ---
 [tool.black]

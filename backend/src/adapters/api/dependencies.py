@@ -35,12 +35,14 @@ from backend.src.domain.services import ImportService, MatrixService
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Открыть сессию БД на время запроса.
 
-    Сессия автоматически закроется после обработки запроса.
+    После успешного запроса — commit.
     При ошибке — rollback.
+    Сессия автоматически закроется (async with).
     """
     async with AsyncSessionLocal() as session:
         try:
             yield session
+            await session.commit()          # ← НОВАЯ СТРОКА
         except Exception:
             await session.rollback()
             raise

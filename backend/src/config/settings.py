@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     # --- Telegram ---
     TELEGRAM_BOT_TOKEN: str = ""
     TELEGRAM_DIGEST_CRON: str = "0 9 * * *"
+    TELEGRAM_PROXY: str = ""
 
     # --- CORS ---
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"

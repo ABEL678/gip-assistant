@@ -29,9 +29,21 @@ def get_bot() -> Bot:
                 "TELEGRAM_BOT_TOKEN не задан в .env. "
                 "Получите токен у @BotFather и добавьте в .env"
             )
+
+        # Прокси (для работы из РФ)
+        proxy = settings.TELEGRAM_PROXY or None
+        if proxy:
+            logger.info("Telegram using proxy: %s", proxy)
+            from aiogram.client.session.aiohttp import AiohttpSession
+
+            session = AiohttpSession(proxy=proxy)
+        else:
+            session = None
+
         _bot = Bot(
             token=settings.TELEGRAM_BOT_TOKEN,
             default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+            session=session,
         )
     return _bot
 

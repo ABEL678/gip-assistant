@@ -31,10 +31,7 @@ def format_digest(
         for task in overdue:
             days_late = (today - task.deadline).days if task.deadline else 0
             deadline_str = task.deadline.strftime("%d.%m.%Y") if task.deadline else "—"
-            parts.append(
-                f"  • {task.title} (срок: {deadline_str}, "
-                f"просрочка: {days_late} дн.)"
-            )
+            parts.append(f"  • {task.title} (срок: {deadline_str}, " f"просрочка: {days_late} дн.)")
         parts.append("")
 
     if upcoming:

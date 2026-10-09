@@ -108,9 +108,7 @@ async def import_confirm(
     return {
         "log_id": str(import_result.log_id),
         "tasks_created": import_result.tasks_created,
-        "errors": [
-            {"row": e.row, "message": e.message} for e in import_result.errors
-        ],
+        "errors": [{"row": e.row, "message": e.message} for e in import_result.errors],
     }
 
 
@@ -124,7 +122,4 @@ async def list_import_logs(
     repo: ImportLogRepoDep,
 ) -> list[ImportLogRead]:
     logs = await repo.get_by_project(project_id)
-    return [
-        ImportLogRead.model_validate(log, from_attributes=True)
-        for log in logs
-    ]
+    return [ImportLogRead.model_validate(log, from_attributes=True) for log in logs]

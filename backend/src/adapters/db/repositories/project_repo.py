@@ -31,6 +31,7 @@ class SqlAlchemyProjectRepository(ProjectRepository):
         model = self._to_model(project)
         merged = await self._session.merge(model)
         await self._session.flush()
+        await self._session.refresh(merged)
         return self._to_domain(merged)
 
     async def delete(self, project_id: UUID) -> None:

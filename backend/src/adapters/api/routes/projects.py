@@ -51,10 +51,7 @@ async def list_projects(
     offset: int = 0,
 ) -> list[ProjectRead]:
     projects = await repo.get_all(limit=limit, offset=offset)
-    return [
-        ProjectRead.model_validate(p, from_attributes=True)
-        for p in projects
-    ]
+    return [ProjectRead.model_validate(p, from_attributes=True) for p in projects]
 
 
 @router.get(

@@ -47,6 +47,7 @@ class SqlAlchemyImportLogRepository(ImportLogRepository):
         model = self._to_model(log)
         merged = await self._session.merge(model)
         await self._session.flush()
+        await self._session.refresh(merged)
         return self._to_domain(merged)
 
     # ---------- Mapping ----------

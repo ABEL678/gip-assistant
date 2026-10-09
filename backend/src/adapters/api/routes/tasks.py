@@ -27,9 +27,7 @@ async def list_tasks(
     offset: int = 0,
 ) -> list[TaskRead]:
     tasks = await repo.get_by_project(project_id, limit=limit, offset=offset)
-    return [
-        TaskRead.model_validate(t, from_attributes=True) for t in tasks
-    ]
+    return [TaskRead.model_validate(t, from_attributes=True) for t in tasks]
 
 
 @router.get(

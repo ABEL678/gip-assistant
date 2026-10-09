@@ -42,7 +42,7 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         try:
             yield session
-            await session.commit()          # ← НОВАЯ СТРОКА
+            await session.commit()  # ← НОВАЯ СТРОКА
         except Exception:
             await session.rollback()
             raise

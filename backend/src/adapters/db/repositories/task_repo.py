@@ -61,12 +61,15 @@ class SqlAlchemyTaskRepository(TaskRepository):
         model = self._to_model(task)
         merged = await self._session.merge(model)
         await self._session.flush()
+        await self._session.refresh(merged)
         return self._to_domain(merged)
 
     async def bulk_save(self, tasks: list[Task]) -> list[Task]:
         models = [self._to_model(t) for t in tasks]
         self._session.add_all(models)
         await self._session.flush()
+        for m in models:
+            await self._session.refresh(m)  # ← НОВЫЙ ЦИКЛ
         return [self._to_domain(m) for m in models]
 
     async def delete(self, task_id: UUID) -> None:

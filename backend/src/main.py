@@ -2,12 +2,12 @@
 
 import logging
 
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_offline import FastAPIOffline
 
-from backend.src.adapters.api.routes import (  # noqa: E402
+from backend.src.adapters.api.routes import (
     import_excel_router,
+    matrix_router,
     projects_router,
     tasks_router,
 )
@@ -45,10 +45,11 @@ app.add_middleware(
 app.include_router(projects_router)
 app.include_router(import_excel_router)
 app.include_router(tasks_router)
-
+app.include_router(matrix_router)
 
 
 # ---------- System routes ----------
+
 
 @app.get("/api/health", tags=["system"])
 async def health() -> dict:
@@ -70,6 +71,7 @@ async def version() -> dict:
 async def ai_ping() -> dict:
     """Проверка AI-порта (в MVP — заглушка)."""
     draft = await container.ai_port.generate_tz_draft(
-        wishes=["тест"], project_context="test",
+        wishes=["тест"],
+        project_context="test",
     )
     return {"ai_stub_response": draft}

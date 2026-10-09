@@ -4,7 +4,8 @@ import { projectsApi } from "@/api/projectsApi"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Upload, Grid3x3 } from "lucide-react"
+import { TaskList } from "@/components/TaskList"
 
 export function ProjectPage() {
   const { id } = useParams<{ id: string }>()
@@ -58,7 +59,10 @@ export function ProjectPage() {
             Загрузите Excel-файл с задачами проекта.
             <div className="mt-4">
               <Link to={`/projects/${id}/import`}>
-                <Button>Импорт Excel</Button>
+                <Button>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Импорт Excel
+                </Button>
               </Link>
             </div>
           </CardContent>
@@ -71,11 +75,23 @@ export function ProjectPage() {
           <CardContent className="text-sm text-muted-foreground">
             Просмотр заданий между разделами.
             <div className="mt-4">
-              <Button disabled>Скоро</Button>
+              <Button disabled>
+                <Grid3x3 className="h-4 w-4 mr-2" />
+                Скоро
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Задачи проекта</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TaskList projectId={id!} />
+        </CardContent>
+      </Card>
     </div>
   )
 }

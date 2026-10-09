@@ -12,6 +12,7 @@ from backend.src.domain.entities.cross_task import CrossTask
 from backend.src.domain.entities.import_log import ImportLog
 from backend.src.domain.entities.project import Project
 from backend.src.domain.entities.task import Task
+from backend.src.domain.entities.user import User
 
 
 class ProjectRepository(ABC):
@@ -111,4 +112,29 @@ class ImportLogRepository(ABC):
 
     @abstractmethod
     async def save(self, log: ImportLog) -> ImportLog:
+        ...
+
+
+class UserRepository(ABC):
+    """Репозиторий пользователей."""
+
+    @abstractmethod
+    async def get_by_id(self, user_id: UUID) -> User | None:
+        ...
+
+    @abstractmethod
+    async def get_by_telegram_id(self, telegram_id: int) -> User | None:
+        ...
+
+    @abstractmethod
+    async def get_by_email(self, email: str) -> User | None:
+        ...
+
+    @abstractmethod
+    async def get_all_with_telegram(self) -> list[User]:
+        """Все активные пользователи с привязанным Telegram."""
+        ...
+
+    @abstractmethod
+    async def save(self, user: User) -> User:
         ...

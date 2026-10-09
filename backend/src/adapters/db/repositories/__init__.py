@@ -12,10 +12,14 @@ from backend.src.adapters.db.repositories.project_repo import (
 from backend.src.adapters.db.repositories.task_repo import (
     SqlAlchemyTaskRepository,
 )
+from backend.src.adapters.db.repositories.user_repo import (
+    SqlAlchemyUserRepository,
+)
 
 __all__ = [
     "SqlAlchemyCrossTaskRepository",
     "SqlAlchemyImportLogRepository",
     "SqlAlchemyProjectRepository",
     "SqlAlchemyTaskRepository",
+    "SqlAlchemyUserRepository",
 ]

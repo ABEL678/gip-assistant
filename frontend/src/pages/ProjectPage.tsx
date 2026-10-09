@@ -57,7 +57,9 @@ export function ProjectPage() {
           <CardContent className="text-sm text-muted-foreground">
             Загрузите Excel-файл с задачами проекта.
             <div className="mt-4">
-              <Button disabled>Скоро (Шаг Б)</Button>
+              <Link to={`/projects/${id}/import`}>
+                <Button>Импорт Excel</Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

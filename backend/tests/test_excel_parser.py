@@ -193,11 +193,99 @@ def test_parse_invalid_file():
 
 
 def test_parse_header_only():
-    """Только заголовки, без строк данных → rows=[]."""
+    """Только заголовки, без строк данных → ошибка (нет смысла импортировать)."""
     data = _make_xlsx([["Наименование", "Срок"]])
+
+    with pytest.raises(ExcelParseError, match="Не удалось найти строку заголовков"):
+        parse_excel(data)
+
+
+# ---------- Новые тесты: автопоиск заголовков, suggested_mapping, preview_rows_raw ----------
+
+
+def test_parse_header_not_in_first_row():
+    """Заголовки на 3-й строке — находятся автоматически."""
+    data = _make_xlsx(
+        [
+            ["Проект X", None, None],
+            ["ГИП: Иванов", None, None],
+            ["Наименование", "Срок", "Раздел"],
+            ["Задача 1", "2026-10-20", "АР"],
+            ["Задача 2", "2026-11-01", "КР"],
+        ]
+    )
 
     result = parse_excel(data)
 
-    assert result.columns == ["Наименование", "Срок"]
-    assert result.rows == []
-    assert result.total_rows == 0
+    assert result.columns == ["Наименование", "Срок", "Раздел"]
+    assert len(result.rows) == 2
+    assert result.rows[0]["Наименование"] == "Задача 1"
+    assert result.header_row_index == 2
+
+
+def test_parse_header_row_override():
+    """Если header_row указан явно — не ищем, используем его."""
+    data = _make_xlsx(
+        [
+            ["мусор", "мусор"],
+            ["A", "B"],
+            ["C", "D"],
+        ]
+    )
+
+    result = parse_excel(data, header_row=1)
+
+    assert result.columns == ["A", "B"]
+    assert result.rows == [{"A": "C", "B": "D"}]
+
+
+def test_parse_suggested_mapping():
+    """Автоподсказка маппинга по именам колонок."""
+    data = _make_xlsx(
+        [
+            ["Наименование", "Срок", "Раздел", "Ответственный", "Описание"],
+            ["Задача 1", "2026-10-20", "АР", "Иванов", "комментарий"],
+        ]
+    )
+
+    result = parse_excel(data)
+
+    assert result.suggested_mapping == {
+        "task_title": "Наименование",
+        "deadline": "Срок",
+        "section": "Раздел",
+        "assignee": "Ответственный",
+        "description": "Описание",
+    }
+
+
+def test_parse_suggested_mapping_partial():
+    """Если найдена только часть — возвращаются только найденные поля."""
+    data = _make_xlsx(
+        [
+            ["Задача", "Some Column", "Another"],
+            ["A", "x", "y"],
+        ]
+    )
+
+    result = parse_excel(data)
+
+    assert result.suggested_mapping == {"task_title": "Задача"}
+
+
+def test_parse_preview_rows_raw_present():
+    """preview_rows_raw содержит первые N строк файла."""
+    data = _make_xlsx(
+        [
+            ["Шапка 1"],
+            ["Наименование", "Срок"],
+            ["Задача 1", "2026-10-20"],
+        ]
+    )
+
+    result = parse_excel(data)
+
+    assert len(result.preview_rows_raw) >= 3
+    # Первая строка файла — "Шапка 1"
+    assert "Шапка 1" in result.preview_rows_raw[0]
+

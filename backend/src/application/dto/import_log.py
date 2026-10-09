@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -15,6 +16,10 @@ class ImportPreview(BaseModel):
     columns: list[str]
     rows: list[dict]
     total_rows: int = Field(ge=0)
+    suggested_mapping: dict[str, str] = Field(default_factory=dict)
+    header_row_index: int = 0
+    preview_rows_raw: list[list[Any]] = Field(default_factory=list)
+    sheet_name: str = ""
 
 
 class ColumnMapping(BaseModel):

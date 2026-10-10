@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { matrixApi, type CrossTaskStatus } from "@/api/matrixApi"
+import { matrixApi, type CrossTask, type CrossTaskStatus } from "@/api/matrixApi"
 
 export function useMatrix(projectId: string) {
   return useQuery({
@@ -29,7 +29,13 @@ export function useUpdateCrossTask(projectId: string) {
       crossTaskId: string
       payload: { status?: CrossTaskStatus; description?: string | null }
     }) => matrixApi.updateCrossTask(crossTaskId, payload),
-    onSuccess: () => {
+    onSuccess: (updatedCrossTask) => {
+      // Способ 1: точечно обновить кэш (быстрее)
+      queryClient.setQueryData<CrossTask[]>(["matrix", projectId], (old) => {
+        if (!old) return old
+        return old.map((ct) => (ct.id === updatedCrossTask.id ? updatedCrossTask : ct))
+      })
+      // Способ 2: заставить перезапросить (страховка)
       queryClient.invalidateQueries({ queryKey: ["matrix", projectId] })
     },
   })

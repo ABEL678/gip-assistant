@@ -85,6 +85,7 @@ export function CrossTaskDialog({
                 Изменить статус
               </div>
               <Select
+                key={`${crossTask.id}-${crossTask.status}`}
                 value={crossTask.status}
                 onValueChange={(v) => onUpdateStatus?.(v as CrossTaskStatus)}
                 disabled={isUpdating}

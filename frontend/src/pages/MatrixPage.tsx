@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, Grid3x3, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -12,10 +12,10 @@ import {
   useUpdateCrossTask,
 } from "@/hooks/useMatrix"
 import {
-  CROSS_TASK_STATUS_LABELS,
-  CROSS_TASK_STATUS_COLORS,
   type CrossTask,
   type CrossTaskStatus,
+  CROSS_TASK_STATUS_LABELS,
+  CROSS_TASK_STATUS_COLORS,
 } from "@/api/matrixApi"
 
 export function MatrixPage() {
@@ -26,31 +26,48 @@ export function MatrixPage() {
   const updateMutation = useUpdateCrossTask(projectId!)
 
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedCell, setSelectedCell] = useState<{
-    crossTask: CrossTask | null
+  // Храним ID ячейки + разделы (а НЕ сам объект — чтобы брать свежие данные из кэша)
+  const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
+  const [selectedSections, setSelectedSections] = useState<{
     from: string
     to: string
   } | null>(null)
+
+  // Всегда берём АКТУАЛЬНЫЙ crossTask из свежего массива
+  const selectedCrossTask: CrossTask | null = useMemo(() => {
+    if (!selectedCellId || !crossTasks) return null
+    return crossTasks.find((ct) => ct.id === selectedCellId) || null
+  }, [selectedCellId, crossTasks])
 
   const handleCellClick = (
     crossTask: CrossTask | null,
     from: string,
     to: string,
   ) => {
-    setSelectedCell({ crossTask, from, to })
+    setSelectedCellId(crossTask?.id || null)
+    setSelectedSections({ from, to })
     setDialogOpen(true)
   }
 
   const handleUpdateStatus = (status: CrossTaskStatus) => {
-    if (!selectedCell?.crossTask) return
+    if (!selectedCrossTask) return
     updateMutation.mutate({
-      crossTaskId: selectedCell.crossTask.id,
+      crossTaskId: selectedCrossTask.id,
       payload: { status },
     })
   }
 
   const handleGenerate = () => {
     generateMutation.mutate()
+  }
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false)
+    // Чуть-чуть задержки, чтобы анимация закрытия прошла
+    setTimeout(() => {
+      setSelectedCellId(null)
+      setSelectedSections(null)
+    }, 150)
   }
 
   if (isLoading) {
@@ -60,9 +77,7 @@ export function MatrixPage() {
   if (isError) {
     return (
       <Alert variant="destructive">
-        <AlertDescription>
-          Ошибка: {(error as Error).message}
-        </AlertDescription>
+        <AlertDescription>Ошибка: {(error as Error).message}</AlertDescription>
       </Alert>
     )
   }
@@ -89,7 +104,9 @@ export function MatrixPage() {
           disabled={generateMutation.isPending}
           className="ml-auto"
         >
-          <RefreshCw className={`h-4 w-4 mr-2 ${generateMutation.isPending ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`h-4 w-4 mr-2 ${generateMutation.isPending ? "animate-spin" : ""}`}
+          />
           {generateMutation.isPending ? "Генерация..." : "Сгенерировать матрицу"}
         </Button>
       </div>
@@ -113,14 +130,16 @@ export function MatrixPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-3">
-              {(Object.keys(CROSS_TASK_STATUS_LABELS) as CrossTaskStatus[]).map((s) => (
-                <div key={s} className="flex items-center gap-2 text-sm">
-                  <span
-                    className={`inline-block w-4 h-4 rounded border ${CROSS_TASK_STATUS_COLORS[s]}`}
-                  />
-                  {CROSS_TASK_STATUS_LABELS[s]}
-                </div>
-              ))}
+              {(Object.keys(CROSS_TASK_STATUS_LABELS) as CrossTaskStatus[]).map(
+                (s) => (
+                  <div key={s} className="flex items-center gap-2 text-sm">
+                    <span
+                      className={`inline-block w-4 h-4 rounded border ${CROSS_TASK_STATUS_COLORS[s]}`}
+                    />
+                    {CROSS_TASK_STATUS_LABELS[s]}
+                  </div>
+                ),
+              )}
             </div>
           </CardContent>
         </Card>
@@ -128,19 +147,19 @@ export function MatrixPage() {
 
       <Card>
         <CardContent className="pt-6">
-          <MatrixTable crossTasks={crossTasks || []} onCellClick={handleCellClick} />
+          <MatrixTable
+            crossTasks={crossTasks || []}
+            onCellClick={handleCellClick}
+          />
         </CardContent>
       </Card>
 
       <CrossTaskDialog
         open={dialogOpen}
-        onClose={() => {
-          setDialogOpen(false)
-          setSelectedCell(null)
-        }}
-        crossTask={selectedCell?.crossTask || null}
-        fromSection={selectedCell?.from || ""}
-        toSection={selectedCell?.to || ""}
+        onClose={handleCloseDialog}
+        crossTask={selectedCrossTask}
+        fromSection={selectedSections?.from || ""}
+        toSection={selectedSections?.to || ""}
         onUpdateStatus={handleUpdateStatus}
         isUpdating={updateMutation.isPending}
       />

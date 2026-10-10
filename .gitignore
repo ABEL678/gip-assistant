@@ -82,3 +82,28 @@ logs/
 uploads/
 media/
 static/
+
+# ============ Docs (не коммитим) ============
+docs/*.docx
+docs/*.doc
+docs/*.md
+docs/archive/
+
+# ============ LLM models ============
+models/
+*.gguf
+*.bin
+*.safetensors
+
+# ============ MinIO / S3 ============
+minio-data/
+minio.license
+
+# ============ Локальные БД ============
+*.sqlite
+*.db
+
+# ============ Временные ============
+test_parse_output/
+tmp/
+temp/

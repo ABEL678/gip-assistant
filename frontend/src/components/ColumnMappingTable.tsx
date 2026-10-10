@@ -19,7 +19,8 @@ const FIELD_LABELS: Record<keyof ColumnMappingPayload, string> = {
   task_title: "Название задачи *",
   description: "Описание",
   deadline: "Дедлайн",
-  section: "Раздел",
+  section: "Раздел (от кого)",
+  to_section: "Получатель (кому)",
   assignee: "Исполнитель",
 }
 

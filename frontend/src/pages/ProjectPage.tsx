@@ -75,10 +75,12 @@ export function ProjectPage() {
           <CardContent className="text-sm text-muted-foreground">
             Просмотр заданий между разделами.
             <div className="mt-4">
-              <Button disabled>
-                <Grid3x3 className="h-4 w-4 mr-2" />
-                Скоро
-              </Button>
+              <Link to={`/projects/${id}/matrix`}>
+                <Button>
+                  <Grid3x3 className="h-4 w-4 mr-2" />
+                  Открыть матрицу
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

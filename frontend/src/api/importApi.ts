@@ -34,6 +34,7 @@ export interface ColumnMappingPayload {
   description?: string | null
   deadline?: string | null
   section?: string | null
+  to_section?: string | null
   assignee?: string | null
 }
 

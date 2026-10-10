@@ -7,9 +7,13 @@ from backend.src.adapters.db.models.project import Project
 from backend.src.adapters.db.models.task import Task
 from backend.src.adapters.db.models.task_status_history import TaskStatusHistory
 from backend.src.adapters.db.models.user import User
+from backend.src.adapters.db.models.entity import EntityModel
+from backend.src.adapters.db.models.entity_type import EntityTypeModel
 
 __all__ = [
     "CrossTask",
+    "EntityModel",
+    "EntityTypeModel",
     "Executor",
     "ImportLog",
     "Project",

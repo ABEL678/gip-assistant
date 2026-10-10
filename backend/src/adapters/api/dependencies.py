@@ -16,6 +16,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.adapters.db.repositories import (
     SqlAlchemyCrossTaskRepository,
+    SqlAlchemyEntityRepository,
+    SqlAlchemyEntityTypeRepository,
     SqlAlchemyImportLogRepository,
     SqlAlchemyProjectRepository,
     SqlAlchemyTaskRepository,
@@ -23,11 +25,18 @@ from backend.src.adapters.db.repositories import (
 from backend.src.adapters.db.session import AsyncSessionLocal
 from backend.src.domain.ports.repositories import (
     CrossTaskRepository,
+    EntityRepository,
+    EntityTypeRepository,
     ImportLogRepository,
     ProjectRepository,
     TaskRepository,
 )
-from backend.src.domain.services import ImportService, MatrixService
+from backend.src.domain.services import (
+    EntityService,
+    EntityTypeService,
+    ImportService,
+    MatrixService,
+)
 
 # ---------- Session ----------
 
@@ -42,7 +51,7 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         try:
             yield session
-            await session.commit()  # ← НОВАЯ СТРОКА
+            await session.commit()
         except Exception:
             await session.rollback()
             raise
@@ -70,10 +79,20 @@ def get_import_log_repo(session: DbSession) -> ImportLogRepository:
     return SqlAlchemyImportLogRepository(session)
 
 
+def get_entity_type_repo(session: DbSession) -> EntityTypeRepository:
+    return SqlAlchemyEntityTypeRepository(session)
+
+
+def get_entity_repo(session: DbSession) -> EntityRepository:
+    return SqlAlchemyEntityRepository(session)
+
+
 ProjectRepoDep = Annotated[ProjectRepository, Depends(get_project_repo)]
 TaskRepoDep = Annotated[TaskRepository, Depends(get_task_repo)]
 CrossTaskRepoDep = Annotated[CrossTaskRepository, Depends(get_cross_task_repo)]
 ImportLogRepoDep = Annotated[ImportLogRepository, Depends(get_import_log_repo)]
+EntityTypeRepoDep = Annotated[EntityTypeRepository, Depends(get_entity_type_repo)]
+EntityRepoDep = Annotated[EntityRepository, Depends(get_entity_repo)]
 
 
 # ---------- Domain services ----------
@@ -99,5 +118,23 @@ def get_matrix_service(
     )
 
 
+def get_entity_type_service(
+    entity_type_repo: EntityTypeRepoDep,
+) -> EntityTypeService:
+    return EntityTypeService(repo=entity_type_repo)
+
+
+def get_entity_service(
+    entity_repo: EntityRepoDep,
+    entity_type_repo: EntityTypeRepoDep,
+) -> EntityService:
+    return EntityService(
+        repo=entity_repo,
+        entity_type_repo=entity_type_repo,
+    )
+
+
 ImportServiceDep = Annotated[ImportService, Depends(get_import_service)]
 MatrixServiceDep = Annotated[MatrixService, Depends(get_matrix_service)]
+EntityTypeServiceDep = Annotated[EntityTypeService, Depends(get_entity_type_service)]
+EntityServiceDep = Annotated[EntityService, Depends(get_entity_service)]

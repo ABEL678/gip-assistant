@@ -13,6 +13,8 @@ from backend.src.domain.entities.import_log import ImportLog
 from backend.src.domain.entities.project import Project
 from backend.src.domain.entities.task import Task
 from backend.src.domain.entities.user import User
+from backend.src.domain.entities.entity import Entity
+from backend.src.domain.entities.entity_type import EntityType
 
 
 class ProjectRepository(ABC):
@@ -145,4 +147,44 @@ class UserRepository(ABC):
 
     @abstractmethod
     async def save(self, user: User) -> User:
+        ...
+
+
+class EntityTypeRepository(ABC):
+    """Репозиторий типов пользовательских сущностей."""
+
+    @abstractmethod
+    async def get_by_id(self, entity_type_id: UUID) -> EntityType | None:
+        ...
+
+    @abstractmethod
+    async def list_by_project(self, project_id: UUID) -> list[EntityType]:
+        ...
+
+    @abstractmethod
+    async def save(self, entity_type: EntityType) -> EntityType:
+        ...
+
+    @abstractmethod
+    async def delete(self, entity_type_id: UUID) -> None:
+        ...
+
+
+class EntityRepository(ABC):
+    """Репозиторий экземпляров пользовательских сущностей."""
+
+    @abstractmethod
+    async def get_by_id(self, entity_id: UUID) -> Entity | None:
+        ...
+
+    @abstractmethod
+    async def list_by_type(self, entity_type_id: UUID) -> list[Entity]:
+        ...
+
+    @abstractmethod
+    async def save(self, entity: Entity) -> Entity:
+        ...
+
+    @abstractmethod
+    async def delete(self, entity_id: UUID) -> None:
         ...

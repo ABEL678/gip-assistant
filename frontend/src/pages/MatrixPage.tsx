@@ -1,16 +1,10 @@
-import { useState, useMemo } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link, useNavigate } from "react-router-dom"
 import { ArrowLeft, Grid3x3, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { MatrixTable } from "@/components/MatrixTable"
-import { CrossTaskDialog } from "@/components/CrossTaskDialog"
-import {
-  useMatrix,
-  useGenerateMatrix,
-  useUpdateCrossTask,
-} from "@/hooks/useMatrix"
+import { useMatrix, useGenerateMatrix } from "@/hooks/useMatrix"
 import {
   type CrossTask,
   type CrossTaskStatus,
@@ -20,54 +14,23 @@ import {
 
 export function MatrixPage() {
   const { id: projectId } = useParams<{ id: string }>()
+  const navigate = useNavigate()
 
   const { data: crossTasks, isLoading, isError, error } = useMatrix(projectId!)
   const generateMutation = useGenerateMatrix(projectId!)
-  const updateMutation = useUpdateCrossTask(projectId!)
-
-  const [dialogOpen, setDialogOpen] = useState(false)
-  // Храним ID ячейки + разделы (а НЕ сам объект — чтобы брать свежие данные из кэша)
-  const [selectedCellId, setSelectedCellId] = useState<string | null>(null)
-  const [selectedSections, setSelectedSections] = useState<{
-    from: string
-    to: string
-  } | null>(null)
-
-  // Всегда берём АКТУАЛЬНЫЙ crossTask из свежего массива
-  const selectedCrossTask: CrossTask | null = useMemo(() => {
-    if (!selectedCellId || !crossTasks) return null
-    return crossTasks.find((ct) => ct.id === selectedCellId) || null
-  }, [selectedCellId, crossTasks])
 
   const handleCellClick = (
     crossTask: CrossTask | null,
-    from: string,
-    to: string,
+    _from: string,
+    _to: string,
   ) => {
-    setSelectedCellId(crossTask?.id || null)
-    setSelectedSections({ from, to })
-    setDialogOpen(true)
-  }
-
-  const handleUpdateStatus = (status: CrossTaskStatus) => {
-    if (!selectedCrossTask) return
-    updateMutation.mutate({
-      crossTaskId: selectedCrossTask.id,
-      payload: { status },
-    })
+    if (crossTask) {
+      navigate(`/projects/${projectId}/matrix/${crossTask.id}`)
+    }
   }
 
   const handleGenerate = () => {
     generateMutation.mutate()
-  }
-
-  const handleCloseDialog = () => {
-    setDialogOpen(false)
-    // Чуть-чуть задержки, чтобы анимация закрытия прошла
-    setTimeout(() => {
-      setSelectedCellId(null)
-      setSelectedSections(null)
-    }, 150)
   }
 
   if (isLoading) {
@@ -96,7 +59,7 @@ export function MatrixPage() {
             Матрица смежников
           </h1>
           <p className="text-sm text-muted-foreground">
-            Задания между разделами проекта
+            Задания между разделами проекта. Кликните на ячейку — увидите все задачи пары.
           </p>
         </div>
         <Button
@@ -153,16 +116,6 @@ export function MatrixPage() {
           />
         </CardContent>
       </Card>
-
-      <CrossTaskDialog
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-        crossTask={selectedCrossTask}
-        fromSection={selectedSections?.from || ""}
-        toSection={selectedSections?.to || ""}
-        onUpdateStatus={handleUpdateStatus}
-        isUpdating={updateMutation.isPending}
-      />
     </div>
   )
 }

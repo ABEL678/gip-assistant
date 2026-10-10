@@ -30,13 +30,19 @@ export function useUpdateCrossTask(projectId: string) {
       payload: { status?: CrossTaskStatus; description?: string | null }
     }) => matrixApi.updateCrossTask(crossTaskId, payload),
     onSuccess: (updatedCrossTask) => {
-      // Способ 1: точечно обновить кэш (быстрее)
       queryClient.setQueryData<CrossTask[]>(["matrix", projectId], (old) => {
         if (!old) return old
         return old.map((ct) => (ct.id === updatedCrossTask.id ? updatedCrossTask : ct))
       })
-      // Способ 2: заставить перезапросить (страховка)
       queryClient.invalidateQueries({ queryKey: ["matrix", projectId] })
     },
+  })
+}
+
+export function useCrossTaskTasks(crossTaskId: string | null) {
+  return useQuery({
+    queryKey: ["cross-task-tasks", crossTaskId],
+    queryFn: () => matrixApi.getCrossTaskTasks(crossTaskId!),
+    enabled: !!crossTaskId,
   })
 }

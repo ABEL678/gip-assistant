@@ -20,7 +20,12 @@ export function useUpdateTask(projectId: string) {
       payload: Partial<Pick<Task, "title" | "description" | "status" | "deadline" | "section_code">>
     }) => tasksApi.update(taskId, payload),
     onSuccess: () => {
+      // Кэш задач проекта (TaskList)
       queryClient.invalidateQueries({ queryKey: ["tasks", projectId] })
+      // Кэш задач пары (страница «МЕХ → АР(КЖ)»)
+      queryClient.invalidateQueries({ queryKey: ["cross-task-tasks"] })
+      // Кэш матрицы (цвет ячейки может измениться)
+      queryClient.invalidateQueries({ queryKey: ["matrix", projectId] })
     },
   })
 }

@@ -68,6 +68,14 @@ class TaskRepository(ABC):
     async def delete(self, task_id: UUID) -> None:
         ...
 
+    async def get_by_pair(
+        self,
+        project_id: UUID,
+        from_section: str,
+        to_section: str,
+    ) -> list[Task]:
+        """Задачи конкретной пары разделов."""
+        ...
 
 class CrossTaskRepository(ABC):
     """Репозиторий заданий смежникам (ячейки матрицы)."""

@@ -50,3 +50,16 @@ class TaskRead(TaskBase):
     source: str
     created_at: datetime
     updated_at: datetime
+
+
+class CrossTaskTaskRead(TaskRead):
+    """Задача в контексте пары матрицы (с вычисленной просрочкой)."""
+
+    overdue_days: int = Field(
+        default=0,
+        description="Сколько дней просрочена (0 если не просрочена)",
+    )
+    days_until_deadline: int | None = Field(
+        default=None,
+        description="Сколько дней до дедлайна (отрицательно если просрочено)",
+    )

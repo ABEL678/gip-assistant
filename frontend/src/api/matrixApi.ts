@@ -18,6 +18,24 @@ export interface CrossTask {
   updated_at: string
 }
 
+export interface CrossTaskTask {
+  id: string
+  project_id: string
+  title: string
+  description: string | null
+  status: string
+  assignee_id: string | null
+  deadline: string | null
+  section_code: string | null
+  to_section_code: string | null
+  sort_order: number
+  source: string
+  created_at: string
+  updated_at: string
+  overdue_days: number
+  days_until_deadline: number | null
+}
+
 export const CROSS_TASK_STATUS_LABELS: Record<CrossTaskStatus, string> = {
   NOT_STARTED: "Не начато",
   IN_PROGRESS: "В работе",
@@ -52,6 +70,13 @@ export const matrixApi = {
     payload: { status?: CrossTaskStatus; description?: string | null },
   ): Promise<CrossTask> {
     const { data } = await apiClient.patch<CrossTask>(`/cross-tasks/${crossTaskId}`, payload)
+    return data
+  },
+
+    async getCrossTaskTasks(crossTaskId: string): Promise<CrossTaskTask[]> {
+    const { data } = await apiClient.get<CrossTaskTask[]>(
+      `/cross-tasks/${crossTaskId}/tasks`,
+    )
     return data
   },
 }

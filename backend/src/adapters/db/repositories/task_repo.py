@@ -37,6 +37,33 @@ class SqlAlchemyTaskRepository(TaskRepository):
         result = await self._session.execute(stmt)
         return [self._to_domain(m) for m in result.scalars().all()]
 
+    async def get_by_pair(
+        self,
+        project_id: UUID,
+        from_section: str,
+        to_section: str,
+    ) -> list[Task]:
+        """Задачи конкретной пары (from_section → to_section).
+
+        Сортировка: сначала просроченные (по возрастанию дедлайна),
+        потом без дедлайна, потом остальные.
+        """
+        stmt = (
+            select(TaskModel)
+            .where(
+                TaskModel.project_id == project_id,
+                TaskModel.section_code == from_section,
+                TaskModel.to_section_code == to_section,
+            )
+            .order_by(
+                TaskModel.deadline.is_(None),  # False (есть дедлайн) — раньше
+                TaskModel.deadline.asc(),
+                TaskModel.created_at.asc(),
+            )
+        )
+        result = await self._session.execute(stmt)
+        return [self._to_domain(m) for m in result.scalars().all()]
+
     async def get_overdue(self, as_of: date | None = None) -> list[Task]:
         as_of = as_of or date.today()
         stmt = select(TaskModel).where(

@@ -90,6 +90,7 @@ class SqlAlchemyTaskRepository(TaskRepository):
             assignee_id=model.assignee_id,
             deadline=model.deadline,
             section_code=model.section_code,
+            to_section_code=model.to_section_code,
             sort_order=model.sort_order,
             source=model.source,
             created_at=model.created_at,
@@ -107,6 +108,7 @@ class SqlAlchemyTaskRepository(TaskRepository):
             assignee_id=domain.assignee_id,
             deadline=domain.deadline,
             section_code=domain.section_code,
+            to_section_code=domain.to_section_code,
             sort_order=domain.sort_order,
             source=domain.source,
         )

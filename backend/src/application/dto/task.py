@@ -15,6 +15,7 @@ class TaskBase(BaseModel):
     description: str | None = None
     deadline: date | None = None
     section_code: str | None = Field(default=None, max_length=50)
+    to_section_code: str | None = Field(default=None, max_length=50)
     assignee_id: uuid.UUID | None = None
 
 
@@ -32,6 +33,7 @@ class TaskUpdate(BaseModel):
     status: TaskStatus | None = None
     deadline: date | None = None
     section_code: str | None = Field(default=None, max_length=50)
+    to_section_code: str | None = Field(default=None, max_length=50)
     assignee_id: uuid.UUID | None = None
     sort_order: int | None = None
 

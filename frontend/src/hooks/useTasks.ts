@@ -4,7 +4,7 @@ import { tasksApi, type Task } from "@/api/tasksApi"
 export function useTasks(projectId: string) {
   return useQuery({
     queryKey: ["tasks", projectId],
-    queryFn: () => tasksApi.getByProject(projectId, { limit: 500, offset: 0 }),
+    queryFn: () => tasksApi.getByProject(projectId, { limit: 1000, offset: 0 }),
     enabled: !!projectId,
   })
 }

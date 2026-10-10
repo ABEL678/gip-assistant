@@ -17,7 +17,8 @@ class Task:
     status: TaskStatus = TaskStatus.NOT_STARTED
     assignee_id: UUID | None = None
     deadline: date | None = None
-    section_code: str | None = None
+    section_code: str | None = None        # от кого (источник задания)
+    to_section_code: str | None = None     # кому (получатель задания)
     sort_order: int = 0
     source: str = "manual"
     id: UUID = field(default_factory=uuid4)

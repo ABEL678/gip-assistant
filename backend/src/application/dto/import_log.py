@@ -28,7 +28,14 @@ class ColumnMapping(BaseModel):
     task_title: str = Field(..., description="Колонка с названием задачи")
     description: str | None = None
     deadline: str | None = None
-    section: str | None = None
+    section: str | None = Field(
+        default=None,
+        description="Колонка 'от кого' — источник задания",
+    )
+    to_section: str | None = Field(
+        default=None,
+        description="Колонка 'кому' — получатель задания",
+    )
     assignee: str | None = None
 
 

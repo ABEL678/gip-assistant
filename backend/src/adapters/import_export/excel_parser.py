@@ -71,12 +71,15 @@ _MAPPING_ALIASES: dict[str, list[str]] = {
     ],
     "section": [
         "раздел", "секция", "марка", "дисциплина", "специальность",
-        "кому",  # в реестрах заданий "кому" — это раздел-получатель
-        "section", "discipline", "trade",
+        "от кого", "источник", "source",
+        "section", "discipline", "trade", "from",
+    ],
+    "to_section": [
+        "кому", "получатель", "адресат", "target", "to", "recipient",
     ],
     "assignee": [
         "исполнитель", "ответственный", "assignee", "owner",
-        "responsible", "выполнил", "от кого",
+        "responsible", "выполнил",
     ],
     "description": [
         "описание", "комментарий", "примечание", "заметка",
@@ -364,7 +367,7 @@ def _suggest_mapping(columns: list[str]) -> dict[str, str]:
     result: dict[str, str] = {}
     used_columns: set[str] = set()
 
-    field_priority = ["task_title", "deadline", "section", "assignee", "description"]
+    field_priority = ["task_title", "deadline", "section", "to_section", "assignee", "description"]
 
     for field_name in field_priority:
         aliases = _MAPPING_ALIASES[field_name]

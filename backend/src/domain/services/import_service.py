@@ -68,7 +68,8 @@ class ImportService:
                     "task_title": "Наименование",
                     "description": "Описание",
                     "deadline": "Срок",
-                    "section": "Раздел",
+                    "section": "дисциплина",
+                    "to_section": "кому",
                     "assignee": "Исполнитель",
                 }
             filename: Имя исходного файла (для лога).
@@ -143,6 +144,7 @@ class ImportService:
             description=_opt_str(row, column_mapping.get("description")),
             deadline=_opt_date(row, column_mapping.get("deadline")),
             section_code=_opt_str(row, column_mapping.get("section")),
+            to_section_code=_opt_str(row, column_mapping.get("to_section")),
             status=TaskStatus.NOT_STARTED,
             source="import",
         )

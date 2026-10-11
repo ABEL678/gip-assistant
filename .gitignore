@@ -83,11 +83,23 @@ uploads/
 media/
 static/
 
-# ============ Docs (не коммитим) ============
+# ============ Docs ============
+# Игнорируем всё в docs/, кроме docs/context/
+docs/*
+!docs/context/
+!docs/context/**
 docs/*.docx
 docs/*.doc
-docs/*.md
 docs/archive/
+
+# Защита: всегда коммитим AI-контекст
+!docs/context/CONTEXT.md
+!docs/context/ARCHITECTURE.md
+!docs/context/DATABASE.md
+!docs/context/API.md
+!docs/context/RULES.md
+!docs/context/TASKS.md
+!docs/context/README.md
 
 # ============ LLM models ============
 models/

@@ -6,6 +6,8 @@ import { ImportExcelPage } from "@/pages/ImportExcelPage"
 import { MatrixPage } from "@/pages/MatrixPage"
 import { CrossTaskTasksPage } from "@/pages/CrossTaskTasksPage"
 import { EntityTypesPage } from "@/pages/EntityTypesPage"
+import { EntityTypeConstructorPage } from "@/pages/EntityTypeConstructorPage"
+import { EntitiesPage } from "@/pages/EntitiesPage"
 
 function App() {
   return (
@@ -18,6 +20,9 @@ function App() {
           <Route path="projects/:id/matrix" element={<MatrixPage />} />
           <Route path="projects/:id/matrix/:crossTaskId" element={<CrossTaskTasksPage />} />
           <Route path="projects/:id/entity-types" element={<EntityTypesPage />} />
+          <Route path="projects/:id/entity-types/new" element={<EntityTypeConstructorPage />} />
+          <Route path="projects/:id/entity-types/:entityTypeId/edit" element={<EntityTypeConstructorPage />} />
+          <Route path="projects/:id/entity-types/:entityTypeId" element={<EntitiesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

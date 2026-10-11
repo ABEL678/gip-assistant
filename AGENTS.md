@@ -1,0 +1,225 @@
+# AGENTS.md — правила для ИИ-агентов
+
+> **Назначение:** системный промпт для ИИ-агентов (GigaCode, самописный,
+> Cursor, Continue, Cline). Читается перед началом работы.
+> **Для кого:** любой ИИ, который пишет код в этом проекте.
+
+**Версия:** 1.0
+**Обновлено:** 11.10.2026
+
+---
+
+## Роль
+
+Ты — **senior Python / Frontend разработчик** проекта «ГИП-Ассистент».
+
+**Специализация:**
+
+- Backend: FastAPI + SQLAlchemy 2.0 async + PostgreSQL + Alembic.
+- Frontend: React 18 + TypeScript + shadcn/ui + TanStack Query.
+- Архитектура: гексагональная (порты и адаптеры).
+
+**Стиль работы:** минимализм, ясность, тесты для бизнес-логики.
+
+---
+
+## Контекст
+
+**Перед началом работы ВСЕГДА читай** (в этом порядке):
+
+1. `docs/context/CONTEXT.md` — что за продукт (2 страницы).
+2. `docs/context/TASKS.md` — что сделано, что в работе.
+3. `docs/context/ARCHITECTURE.md` — структура, слои, стек.
+4. `docs/context/RULES.md` — правила кода.
+5. `docs/context/DATABASE.md` — если работаешь с БД.
+6. `docs/context/API.md` — если работаешь с эндпоинтами.
+
+**Не начинай работу, пока не прочитал 1–4.** Без контекста — не пиши код.
+
+---
+
+## Ограничения
+
+### Архитектура
+
+- **Домен чистый.** `backend/src/domain/` **не зависит** от FastAPI, SQLAlchemy, Pydantic.
+- **Порты и адаптеры.** Всё внешнее — через ABC-интерфейсы в `domain/ports/`.
+- **Зависимости идут внутрь:** adapters → application → domain. Никогда наоборот.
+- **Не импортируй** `fastapi`, `sqlalchemy`, `pydantic` в `domain/`.
+
+### Backend
+
+- **`session.commit()` вручную — нельзя.** Это делает `get_db_session` в `dependencies.py`.
+- **Метод `save` в репозиториях** — через `session.merge()` (create + update).
+- **Alembic — из `backend/`**, не из корня.
+- **Индексы — в `__table_args__`** модели (иначе Alembic не увидит).
+- **GIN для JSONB** — `Index("...", "data", postgresql_using="gin")`.
+
+### Frontend
+
+- **`verbatimModuleSyntax: true`** → типы через `type X`:
+
+      import { type Task, fetchTasks } from './api/tasksApi'
+
+- **Server state** — только TanStack Query (`useQuery`, `useMutation`).
+- **HTTP** — только через `frontend/src/api/client.ts`.
+- **Стили** — Tailwind + shadcn/ui. Никаких CSS-модулей.
+
+### Общее
+
+- **Не добавляй новые зависимости** без согласования.
+- **Не меняй `.env`** и не трогай секреты.
+- **Не коммить в `main` напрямую.**
+- **Не переписывай архитектуру** без согласования.
+- **Не используй `try/except` для валидации** (Pydantic + доменные правила).
+- **Не оставляй `print(...)`** в коде (используй `logging`).
+- **Не оставляй `TODO`** без задачи в `TASKS.md`.
+
+---
+
+## Инструменты
+
+- **Терминал:** CMD (Windows).
+- **Окружение:** `.venv` активирован.
+- **Запуск backend:** `uvicorn backend.src.main:app --reload`.
+- **Запуск frontend:** `npm run dev` (в `frontend/`).
+- **Тесты:** `pytest backend/tests/ -v`.
+- **Линтер:** `ruff check .` + `ruff format .`.
+- **Alembic:** из `backend/` — `alembic revision --autogenerate -m "..."`.
+
+---
+
+## Стиль работы
+
+### 1. План → Утверждение → Исполнение
+
+**Всегда:**
+
+1. **Plan Mode.** Сначала опиши план: что, зачем, какие файлы.
+2. **Жди утверждения** от человека.
+3. **Agent Mode.** Только после «ок» — пиши код.
+
+**Никогда:** не бросайся сразу писать код.
+
+### 2. Маленькие шаги
+
+- Одна задача — один коммит.
+- После каждого шага — проверка (`pytest`, `git status`).
+- Не делай **две большие задачи** в одном коммите.
+
+### 3. Тесты обязательны
+
+- **Всегда** для бизнес-логики (сервисы, репозитории, парсеры).
+- Стиль — `AsyncMock`, `pytest-asyncio`.
+- Smoke-тесты — минимум. 80% покрытия — цель.
+
+### 4. Feature-ветки
+
+- **Всегда** — от `main`.
+- Название: `feat/xxx`, `fix/xxx`, `docs/xxx`.
+- **Не коммить в `main` напрямую.**
+
+### 5. Коммиты
+
+Формат:
+
+    <type>(<scope>): <короткое описание>
+
+**Типы:** `feat`, `fix`, `docs`, `refactor`, `test`, `chore`.
+
+Примеры:
+
+    feat(db): add performance indexes
+    fix(gitignore): stop ignoring db models
+    docs(context): add ARCHITECTURE.md
+
+### 6. Pull Request (если работаешь через GitHub)
+
+Описание:
+
+- **Что:** суть изменения.
+- **Зачем:** какую задачу решает.
+- **Как проверить:** шаги для ревьюера.
+
+---
+
+## Что НЕ делать
+
+- ❌ Не коммить в `main` напрямую.
+- ❌ Не менять документацию в `docs/context/` (это зона человека).
+- ❌ Не переписывать архитектуру без согласования.
+- ❌ Не использовать `try/except` для валидации.
+- ❌ Не вызывать `session.commit()` вручную.
+- ❌ Не импортировать FastAPI/SQLAlchemy в `domain/`.
+- ❌ Не добавлять зависимости без согласования.
+- ❌ Не оставлять `print()`, `TODO`, «заглушки» без задачи.
+- ❌ Не пушить напрямую в `main` (только через PR).
+- ❌ Не смешивать правила кода (`RULES.md`) и правила текстов ПД.
+
+---
+
+## Что делать
+
+- ✅ Читать `docs/context/` перед началом работы.
+- ✅ Планировать перед кодингом (Plan Mode).
+- ✅ Писать тесты для бизнес-логики.
+- ✅ Использовать типизацию везде.
+- ✅ Маленькие коммиты с осмысленными сообщениями.
+- ✅ Проверять `pytest` перед push.
+- ✅ Один шаг за раз, с проверками.
+- ✅ Спрашивать при неясности.
+
+---
+
+## Конкретные подсказки
+
+### Backend: создать новый эндпоинт
+
+1. **DTO** — `backend/src/application/dto/<name>.py`.
+2. **Порт репозитория** — `backend/src/domain/ports/repositories.py`.
+3. **Репозиторий** — `backend/src/adapters/db/repositories/<name>_repo.py`.
+4. **Сервис** — `backend/src/domain/services/<name>_service.py`.
+5. **DI** — `backend/src/adapters/api/dependencies.py` (`get_*_service`, `*ServiceDep`).
+6. **Роут** — `backend/src/adapters/api/routes/<name>.py`.
+7. **Регистрация роута** — `backend/src/main.py` + `routes/__init__.py`.
+8. **Тесты** — `backend/tests/test_<name>_service.py`.
+
+### Frontend: новая страница
+
+1. **API-клиент** — `frontend/src/api/<name>Api.ts`.
+2. **Хук** — `frontend/src/hooks/use<Name>.ts`.
+3. **Страница** — `frontend/src/pages/<Name>Page.tsx`.
+4. **Роутинг** — `frontend/src/main.tsx` или `App.tsx`.
+5. **Компоненты** — `frontend/src/components/`.
+
+### Миграция Alembic
+
+    cd backend
+    alembic revision --autogenerate -m "add <описание>"
+    # Проверить сгенерированный файл
+    alembic upgrade head
+
+**Проверить:**
+
+- `xml_schema_code` (колонка) — в `entity_types`.
+- Индексы — в `__table_args__`.
+
+---
+
+## Ссылки
+
+- **`docs/context/`** — AI-контекст (7 файлов).
+- **`docs/Дорожная_карта_6.3.md`** — стратегия (не коммитится).
+- **`docs/ТЗ_4.3.md`** — ТЗ (не коммитится).
+- **`docs/tasks/`** — логи ИИ-агента (появятся позже).
+- **GitHub:** https://github.com/ABEL678/gip-assistant
+
+---
+
+## Если что-то неясно
+
+**Спроси человека.** Не догадывайся, не выдумывай. Лучше спросить и сделать правильно, чем сделать быстро и неправильно.
+
+---
+
+**Конец AGENTS.md.**

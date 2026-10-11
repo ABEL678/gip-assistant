@@ -146,7 +146,7 @@ export function FieldEditor({
           <div>
             <Label>Значение по умолчанию</Label>
             <Input
-              value={field.default ?? ""}
+              value={field.default != null ? String(field.default) : ""}
               onChange={(e) => {
                 const v = e.target.value
                 onChange({

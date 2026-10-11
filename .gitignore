@@ -101,8 +101,8 @@ docs/archive/
 !docs/context/TASKS.md
 !docs/context/README.md
 
-# ============ LLM models ============
-models/
+# ============ LLM models (только корневая папка /models) ============
+/models/
 *.gguf
 *.bin
 *.safetensors

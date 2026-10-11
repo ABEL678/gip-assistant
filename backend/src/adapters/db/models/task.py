@@ -3,7 +3,7 @@
 import uuid
 from datetime import date
 
-from sqlalchemy import Date, ForeignKey, Integer, String, Text
+from sqlalchemy import Date, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -11,9 +11,16 @@ from backend.src.adapters.db.base import Base, TimestampMixin
 
 
 class Task(Base, TimestampMixin):
-    """Задача (см. ТЗ 3.0, раздел 4.3)."""
+    """Задача (см. ТЗ 4.3, раздел 4.3)."""
 
     __tablename__ = "tasks"
+    __table_args__ = (
+        Index("idx_tasks_project", "project_id"),
+        Index("idx_tasks_status", "status"),
+        Index("idx_tasks_deadline", "deadline"),
+        Index("idx_tasks_section", "section_code"),
+        Index("idx_tasks_to_section", "to_section_code"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),

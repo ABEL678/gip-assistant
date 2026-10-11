@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { entityApi, type EntityType } from "@/api/entityApi"
+import { entityApi, type EntityType, type EntityTypeSchema } from "@/api/entityApi"
 
 export function useEntityTypes(projectId: string) {
   return useQuery({
@@ -25,7 +25,7 @@ export function useCreateEntityType(projectId: string) {
       icon?: string
       color?: string
       description?: string | null
-      schema: { fields: Record<string, unknown>[] }
+      schema: EntityTypeSchema
       sort_order?: number
     }) => entityApi.createType(projectId, payload),
     onSuccess: () => {

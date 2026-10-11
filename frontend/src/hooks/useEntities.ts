@@ -17,7 +17,7 @@ export function useEntity(entityId: string) {
   })
 }
 
-export function useCreateEntity(entityTypeId: string, projectId: string) {
+export function useCreateEntity(entityTypeId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (payload: {

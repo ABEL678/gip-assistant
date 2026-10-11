@@ -84,12 +84,38 @@ mode: all
 ## Инструменты
 
 - **Терминал:** CMD (Windows).
-- **Окружение:** `.venv` активирован.
-- **Запуск backend:** `uvicorn backend.src.main:app --reload`.
+- **Окружение:** `.venv` активируется через `..\.venv\Scripts\activate` (из `backend/`).
+- **Запуск backend:** `uvicorn backend.src.main:app --reload` (из корня).
 - **Запуск frontend:** `npm run dev` (в `frontend/`).
-- **Тесты:** `pytest backend/tests/ -v`.
-- **Линтер:** `ruff check .` + `ruff format .`.
-- **Alembic:** из `backend/` — `alembic revision --autogenerate -m "..."`.
+- **Тесты:** `pytest backend/tests/ -v` (из корня).
+- **Линтер:** `ruff check .` + `ruff format .` (из корня).
+- **Alembic:** запускать **из `backend/`**, не из корня.
+
+### Готовые команды (для GigaCode)
+
+**Тесты (из корня):**
+
+    .venv\Scripts\activate && pytest backend/tests/ -v
+
+**Alembic (из корня, с переходом в backend):**
+
+    cd backend && ..\.venv\Scripts\activate && alembic current
+    cd backend && ..\.venv\Scripts\activate && alembic upgrade head
+    cd backend && ..\.venv\Scripts\activate && alembic revision --autogenerate -m "описание"
+
+**Ruff (из корня):**
+
+    .venv\Scripts\activate && ruff check backend/
+
+**uvicorn (из корня):**
+
+    .venv\Scripts\activate && uvicorn backend.src.main:app --reload
+
+### Важно
+
+- **Не создавай Python-скрипты для обхода команд.** Если команда не работает — **спроси человека**.
+- **Не перебирай варианты** команд больше 2-3 раз. Если не получается — остановись и спроси.
+- **Используй готовые команды выше** — они проверены.
 
 ---
 

@@ -119,3 +119,6 @@ minio.license
 test_parse_output/
 tmp/
 temp/
+
+# ============ GigaCode ============
+.gigacode/

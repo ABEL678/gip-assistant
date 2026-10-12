@@ -423,14 +423,20 @@
 ## 11. Эндпоинты в планах
 
 ### MVP (нед. 3) — Документы
+- GET `/api/document-types`
 - POST `/api/projects/{id}/documents`
 - GET `/api/projects/{id}/documents`
 - GET `/api/documents/{id}`
-- GET `/api/documents/{id}/download`
 - PATCH `/api/documents/{id}`
 - DELETE `/api/documents/{id}`
-- GET `/api/entities/{id}/documents`
-- GET `/api/tasks/{id}/documents`
+- POST `/api/documents/{id}/versions`
+- GET `/api/documents/{id}/versions`
+- GET `/api/documents/{id}/versions/{vid}`
+- GET `/api/documents/{id}/versions/current`
+- DELETE `/api/documents/{id}/versions/{vid}`
+- POST `/api/documents/{id}/links`
+- GET `/api/documents/{id}/links`
+- DELETE `/api/documents/{id}/links/{lid}`
 
 ### MVP (нед. 3) — Шаблоны
 - GET `/api/entity-type-templates`

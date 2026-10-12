@@ -50,6 +50,12 @@
     │   ├── cross_task.py
     │   ├── entity_type.py
     │   ├── entity.py
+    │   ├── document.py 
+    │   ├── document_version.py
+    │   ├── document_link.py
+    │   ├── document_type.py
+    │   ├── xml_schema.py
+    │   ├── xml_document.py
     │   └── ...
     ├── value_objects/      # Enum'ы, VO
     │   └── enums.py

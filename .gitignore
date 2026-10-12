@@ -88,6 +88,8 @@ static/
 docs/*
 !docs/context/
 !docs/context/**
+!docs/ТЗ_4.4.md
+!docs/Дорожная_карта_6.4.md
 docs/*.docx
 docs/*.doc
 docs/archive/

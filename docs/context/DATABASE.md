@@ -30,7 +30,7 @@
 
 | Группа | Таблицы | Этап |
 |--------|---------|------|
-| Документы | documents | MVP, нед. 3 |
+| Документы (ГОСТ) | document_types, documents, document_versions, document_links | MVP, нед. 3 |
 | Шаблоны | entity_type_templates | MVP, нед. 3 |
 | XML | xml_schemas, xml_documents | MVP-1.5 |
 

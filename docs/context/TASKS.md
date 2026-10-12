@@ -120,6 +120,15 @@
 
 ## 2. В работе (In Progress)
 
+### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.1
+
+- ⏳ Домен: Document, DocumentVersion, DocumentLink, DocumentType.
+- ⏳ Value Objects: 4 Enum (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
+- ⏳ SQLAlchemy-модели: 4 таблицы.
+- ⏳ Миграция Alembic + сиды document_types.
+- ⏳ Проверка: 65 старых тестов зелёные.
+- ⏳ Обновление DATABASE.md.
+
 ### GigaCode (установлен и протестирован)
 
 - ✅ Плагин установлен в PyCharm (Marketplace + Sber ID).
@@ -236,6 +245,13 @@
 ## 5. Журнал (Changelog)
 
 Краткая история — что делали по датам.
+
+### 13.10.2026 (сессия 5)
+
+- ✅ Обновлён AGENTS.md: правило авто-синхронизации контекста.
+- ✅ Создан HANDOFF.md — механизм передачи между сессиями.
+- ✅ Обновлено правило про HANDOFF (по запросу человека, не автоматом).
+- ⏸ Пауза до Сессии 5.1 (Уровень 1.5 — домен + модели).
 
 ### 12.10.2026 (сессия 4)
 

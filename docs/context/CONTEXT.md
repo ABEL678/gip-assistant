@@ -5,7 +5,7 @@
 > контекст, достаточный для продуктивной работы.
 
 **Версия:** 1.1 (октябрь 2026)
-**Актуально на:** после Дорожной карты 6.3 + ТЗ 4.3 (перед UI Уровня 1)
+**Актуально на:** после Дорожной карты 6.4 + ТЗ 4.4 (перед UI Уровня 1)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -35,7 +35,7 @@
 | Уровень | Что | Этап | Статус |
 |---------|-----|------|--------|
 | 0 | Импорт Excel, матрица, TaskList, Telegram-бот | Прототип | ✅ Сделано |
-| 1 | Универсальные сущности (EntityType + Entity) | MVP, нед. 1-2 | ✅ Backend готов, UI в работе |
+| 1 | Универсальные сущности (EntityType + Entity) | MVP, нед. 1-2 | ✅ Backend + UI готовы |
 | 2 | Библиотека шаблонов (6 типов) | MVP, нед. 3 | ⏳ Не начато |
 | 2.5 | XML-формат ПД (ТЗ, ПЗ) + валидация XSD | MVP-1.5, 2 недели | ⏳ Не начато |
 | 3 | LLM-ассистент (Qwen 2.5 7B) | MVP-3 | ⏳ Не начато |
@@ -76,13 +76,16 @@
 - **65 тестов pytest** (39 существующих + 26 для Universal Entities).
 - Гексагональная архитектура: domain / application / adapters.
 
-**Frontend:**
+**Frontend (Уровень 1 UI — ЗАКРЫТ):**
 
-- Импорт Excel (dropzone + селектор шапки + маппинг).
-- TaskList (500+ задач, фильтры, inline).
-- Матрица смежников (10×10, цвета).
-- Страница задач пары.
-- **Не начато:** UI конструктора типов (EntityTypesPage и др.).
+- entityApi.ts — API-клиент.
+- useEntityTypes.ts, useEntities.ts — TanStack Query хуки.
+- EntityTypesPage.tsx — галерея типов.
+- EntityTypeConstructorPage.tsx — конструктор.
+- EntitiesPage.tsx — записи типа.
+- Компоненты: EntityTypeCard, FieldEditor, FieldList, DynamicField, DynamicTable, textarea.
+- Интеграция в ProjectPage.tsx (секция «Типы сущностей»).
+- Роутинг в App.tsx (4 маршрута).
 
 **Bot:** aiogram 3.x, @gip_assistant_ru_bot, /start /help /link /status.
 
@@ -90,12 +93,12 @@
 
 **AI-контекст и документация:**
 
-- Дорожная карта 6.3 — обновлён раздел 15 (отказ от Cursor / Claude Code,
+- Дорожная карта 6.4 — обновлён раздел 15 (отказ от Cursor / Claude Code,
   GigaCode + самописный агент).
-- ТЗ 4.3 — обновлены разделы 1.5, 2.5, 12, 13, 15.
+- ТЗ 4.4 — обновлены разделы 1.5, 2.5, 12, 13, 15.
 - `docs/context/CONTEXT.md` — создан (этот файл).
 - `AGENTS.md` — в работе.
-- GigaCode — установка в процессе.
+- GigaCode — установлен и протестирован.
 
 ---
 
@@ -103,13 +106,10 @@
 
 **Сейчас (октябрь 2026):**
 
-- ✅ Дорожная карта 6.3 — готова.
-- ✅ ТЗ 4.3 — готово.
+- ✅ Дорожная карта 6.4 — готова.
+- ✅ ТЗ 4.4 — готово.
 - ✅ `CONTEXT.md` — создан.
-- ⏳ `docs/context/` — 6 файлов в работе (TASKS, ARCHITECTURE, DATABASE, API, RULES, README).
-- ⏳ `AGENTS.md` — в корне репозитория.
-- ⏳ GigaCode — установка в PyCharm.
-- ⏳ UI конструктора типов (Неделя 2 MVP).
+- ✅ `AGENTS.md` — создан (в корне, подключён к GigaCode Rules).
 
 **Дальше по плану:**
 

@@ -137,7 +137,7 @@
 
 ## 2. В работе (In Progress)
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.1
+### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.1 — ЗАКРЫТ (14.10.2026)
 
 **Промпт для GigaCode:** `docs/tasks/5.1_prompt.md`.
 
@@ -147,6 +147,14 @@
 - ✅ Миграция Alembic c719d9b4537e + сиды document_types (8 записей).
 - ✅ Проверка: 65 старых тестов зелёные.
 - ✅ Обновление DATABASE.md.
+
+### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2a — ЗАКРЫТ (14.10.2026)
+
+- ✅ 4 порта репозиториев: `DocumentTypeRepository`, `DocumentRepository`,
+  `DocumentVersionRepository`, `DocumentLinkRepository` в `domain/ports/repositories.py`.
+- ✅ Domain чистый — без fastapi/sqlalchemy/pydantic.
+- ✅ 65 тестов зелёные.
+- ✅ Итого портов: 11 (было 7).
 
 
 
@@ -246,6 +254,14 @@
 
 Краткая история — что делали по датам.
 
+### 14.10.2026 (сессия 5.2a)
+
+- ✅ Сессия 5.2a закрыта: 4 порта репозиториев для ГОСТ-документов.
+- ✅ DocumentTypeRepository, DocumentRepository, DocumentVersionRepository,
+  DocumentLinkRepository — ABC-классы в domain/ports/repositories.py.
+- ✅ Domain чистый, 65 тестов зелёные.
+- ✅ Итого портов: 11.
+
 ### 13.10.2026 (сессия 5.1)
 
 - ✅ Сессия 5.1 закрыта: домен + модели + миграция для ГОСТ-документов.
@@ -312,6 +328,7 @@
 | MRR | 0 ₽ | 5 000 ₽ (первый платёж) |
 | `docs/context/` готовность | 7/7 файлов | 7/7 |
 | UI Уровня 1 | 100% | 100% |
+| Портов репозиториев | 11 | 11 |
 
 ---
 

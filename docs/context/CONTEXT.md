@@ -75,6 +75,9 @@
 - 17 эндпоинтов для projects / tasks / matrix / import / entity-types / entities.
 - **65 тестов pytest** (39 существующих + 26 для Universal Entities).
 - Гексагональная архитектура: domain / application / adapters.
+- **11 портов репозиториев** (domain/ports/repositories.py):
+  Project, Task, CrossTask, ImportLog, User, EntityType, Entity,
+  DocumentType, Document, DocumentVersion, DocumentLink.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

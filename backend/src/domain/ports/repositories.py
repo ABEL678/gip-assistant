@@ -9,12 +9,17 @@ from datetime import date
 from uuid import UUID
 
 from backend.src.domain.entities.cross_task import CrossTask
+from backend.src.domain.entities.document import Document
+from backend.src.domain.entities.document_link import DocumentLink
+from backend.src.domain.entities.document_type import DocumentType
+from backend.src.domain.entities.document_version import DocumentVersion
+from backend.src.domain.entities.entity import Entity
+from backend.src.domain.entities.entity_type import EntityType
 from backend.src.domain.entities.import_log import ImportLog
 from backend.src.domain.entities.project import Project
 from backend.src.domain.entities.task import Task
 from backend.src.domain.entities.user import User
-from backend.src.domain.entities.entity import Entity
-from backend.src.domain.entities.entity_type import EntityType
+from backend.src.domain.value_objects.document import LifecycleStatus
 
 
 class ProjectRepository(ABC):
@@ -188,3 +193,97 @@ class EntityRepository(ABC):
     @abstractmethod
     async def delete(self, entity_id: UUID) -> None:
         ...
+
+
+class DocumentTypeRepository(ABC):
+    """Порт репозитория типов ГОСТ-документов (справочник)."""
+
+    @abstractmethod
+    async def get_by_id(self, id: UUID) -> DocumentType | None:
+        """Найти тип по ID."""
+
+    @abstractmethod
+    async def get_by_code(self, code: str) -> DocumentType | None:
+        """Найти тип по коду (drawing, scheme, ...)."""
+
+    @abstractmethod
+    async def list_all(self) -> list[DocumentType]:
+        """Все типы, сортировка по code."""
+
+
+class DocumentRepository(ABC):
+    """Порт репозитория ГОСТ-документов."""
+
+    @abstractmethod
+    async def get_by_id(self, id: UUID) -> Document | None:
+        """Найти документ по ID."""
+
+    @abstractmethod
+    async def get_by_guid(self, guid: UUID) -> Document | None:
+        """Найти документ по GUID (ГОСТ Р 21.101-2026, 4.1.2.2)."""
+
+    @abstractmethod
+    async def list_by_project(
+        self,
+        project_id: UUID,
+        *,
+        lifecycle_status: LifecycleStatus | None = None,
+    ) -> list[Document]:
+        """Документы проекта, опционально — фильтр по статусу жизненного цикла."""
+
+    @abstractmethod
+    async def save(self, document: Document) -> Document:
+        """Создать или обновить документ (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, id: UUID) -> None:
+        """Удалить документ по ID (CASCADE на версии и связи)."""
+
+
+class DocumentVersionRepository(ABC):
+    """Порт репозитория версий ГОСТ-документов."""
+
+    @abstractmethod
+    async def get_by_id(self, id: UUID) -> DocumentVersion | None:
+        """Найти версию по ID."""
+
+    @abstractmethod
+    async def list_by_document(self, document_id: UUID) -> list[DocumentVersion]:
+        """Все версии документа, сортировка по uploaded_at DESC."""
+
+    @abstractmethod
+    async def get_current(self, document_id: UUID) -> DocumentVersion | None:
+        """Текущая версия документа (is_current = TRUE)."""
+
+    @abstractmethod
+    async def save(self, version: DocumentVersion) -> DocumentVersion:
+        """Создать или обновить версию."""
+
+    @abstractmethod
+    async def set_current(self, document_id: UUID, version_id: UUID) -> None:
+        """Сделать version_id текущей для document_id.
+        Атомарно: сбросить is_current у прежней текущей, установить у новой."""
+
+
+class DocumentLinkRepository(ABC):
+    """Порт репозитория связей между ГОСТ-документами."""
+
+    @abstractmethod
+    async def get_by_id(self, id: UUID) -> DocumentLink | None:
+        """Найти связь по ID."""
+
+    @abstractmethod
+    async def list_by_source(self, document_id: UUID) -> list[DocumentLink]:
+        """Связи, где document_id — источник."""
+
+    @abstractmethod
+    async def list_by_target(self, document_id: UUID) -> list[DocumentLink]:
+        """Связи, где document_id — цель."""
+
+    @abstractmethod
+    async def save(self, link: DocumentLink) -> DocumentLink:
+        """Создать или обновить связь."""
+
+    @abstractmethod
+    async def delete(self, id: UUID) -> None:
+        """Удалить связь по ID."""

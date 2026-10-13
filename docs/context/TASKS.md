@@ -122,6 +122,8 @@
 
 ### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.1
 
+**Промпт для GigaCode:** `docs/tasks/5.1_prompt.md`.
+
 - ⏳ Домен: Document, DocumentVersion, DocumentLink, DocumentType.
 - ⏳ Value Objects: 4 Enum (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
 - ⏳ SQLAlchemy-модели: 4 таблицы.
@@ -222,17 +224,17 @@
 
 ## 4. Блокеры (Blockers)
 
-**На 12.10.2026 — блокеров нет.**
+**На 13.10.2026 — блокеров нет.**
 
 Все запланированные задачи по инфраструктуре выполнены:
-- ✅ AI-контекст (`docs/context/` — 7 файлов).
-- ✅ `AGENTS.md` (в корне).
+- ✅ AI-контекст (docs/context/ — 7 файлов).
+- ✅ AGENTS.md (в корне).
 - ✅ GigaCode установлен и протестирован.
 - ✅ Дорожная карта 6.4, ТЗ 4.4.
 - ✅ Уровень 1 (MVP) backend + UI закрыт.
 - ✅ 65 тестов pytest.
 
-**Следующие шаги:** Неделя 3 MVP — Библиотека шаблонов + MinIO.
+**Следующие шаги:** Сессия 5.1 — Уровень 1.5 (домен + модели для Document).
 
 ### Известные ограничения (не блокеры)
 

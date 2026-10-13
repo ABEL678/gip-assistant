@@ -90,6 +90,8 @@ docs/*
 !docs/context/**
 !docs/ТЗ_4.4.md
 !docs/Дорожная_карта_6.4.md
+!docs/tasks/
+!docs/tasks/**
 docs/*.docx
 docs/*.doc
 docs/archive/

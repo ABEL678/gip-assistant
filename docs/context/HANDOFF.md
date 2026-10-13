@@ -21,26 +21,17 @@
 
 ## 2. Что делаем сейчас
 
-**Пауза.** Сессия 5 закрыта. Следующая — Сессия 5.1 (начнём позже).
+**Сессия 5.1 — Домен + SQLAlchemy-модели + миграция для ГОСТ-документов.**
 
-**Задача на следующий раз:** Сессия 5.1 — Домен + SQLAlchemy-модели + миграция для ГОСТ-документов.
-
-- **Файлы (новые):**
-  - `backend/src/domain/entities/document.py`
-  - `backend/src/domain/entities/document_version.py`
-  - `backend/src/domain/entities/document_link.py`
-  - `backend/src/domain/entities/document_type.py`
-  - `backend/src/domain/value_objects/document.py` (4 Enum)
-  - `backend/src/adapters/db/models/document_type.py`
-  - `backend/src/adapters/db/models/document.py`
-  - `backend/src/adapters/db/models/document_version.py`
-  - `backend/src/adapters/db/models/document_link.py`
-  - Обновить `backend/src/adapters/db/models/__init__.py`
-  - Миграция Alembic (autogenerate) + сиды document_types
-
-- **Прогресс:** 0% — ещё не начато.
-
-- **Промпт для GigaCode:** в чате с DeepSeek (сохранён в истории, при необходимости — переформулировать по ТЗ 4.4, раздел 4.4).
+- **Прогресс:** 0% — начинаем с нуля.
+- **Промпт для GigaCode:** `docs/tasks/5.1_prompt.md` (полный текст).
+- **Источник истины:** ТЗ 4.4, разделы 4.4, 16.2, 16.8.
+- **Критерии готовности:**
+  - Домен: 4 сущности + 4 Enum.
+  - SQLAlchemy: 4 модели.
+  - Миграция: применена, 4 таблицы, 8 сидов.
+  - Тесты: 65 старых — зелёные.
+  - Контекст: TASKS.md и DATABASE.md обновлены.
 
 ## 3. Что дальше
 
@@ -67,6 +58,7 @@
 - [ ] **GigaCode иногда выполняет задачу частично** — нужно проверять чек-лист по пунктам.
 - [ ] **Первая проверка авто-синхронизации** — GigaCode должен сам обновить TASKS.md и CONTEXT.md после Сессии 5.1. Если не сделает — нужно поправить правило в AGENTS.md.
 - [ ] **GitHub Actions** для авто-генерации DATABASE.md / API.md / RULES.md — не настроены (отложены).
+- [ ] **Промпт для Сессии 5.1** — `docs/tasks/5.1_prompt.md` (создан 13.10.2026).
 
 ## 6. Ключи / пути / команды
 
@@ -86,15 +78,20 @@
 
     Привет. Продолжаем проект «ГИП-Ассистент».
 
-    Прочитай:
+    Прочитай (по порядку):
     1. docs/context/HANDOFF.md — что было и что дальше.
     2. docs/context/CONTEXT.md — что за продукт.
     3. docs/context/TASKS.md — что сделано.
+    4. docs/context/ARCHITECTURE.md — структура.
+    5. AGENTS.md — правила для GigaCode.
 
-    Дальше — продолжай с Сессии 5.1 (домен + модели для Document).
-    Промпт для GigaCode — см. в HANDOFF.md, раздел 2.
+    Дальше:
+    - Мы на Уровне 1.5 (ГОСТ-хранение), Сессия 5.1.
+    - Задача: домен + модели + миграция для Document.
+    - Полный промпт для GigaCode — в docs/tasks/5.1_prompt.md.
+    - Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
 
-    Правила работы — в AGENTS.md.
+    Продолжай.
 
 ---
 

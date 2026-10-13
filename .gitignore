@@ -92,6 +92,8 @@ docs/*
 !docs/Дорожная_карта_6.4.md
 !docs/tasks/
 !docs/tasks/**
+!docs/templates/
+!docs/templates/**
 docs/*.docx
 docs/*.doc
 docs/archive/

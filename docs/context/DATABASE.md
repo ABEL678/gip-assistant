@@ -4,8 +4,8 @@
 > **Автогенерация:** в MVP-2 файл обновляется автоматически через
 > `sqlacodegen` + GitHub Actions. Пока — вручную.
 
-**Версия:** 1.1
-**Обновлено:** 11.10.2026
+**Версия:** 1.2
+**Обновлено:** 13.10.2026
 **СУБД:** PostgreSQL 15+
 **ORM:** SQLAlchemy 2.0 async
 **Текущая миграция:** `d357e719c8bf`
@@ -14,7 +14,7 @@
 
 ## 1. Обзор
 
-**Всего таблиц:** 10.
+**Всего таблиц:** 14.
 
 | Группа | Таблицы |
 |--------|---------|
@@ -24,13 +24,14 @@
 | Универсальные сущности | entity_types, entities |
 | Служебные | alembic_version |
 
-**Всего индексов:** 21 (10 PK + 1 UNIQUE + 10 дополнительных).
+**Всего индексов:** 38 (14 PK + 2 UNIQUE + 22 дополнительных).
+Пересчитано после Сессии 5.1 (+17 индексов).
 
-**Планируются:**
+**ГОСТ-документы (MVP-1.5, сессия 5.1):**
 
 | Группа | Таблицы | Этап |
 |--------|---------|------|
-| Документы (ГОСТ) | document_types, documents, document_versions, document_links | MVP, нед. 3 |
+| Документы (ГОСТ) | document_types, documents, document_versions, document_links | ✅ Сессия 5.1 |
 | Шаблоны | entity_type_templates | MVP, нед. 3 |
 | XML | xml_schemas, xml_documents | MVP-1.5 |
 
@@ -253,7 +254,98 @@
 |------|-----|-------------|
 | version_num | VARCHAR(32) | PK |
 
-**Текущая версия:** `d357e719c8bf` (add indexes and xml_schema_code).
+**Текущая версия:** `c719d9b4537e` (add gost document model).
+
+### 2.11. document_types
+
+**Назначение:** справочник типов ГОСТ-документов.
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| code | VARCHAR(50) | NOT NULL, UNIQUE | Код типа (drawing, scheme, ...) |
+| name | VARCHAR(200) | NOT NULL | Название |
+| description | TEXT | nullable | Описание |
+| gost_code | VARCHAR(50) | nullable | Код по ГОСТ (ПЗ, ТЗ, УЛ) |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+
+**Индексы:** `document_types_pkey` (PK), `uq_document_types_code` (UNIQUE).
+
+### 2.12. documents
+
+**Назначение:** карточка ГОСТ-документа (ГОСТ Р 21.101-2026).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| guid | UUID | NOT NULL, UNIQUE | GUID документа (ГОСТ Р 21.101-2026, 4.1.2.2) |
+| project_id | UUID | FK → projects.id (CASCADE), NOT NULL | Проект |
+| entity_id | UUID | FK → entities.id (SET NULL), nullable | Сущность |
+| task_id | UUID | FK → tasks.id (SET NULL), nullable | Задача |
+| cipher | VARCHAR(500) | NOT NULL | Обозначение (АБЗ-XXX-XX ЭД) |
+| base_designation | VARCHAR(200) | nullable | Базовое обозначение |
+| section_code | VARCHAR(50) | nullable | Код раздела |
+| document_kind | VARCHAR(10) | NOT NULL, default='ПД' | ПД / РД |
+| mark | VARCHAR(50) | nullable | Марка |
+| doc_part_type | VARCHAR(10) | nullable | ТЧ / ГЧ |
+| document_name | VARCHAR(500) | NOT NULL | Наименование |
+| document_type_id | UUID | FK → document_types.id, NOT NULL | Тип |
+| current_version_id | UUID | nullable, НЕ FK | Текущая версия |
+| version_parent_id | UUID | FK → documents.id, nullable | Родитель |
+| replaces_id | UUID | FK → documents.id, nullable | Заменяемый |
+| replaced_by_id | UUID | FK → documents.id, nullable | Заменяющий |
+| lifecycle_status | VARCHAR(20) | NOT NULL, default='DRAFT' | Статус |
+| signed_by | UUID | FK → users.id, nullable | Кто подписал |
+| signed_at | TIMESTAMPTZ | nullable | Когда подписал |
+| signature_hash | VARCHAR(255) | nullable | Хеш ЭП |
+| signature_status | VARCHAR(50) | nullable | Статус ЭП |
+| created_by | UUID | FK → users.id, nullable | Кто создал |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+| updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
+
+**Индексы:** `documents_pkey` (PK), `uq_documents_guid` (UNIQUE), `idx_documents_project`, `idx_documents_entity`, `idx_documents_task`, `idx_documents_type`, `idx_documents_status`.
+
+**FK:** projects, entities (SET NULL), tasks (SET NULL), document_types, documents (само-рекурсия), users.
+
+### 2.13. document_versions
+
+**Назначение:** версия файла ГОСТ-документа.
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| document_id | UUID | FK → documents.id (CASCADE), NOT NULL | Документ |
+| version | VARCHAR(20) | NOT NULL | Номер версии (v1.0, v1.1) |
+| change_number | INT | nullable | Номер изменения |
+| file_path | VARCHAR(1000) | NOT NULL | Путь к файлу |
+| file_name | VARCHAR(500) | NOT NULL | Имя файла |
+| hash_sha256 | VARCHAR(64) | NOT NULL | Хеш SHA-256 |
+| format_original | VARCHAR(20) | NOT NULL | Формат (dwg, docx, pdf) |
+| format_archive | VARCHAR(20) | nullable | Архивный формат |
+| size_bytes | BIGINT | NOT NULL | Размер в байтах |
+| is_current | BOOLEAN | NOT NULL, default=False | Текущая версия |
+| uploaded_by | UUID | FK → users.id, nullable | Загрузил |
+| uploaded_at | TIMESTAMPTZ | NOT NULL, default=now() | Загружено |
+
+**Ограничения:** UniqueConstraint(document_id, version).
+
+**Индексы:** `document_versions_pkey` (PK), `idx_document_versions_document`, `idx_document_versions_current` (partial: WHERE is_current = TRUE).
+
+### 2.14. document_links
+
+**Назначение:** связь между ГОСТ-документами.
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| source_document_id | UUID | FK → documents.id (CASCADE), NOT NULL | Источник |
+| target_document_id | UUID | FK → documents.id (CASCADE), NOT NULL | Цель |
+| link_type | VARCHAR(30) | NOT NULL, default='reference' | Тип связи |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+
+**Ограничения:** UniqueConstraint(source_document_id, target_document_id, link_type).
+
+**Индексы:** `document_links_pkey` (PK), `idx_document_links_source`, `idx_document_links_target`.
 
 ---
 
@@ -269,6 +361,10 @@
 | ImportStatus | SUCCESS, PARTIAL, FAILED | import_logs.status |
 | DocumentStatus | UPLOADING, READY, FAILED | documents (план) |
 | XMLDocumentStatus | DRAFT, GENERATED, VALIDATED, INVALID, EXPORTED | xml_documents (план) |
+| DocumentKind | ПД, РД | домен (value_objects/document.py) |
+| DocPartType | ТЧ, ГЧ | домен (value_objects/document.py) |
+| LifecycleStatus | DRAFT, IN_REVIEW, NORMOCONTROL, APPROVED, ARCHIVED, ANNULLED, REPLACED | домен (value_objects/document.py) |
+| DocumentLinkType | appendix, reference, replaces, version_of | домен (value_objects/document.py) |
 
 ---
 
@@ -282,6 +378,7 @@
 | `272f011cf740` | add to_section_code to tasks | 2026-10-08 |
 | `78ada0d52056` | add entity_types and entities tables | 2026-10-10 |
 | `d357e719c8bf` | add indexes and xml_schema_code | 2026-10-11 |
+| `c719d9b4537e` | add gost document model | 2026-10-13 |
 
 **Команды:**
 

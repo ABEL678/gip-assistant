@@ -124,12 +124,12 @@
 
 **Промпт для GigaCode:** `docs/tasks/5.1_prompt.md`.
 
-- ⏳ Домен: Document, DocumentVersion, DocumentLink, DocumentType.
-- ⏳ Value Objects: 4 Enum (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
-- ⏳ SQLAlchemy-модели: 4 таблицы.
-- ⏳ Миграция Alembic + сиды document_types.
-- ⏳ Проверка: 65 старых тестов зелёные.
-- ⏳ Обновление DATABASE.md.
+- ✅ Домен: Document, DocumentVersion, DocumentLink, DocumentType.
+- ✅ Value Objects: 4 Enum (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
+- ✅ SQLAlchemy-модели: 4 таблицы.
+- ✅ Миграция Alembic c719d9b4537e + сиды document_types (8 записей).
+- ✅ Проверка: 65 старых тестов зелёные.
+- ✅ Обновление DATABASE.md.
 
 ### GigaCode (установлен и протестирован)
 
@@ -248,6 +248,14 @@
 
 Краткая история — что делали по датам.
 
+### 13.10.2026 (сессия 5.1)
+
+- ✅ Сессия 5.1 закрыта: домен + модели + миграция для ГОСТ-документов.
+- ✅ 4 новые таблицы: document_types, documents, document_versions, document_links.
+- ✅ 8 сидов document_types.
+- ✅ Обновлены TASKS.md, DATABASE.md.
+- ✅ 65 тестов зелёные.
+
 ### 13.10.2026 (сессия 5)
 
 - ✅ Обновлён AGENTS.md: правило авто-синхронизации контекста.
@@ -299,7 +307,7 @@
 | Метрика | Значение | Цель |
 |---------|----------|------|
 | Тесты pytest | 65 | 84 (MVP), 107 (MVP-1.5) |
-| Таблиц в БД | 10 | 14 (MVP-1.5) |
+| Таблиц в БД | 14 | 14 (MVP-1.5) |
 | Эндпоинтов API | 17 | 30+ (MVP) |
 | Покрытие бизнес-логики | Smoke-тесты | 80%+ |
 | Клиентов | 0 | 1 пилот |

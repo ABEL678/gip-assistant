@@ -84,6 +84,8 @@
   SqlAlchemyDocumentTypeRepository, SqlAlchemyDocumentRepository,
   SqlAlchemyDocumentVersionRepository, SqlAlchemyDocumentLinkRepository.
 - **11 портов + 11 репозиториев SQLAlchemy**.
+- **8 smoke-тестов маппинга** (test_document_mapping.py): Enum-маппинг,
+  roundtrip, no timestamps.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

@@ -89,6 +89,8 @@
 - **4 сервиса** (domain/services/): DocumentTypeService, DocumentService,
   DocumentVersionService, DocumentLinkService.
 - **8 сервисов** (было 4: entity_type, entity, import, matrix).
+- **DI-инфраструктура**: 2 __init__.py + dependencies.py — агрегация
+  4 репозиториев и 4 сервисов через FastAPI Depends.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

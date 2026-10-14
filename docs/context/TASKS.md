@@ -186,6 +186,12 @@
 - ✅ set_current: 3 валидации + денормализация current_version_id.
 - ✅ Итого сервисов: 8 (было 4).
 
+### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2e-1 — ЗАКРЫТ (14.10.2026)
+
+- ✅ DI-инфраструктура: 2 __init__.py + dependencies.py.
+- ✅ 4 репозитория + 4 сервиса агрегированы.
+- ✅ DocumentServiceDep, DocumentVersionServiceDep, DocumentLinkServiceDep.
+
 ---
 
 ## 3. Дальше (Next)
@@ -304,6 +310,11 @@
 - ✅ Валидации: уникальность кода, existence checks, self-link, same project.
 - ✅ set_current: 3 валидации + денормализация current_version_id.
 - ✅ 8 сервисов (было 4).
+
+### 14.10.2026 (сессия 5.2e-1)
+
+- ✅ Сессия 5.2e-1 закрыта: DI-инфраструктура для ГОСТ-документов.
+- ✅ 2 __init__.py + dependencies.py: 4 репо + 4 сервиса.
 
 ### 14.10.2026 (сессия 5.2b)
 

@@ -16,6 +16,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.adapters.db.repositories import (
     SqlAlchemyCrossTaskRepository,
+    SqlAlchemyDocumentLinkRepository,
+    SqlAlchemyDocumentRepository,
+    SqlAlchemyDocumentTypeRepository,
+    SqlAlchemyDocumentVersionRepository,
     SqlAlchemyEntityRepository,
     SqlAlchemyEntityTypeRepository,
     SqlAlchemyImportLogRepository,
@@ -25,6 +29,10 @@ from backend.src.adapters.db.repositories import (
 from backend.src.adapters.db.session import AsyncSessionLocal
 from backend.src.domain.ports.repositories import (
     CrossTaskRepository,
+    DocumentLinkRepository,
+    DocumentRepository,
+    DocumentTypeRepository,
+    DocumentVersionRepository,
     EntityRepository,
     EntityTypeRepository,
     ImportLogRepository,
@@ -32,6 +40,10 @@ from backend.src.domain.ports.repositories import (
     TaskRepository,
 )
 from backend.src.domain.services import (
+    DocumentLinkService,
+    DocumentService,
+    DocumentTypeService,
+    DocumentVersionService,
     EntityService,
     EntityTypeService,
     ImportService,
@@ -87,12 +99,33 @@ def get_entity_repo(session: DbSession) -> EntityRepository:
     return SqlAlchemyEntityRepository(session)
 
 
+def get_document_type_repo(session: DbSession) -> DocumentTypeRepository:
+    return SqlAlchemyDocumentTypeRepository(session)
+
+
+def get_document_repo(session: DbSession) -> DocumentRepository:
+    return SqlAlchemyDocumentRepository(session)
+
+
+def get_document_version_repo(session: DbSession) -> DocumentVersionRepository:
+    return SqlAlchemyDocumentVersionRepository(session)
+
+
+def get_document_link_repo(session: DbSession) -> DocumentLinkRepository:
+    return SqlAlchemyDocumentLinkRepository(session)
+
+
 ProjectRepoDep = Annotated[ProjectRepository, Depends(get_project_repo)]
 TaskRepoDep = Annotated[TaskRepository, Depends(get_task_repo)]
 CrossTaskRepoDep = Annotated[CrossTaskRepository, Depends(get_cross_task_repo)]
 ImportLogRepoDep = Annotated[ImportLogRepository, Depends(get_import_log_repo)]
 EntityTypeRepoDep = Annotated[EntityTypeRepository, Depends(get_entity_type_repo)]
 EntityRepoDep = Annotated[EntityRepository, Depends(get_entity_repo)]
+
+DocumentTypeRepoDep = Annotated[DocumentTypeRepository, Depends(get_document_type_repo)]
+DocumentRepoDep = Annotated[DocumentRepository, Depends(get_document_repo)]
+DocumentVersionRepoDep = Annotated[DocumentVersionRepository, Depends(get_document_version_repo)]
+DocumentLinkRepoDep = Annotated[DocumentLinkRepository, Depends(get_document_link_repo)]
 
 
 # ---------- Domain services ----------
@@ -134,7 +167,48 @@ def get_entity_service(
     )
 
 
+def get_document_type_service(
+    document_type_repo: DocumentTypeRepoDep,
+) -> DocumentTypeService:
+    return DocumentTypeService(repo=document_type_repo)
+
+
+def get_document_service(
+    document_repo: DocumentRepoDep,
+    document_type_repo: DocumentTypeRepoDep,
+) -> DocumentService:
+    return DocumentService(
+        repo=document_repo,
+        document_type_repo=document_type_repo,
+    )
+
+
+def get_document_version_service(
+    version_repo: DocumentVersionRepoDep,
+    document_repo: DocumentRepoDep,
+) -> DocumentVersionService:
+    return DocumentVersionService(
+        version_repo=version_repo,
+        document_repo=document_repo,
+    )
+
+
+def get_document_link_service(
+    document_link_repo: DocumentLinkRepoDep,
+    document_repo: DocumentRepoDep,
+) -> DocumentLinkService:
+    return DocumentLinkService(
+        repo=document_link_repo,
+        document_repo=document_repo,
+    )
+
+
 ImportServiceDep = Annotated[ImportService, Depends(get_import_service)]
 MatrixServiceDep = Annotated[MatrixService, Depends(get_matrix_service)]
 EntityTypeServiceDep = Annotated[EntityTypeService, Depends(get_entity_type_service)]
 EntityServiceDep = Annotated[EntityService, Depends(get_entity_service)]
+
+DocumentTypeServiceDep = Annotated[DocumentTypeService, Depends(get_document_type_service)]
+DocumentServiceDep = Annotated[DocumentService, Depends(get_document_service)]
+DocumentVersionServiceDep = Annotated[DocumentVersionService, Depends(get_document_version_service)]
+DocumentLinkServiceDep = Annotated[DocumentLinkService, Depends(get_document_link_service)]

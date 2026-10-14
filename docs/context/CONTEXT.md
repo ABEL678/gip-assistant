@@ -78,6 +78,8 @@
 - **11 портов репозиториев** (domain/ports/repositories.py):
   Project, Task, CrossTask, ImportLog, User, EntityType, Entity,
   DocumentType, Document, DocumentVersion, DocumentLink.
+- **4 DTO-файла** (application/dto/): document_type, document,
+  document_version, document_link — 13 Pydantic-классов.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

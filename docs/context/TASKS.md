@@ -156,6 +156,12 @@
 - ✅ 65 тестов зелёные.
 - ✅ Итого портов: 11 (было 7).
 
+### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2b — ЗАКРЫТ (14.10.2026)
+
+- ✅ 4 DTO-файла: `document_type.py`, `document.py`,
+  `document_version.py`, `document_link.py`.
+- ✅ 13 Pydantic-классов (Base/Create/Update/Read).
+- ✅ Стиль: `Optional[X]`, `List[X]`, `ConfigDict(populate_by_name=True)`.
 
 
 ---
@@ -256,6 +262,12 @@
 ## 5. Журнал (Changelog)
 
 Краткая история — что делали по датам.
+
+### 14.10.2026 (сессия 5.2b)
+
+- ✅ Сессия 5.2b закрыта: 4 DTO-файла для ГОСТ-документов.
+- ✅ 13 Pydantic-классов: DocumentType, Document, DocumentVersion, DocumentLink.
+- ✅ 65 тестов зелёные.
 
 ### 14.10.2026 (сессия 5.2a)
 

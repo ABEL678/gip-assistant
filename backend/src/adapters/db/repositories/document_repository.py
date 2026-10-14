@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.adapters.db.models.document import DocumentModel
@@ -54,12 +54,9 @@ class SqlAlchemyDocumentRepository(DocumentRepository):
         return self._to_domain(merged)
 
     async def delete(self, id: UUID) -> None:
-        stmt = select(DocumentModel).where(DocumentModel.id == id)
-        result = await self._session.execute(stmt)
-        model = result.scalar_one_or_none()
-        if model:
-            await self._session.delete(model)
-            await self._session.flush()
+        stmt = delete(DocumentModel).where(DocumentModel.id == id)
+        await self._session.execute(stmt)
+        await self._session.flush()
 
     # ---------- Mapping ----------
 

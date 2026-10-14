@@ -86,6 +86,9 @@
 - **11 портов + 11 репозиториев SQLAlchemy**.
 - **8 smoke-тестов маппинга** (test_document_mapping.py): Enum-маппинг,
   roundtrip, no timestamps.
+- **4 сервиса** (domain/services/): DocumentTypeService, DocumentService,
+  DocumentVersionService, DocumentLinkService.
+- **8 сервисов** (было 4: entity_type, entity, import, matrix).
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

@@ -178,6 +178,14 @@
 - ✅ Покрытие: Enum-маппинг (str ↔ Enum), roundtrip, no timestamps.
 - ✅ Итого тестов pytest: 73 (было 65).
 
+### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2d — ЗАКРЫТ (14.10.2026)
+
+- ✅ 4 сервиса: `document_type_service.py`, `document_service.py`,
+  `document_version_service.py`, `document_link_service.py`.
+- ✅ Валидации: уникальность кода, existence checks, self-link, same project.
+- ✅ set_current: 3 валидации + денормализация current_version_id.
+- ✅ Итого сервисов: 8 (было 4).
+
 ---
 
 ## 3. Дальше (Next)
@@ -290,6 +298,13 @@
 - ✅ Покрытие: Enum-маппинг, roundtrip, no timestamps.
 - ✅ 73 теста pytest.
 
+### 14.10.2026 (сессия 5.2d)
+
+- ✅ Сессия 5.2d закрыта: 4 сервиса для ГОСТ-документов.
+- ✅ Валидации: уникальность кода, existence checks, self-link, same project.
+- ✅ set_current: 3 валидации + денормализация current_version_id.
+- ✅ 8 сервисов (было 4).
+
 ### 14.10.2026 (сессия 5.2b)
 
 - ✅ Сессия 5.2b закрыта: 4 DTO-файла для ГОСТ-документов.
@@ -372,6 +387,7 @@
 | UI Уровня 1 | 100% | 100% |
 | Портов репозиториев | 11 | 11 |
 | Репозиториев SQLAlchemy | 11 | 11 |
+| Сервисов | 8 | 8 |
 
 ---
 

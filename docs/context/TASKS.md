@@ -3,8 +3,8 @@
 > **Назначение:** что сделано / в работе / дальше. Обновляется перед каждым
 > новым чатом с ИИ. Помогает понять статус проекта без пересказа.
 
-**Версия:** 1.1
-**Обновлено:** 13.10.2026
+**Версия:** 1.2
+**Обновлено:** 14.10.2026
 **Автор:** ГИП, руководитель разработки
 
 ---
@@ -191,6 +191,25 @@
 - ✅ DI-инфраструктура: 2 __init__.py + dependencies.py.
 - ✅ 4 репозитория + 4 сервиса агрегированы.
 - ✅ DocumentServiceDep, DocumentVersionServiceDep, DocumentLinkServiceDep.
+
+### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2e-2 — ЗАКРЫТ (14.10.2026)
+
+- ✅ 4 роутера: `document_types.py`, `documents.py`,
+  `document_versions.py`, `document_links.py`.
+- ✅ 22 эндпоинта (6 + 6 + 6 + 4).
+- ✅ Порядок эндпоинтов: /by-code/{code} ПЕРЕД /{id},
+  /by-guid/{guid} ПЕРЕД /{id}, /versions/current ПЕРЕД /versions.
+- ✅ Роуты через ServiceDep (НЕ RepoDep напрямую).
+- ✅ PATCH: `payload.model_dump(exclude_unset=True, by_alias=False)`.
+- ✅ ruff check — чисто. pytest — 73 passed.
+
+### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2e-3 — ЗАКРЫТ (14.10.2026)
+
+- ✅ Регистрация роутеров в `main.py` (4 include_router).
+- ✅ Обновлён `routes/__init__.py` (+4 импорта, алфавит).
+- ✅ Обновлён `docs/context/API.md` (+22 эндпоинта в секции 8-11).
+- ✅ ruff check — чисто. pytest — 67 passed.
+- ✅ **Итого эндпоинтов:** 39 (было 17).
 
 ---
 

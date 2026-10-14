@@ -13,7 +13,7 @@
 
 ## 1. Обзор
 
-**Всего эндпоинтов:** 17 + системные.
+**Всего эндпоинтов:** 39 + системные.
 
 **Группы:**
 
@@ -25,6 +25,10 @@
 | Import | 3 | `/api/projects/{id}/import-*` |
 | EntityTypes | 5 | `/api/projects/{id}/entity-types`, `/api/entity-types` |
 | Entities | 5 | `/api/entity-types/{id}/entities`, `/api/entities` |
+| DocumentTypes | 6 | `/api/document-types` |
+| Documents | 6 | `/api/projects/{id}/documents`, `/api/documents` |
+| DocumentVersions | 6 | `/api/documents/{id}/versions`, `/api/document-versions` |
+| DocumentLinks | 4 | `/api/documents/{id}/links`, `/api/document-links` |
 | System | 3 | `/api/health`, `/api/version`, `/api/ai/ping` |
 
 ---
@@ -361,7 +365,234 @@
 
 ---
 
-## 8. System
+## 8. Document Types
+
+### POST /api/document-types
+
+**Описание:** создать тип ГОСТ-документа.
+
+**Body:**
+    {
+      "code": "EXT",
+      "name": "Внешний документ",
+      "description": "Описание",
+      "gost_code": "ГОСТ Р 1234-2024"
+    }
+
+**Ответ 201:** созданный тип.
+
+### GET /api/document-types
+
+**Описание:** список типов ГОСТ-документов.
+
+**Ответ 200:** `[DocumentType, ...]`.
+
+### GET /api/document-types/by-code/{code}
+
+**Описание:** тип ГОСТ-документа по коду.
+
+**Ответ 200:** тип.
+
+**Ошибка 404:** тип с таким кодом не найден.
+
+### GET /api/document-types/{document_type_id}
+
+**Описание:** тип ГОСТ-документа по ID.
+
+**Ответ 200:** тип.
+
+**Ошибка 404:** не найден.
+
+### PATCH /api/document-types/{document_type_id}
+
+**Описание:** обновить тип ГОСТ-документа.
+
+**Body:** любое подмножество полей (`name`, `description`, `gost_code`).
+
+**Ответ 200:** обновлённый тип.
+
+### DELETE /api/document-types/{document_type_id}
+
+**Описание:** удалить тип ГОСТ-документа.
+
+**Ответ 204:** пусто.
+
+**Ошибка 404:** не найден.
+
+---
+
+## 9. Documents
+
+### POST /api/projects/{project_id}/documents
+
+**Описание:** создать ГОСТ-документ в проекте.
+
+**Body:**
+    {
+      "document_type_id": "uuid",
+      "document_name": "ПЗ",
+      "cipher": "1234-2024",
+      "document_kind": "PD",
+      "doc_part_type": "TEXT",
+      "section_code": "ПЗ",
+      "mark": "Лист 1",
+      "base_designation": "АБВГ.1234567.890-24",
+      "entity_id": "uuid | null",
+      "task_id": "uuid | null",
+      "lifecycle_status": "DRAFT",
+      "version_parent_id": "uuid | null",
+      "replaces_id": "uuid | null",
+      "replaced_by_id": "uuid | null"
+    }
+
+**Ответ 201:** созданный документ.
+
+**Ошибка 400:** тип документа не найден.
+
+### GET /api/projects/{project_id}/documents
+
+**Описание:** список документов проекта.
+
+**Query параметры:**
+- `lifecycle_status` (LifecycleStatus | null) — фильтр по статусу.
+
+**Ответ 200:** `[Document, ...]`.
+
+### GET /api/documents/by-guid/{guid}
+
+**Описание:** ГОСТ-документ по GUID.
+
+**Ответ 200:** документ.
+
+**Ошибка 404:** не найден.
+
+### GET /api/documents/{document_id}
+
+**Описание:** ГОСТ-документ по ID.
+
+**Ответ 200:** документ.
+
+**Ошибка 404:** не найден.
+
+### PATCH /api/documents/{document_id}
+
+**Описание:** обновить ГОСТ-документ.
+
+**Body:** любое подмножество полей (`document_name`, `document_kind`, `doc_part_type`, `section_code`, `mark`, `base_designation`, `lifecycle_status`).
+
+**Ответ 200:** обновлённый документ.
+
+### DELETE /api/documents/{document_id}
+
+**Описание:** удалить ГОСТ-документ.
+
+**Ответ 204:** пусто.
+
+**Ошибка 404:** не найден.
+
+---
+
+## 10. Document Versions
+
+### POST /api/documents/{document_id}/versions
+
+**Описание:** создать версию ГОСТ-документа.
+
+**Body:**
+    {
+      "version": "1.0",
+      "file_path": "/storage/docs/123.pdf",
+      "file_name": "ПЗ.pdf",
+      "hash_sha256": "abc123...",
+      "format_original": "pdf",
+      "size_bytes": 1048576,
+      "change_number": 1,
+      "format_archive": "zip"
+    }
+
+**Ответ 201:** созданная версия.
+
+**Ошибка 400:** документ не найден.
+
+### GET /api/documents/{document_id}/versions/current
+
+**Описание:** текущая версия ГОСТ-документа.
+
+**Ответ 200:** версия.
+
+**Ошибка 404:** текущая версия не найдена.
+
+### GET /api/documents/{document_id}/versions
+
+**Описание:** список версий ГОСТ-документа.
+
+**Ответ 200:** `[DocumentVersion, ...]`.
+
+### GET /api/document-versions/{version_id}
+
+**Описание:** версия ГОСТ-документа по ID.
+
+**Ответ 200:** версия.
+
+**Ошибка 404:** не найдена.
+
+### PATCH /api/documents/{document_id}/versions/{version_id}/set-current
+
+**Описание:** сделать версию текущей.
+
+**Ответ 204:** пусто.
+
+**Ошибка 400:** документ/версия не найдены, или версия не принадлежит документу.
+
+### DELETE /api/document-versions/{version_id}
+
+**Описание:** удалить версию ГОСТ-документа.
+
+**Ответ 204:** пусто.
+
+**Ошибка 404:** не найдена.
+
+---
+
+## 11. Document Links
+
+### POST /api/documents/{document_id}/links
+
+**Описание:** создать связь ГОСТ-документов.
+
+**Body:**
+    {
+      "target_document_id": "uuid",
+      "link_type": "REFERENCES"
+    }
+
+**Ответ 201:** созданная связь.
+
+**Ошибка 400:** само-связь, документы не найдены, или из разных проектов.
+
+### GET /api/documents/{document_id}/links
+
+**Описание:** исходящие связи ГОСТ-документа.
+
+**Ответ 200:** `[DocumentLink, ...]`.
+
+### GET /api/documents/{document_id}/links/incoming
+
+**Описание:** входящие связи ГОСТ-документа.
+
+**Ответ 200:** `[DocumentLink, ...]`.
+
+### DELETE /api/document-links/{link_id}
+
+**Описание:** удалить связь ГОСТ-документов.
+
+**Ответ 204:** пусто.
+
+**Ошибка 404:** не найдена.
+
+---
+
+## 12. System
 
 ### GET /api/health
 
@@ -420,23 +651,7 @@
 
 ---
 
-## 11. Эндпоинты в планах
-
-### MVP (нед. 3) — Документы
-- GET `/api/document-types`
-- POST `/api/projects/{id}/documents`
-- GET `/api/projects/{id}/documents`
-- GET `/api/documents/{id}`
-- PATCH `/api/documents/{id}`
-- DELETE `/api/documents/{id}`
-- POST `/api/documents/{id}/versions`
-- GET `/api/documents/{id}/versions`
-- GET `/api/documents/{id}/versions/{vid}`
-- GET `/api/documents/{id}/versions/current`
-- DELETE `/api/documents/{id}/versions/{vid}`
-- POST `/api/documents/{id}/links`
-- GET `/api/documents/{id}/links`
-- DELETE `/api/documents/{id}/links/{lid}`
+## 13. Эндпоинты в планах
 
 ### MVP (нед. 3) — Шаблоны
 - GET `/api/entity-type-templates`

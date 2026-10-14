@@ -20,6 +20,15 @@ class DocumentTypeCreate(DocumentTypeBase):
     pass
 
 
+class DocumentTypeUpdate(BaseModel):
+    """DTO для обновления типа ГОСТ-документа (все поля опциональны)."""
+    model_config = ConfigDict(populate_by_name=True)
+
+    name: Optional[str] = Field(None, min_length=1, max_length=200)  # noqa: UP045
+    description: Optional[str] = None  # noqa: UP045
+    gost_code: Optional[str] = Field(None, max_length=50)  # noqa: UP045
+
+
 class DocumentTypeRead(DocumentTypeBase):
     """DTO для чтения типа ГОСТ-документа."""
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)

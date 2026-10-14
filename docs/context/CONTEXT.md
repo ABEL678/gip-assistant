@@ -4,8 +4,8 @@
 > в начало каждого нового чата с ИИ-ассистентом. Он даёт минимальный
 > контекст, достаточный для продуктивной работы.
 
-**Версия:** 1.1 (октябрь 2026)
-**Актуально на:** после Дорожной карты 6.4 + ТЗ 4.4 (перед UI Уровня 1)
+**Версия:** 1.2 (14.10.2026)
+**Актуально на:** после 5.2e-3 (регистрация документ-роутов в main.py)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -36,6 +36,7 @@
 |---------|-----|------|--------|
 | 0 | Импорт Excel, матрица, TaskList, Telegram-бот | Прототип | ✅ Сделано |
 | 1 | Универсальные сущности (EntityType + Entity) | MVP, нед. 1-2 | ✅ Backend + UI готовы |
+| 1.5 | ГОСТ-хранение (Document, Version, Link, Type) | MVP-1.5 | ✅ Backend готов |
 | 2 | Библиотека шаблонов (6 типов) | MVP, нед. 3 | ⏳ Не начато |
 | 2.5 | XML-формат ПД (ТЗ, ПЗ) + валидация XSD | MVP-1.5, 2 недели | ⏳ Не начато |
 | 3 | LLM-ассистент (Qwen 2.5 7B) | MVP-3 | ⏳ Не начато |
@@ -72,8 +73,8 @@
 - Миграции Alembic: f9f9bed0be0f (initial 7 tables),
   272f011cf740 (to_section_code), 78ada0d52056 (entity_types + entities).
 - Универсальный Excel-парсер (merged cells, автопоиск шапки, serial-даты).
-- 17 эндпоинтов для projects / tasks / matrix / import / entity-types / entities.
-- **65 тестов pytest** (39 существующих + 26 для Universal Entities).
+- 39 эндпоинтов (17 существующих + 22 для ГОСТ-документов).
+- **73 теста pytest** (65 существующих + 8 для document mapping).
 - Гексагональная архитектура: domain / application / adapters.
 - **11 портов репозиториев** (domain/ports/repositories.py):
   Project, Task, CrossTask, ImportLog, User, EntityType, Entity,
@@ -91,6 +92,10 @@
 - **8 сервисов** (было 4: entity_type, entity, import, matrix).
 - **DI-инфраструктура**: 2 __init__.py + dependencies.py — агрегация
   4 репозиториев и 4 сервисов через FastAPI Depends.
+- **4 роутера** (adapters/api/routes/): document_types.py, documents.py,
+  document_versions.py, document_links.py — 22 эндпоинта.
+- **Регистрация в main.py**: 4 include_router (document_types, documents,
+  document_versions, document_links).
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

@@ -80,6 +80,10 @@
   DocumentType, Document, DocumentVersion, DocumentLink.
 - **4 DTO-файла** (application/dto/): document_type, document,
   document_version, document_link — 13 Pydantic-классов.
+- **4 SQLAlchemy-репозитория** (adapters/db/repositories/):
+  SqlAlchemyDocumentTypeRepository, SqlAlchemyDocumentRepository,
+  SqlAlchemyDocumentVersionRepository, SqlAlchemyDocumentLinkRepository.
+- **11 портов + 11 репозиториев SQLAlchemy**.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

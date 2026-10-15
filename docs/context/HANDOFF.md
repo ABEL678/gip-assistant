@@ -5,60 +5,43 @@
 > или при приближении к лимиту контекста.
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
-**Дата:** 14.10.2026
-**Сессия:** 5.2f (пауза до 15.10.2026)
-**Статус:** закрыта (пауза до завтра)
+**Дата:** 15.10.2026
+**Сессия:** 5.2f (закрыта)
+**Статус:** закрыта
 
 ---
 
-## 1. Что было в прошлой сессии (14.10.2026, сессия 5.2e)
+## 1. Что было в прошлой сессии (15.10.2026, сессии 5.2f-1 и 5.2f-2)
 
-Закрыт Уровень 1.5 (backend) — 8 подсессий:
+Закрыты unit-тесты для сервисов ГОСТ-документов:
 
-- **5.1:** домен + модели + миграция (4 таблицы, 8 сидов).
-- **5.2a:** 4 порта репозиториев.
-- **5.2b:** 4 DTO-файла (13 Pydantic-классов).
-- **5.2c-1:** 4 SQLAlchemy-репозитория (Enum-маппинг).
-- **5.2c-2:** 8 smoke-тестов маппинга.
-- **5.2d:** 4 доменных сервиса (валидации, set_current, delete).
-- **5.2e-1:** DI (2 __init__.py + dependencies.py).
-- **5.2e-2/3:** 4 роутера (22 эндпоинта) + main.py + API.md.
+- **5.2f-1:** test_document_type_service.py (10 тестов) + test_document_service.py (13 тестов).
+- **5.2f-2:** test_document_version_service.py (15 тестов) + test_document_link_service.py (11 тестов).
 
 **Результат:** 14 таблиц, 11 портов, 11 репозиториев, 8 сервисов,
-39 эндпоинтов, 73 теста pytest (все зелёные).
+39 эндпоинтов, 122 теста pytest (все зелёные).
+Уровень 1.5 backend закрыт полностью.
 
-**HEAD:** `b0de1f7` (feat(api): add document routes + context sync).
+**HEAD:** `333325a` (docs(context): remove duplicate line in CONTEXT).
 
 ## 2. Что делаем сейчас
 
-**Сессия 5.2f-1 — Unit-тесты сервисов: DocumentTypeService + DocumentService.**
-
-- **Прогресс:** 0% — начинаем с нуля.
-- **Источник истины:** `docs/tasks/5.2f-1_prompt.md` (создать).
-- **Критерии готовности:**
-  - `backend/tests/test_document_type_service.py` — ~7 тестов.
-  - `backend/tests/test_document_service.py` — ~9 тестов.
-  - Стиль: AsyncMock, @pytest.mark.asyncio, фикстуры (см. test_entity_type_service.py).
-  - Покрытие: create (успех + ValueError), get_by_id, list, update (частично), delete.
-  - 73 старых теста зелёные, итого — ~89 тестов.
-  - TASKS.md и CONTEXT.md обновлены.
-- **НЕ делать:** тесты DocumentVersion + DocumentLink (это 5.2f-2).
+Следующая сессия: 5.4 (UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage).
+Источник: `docs/tasks/5.4_prompt.md` (создать по мере надобности).
 
 ## 3. Что дальше
 
-1. **Сессия 5.2f-1** (завтра): тесты DocumentType + Document.
-2. **Сессия 5.2f-2:** тесты DocumentVersion + DocumentLink.
-   Цель: ~100 тестов pytest. Backend 1.5 закрыт.
-3. **Сессия 5.4:** UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage.
-4. **Потом:** Auth (JWT), Telegram-сводка, деплой на VPS.
-5. **MVP-1.5:** XML-модуль.
+1. Сессия 5.4: UI для ГОСТ-документов.
+2. Неделя 3: Библиотека шаблонов + MinIO.
+3. Неделя 4: Auth + Telegram + деплой на VPS.
+4. MVP-1.5: XML-модуль.
 
 ## 4. Что уже в контексте (не надо пересказывать)
 
 - `docs/Дорожная_карта_6.4.md` — стратегия.
 - `docs/ТЗ_4.4.md` — ТЗ (включая раздел 16 — ГОСТ-совместимость).
-- `docs/context/CONTEXT.md` — резюме проекта (последнее обновление: 5.2e).
-- `docs/context/TASKS.md` — статус (5.2e закрыт).
+- `docs/context/CONTEXT.md` — резюме проекта (последнее обновление: 5.2f-2).
+- `docs/context/TASKS.md` — статус (5.2f-2 закрыт, 122 теста).
 - `docs/context/ARCHITECTURE.md` — структура.
 - `docs/context/DATABASE.md` — 14 таблиц.
 - `docs/context/API.md` — 39 эндпоинтов.
@@ -68,12 +51,9 @@
 
 ## 5. Открытые вопросы / блокеры
 
-- [ ] GigaCode запускает `python -c` без активации .venv → ImportError.
-      Решение: обновить AGENTS.md — правило «Для python -c: .venv\Scripts\activate && python -c ...».
-- [ ] GigaCode делает отдельный коммит вместо amend. Решение: явно указывать «amend» в промпте.
-- [ ] Проверять импорты DTO при планировании роутов (сегодня: DocumentTypeUpdate забыт в 5.2b).
 - [ ] GitHub Actions для авто-генерации DATABASE.md / API.md — не настроены.
-- [ ] Промпт для 5.2f-1 — создать `docs/tasks/5.2f-1_prompt.md` (завтра).
+- [ ] B027 (TaskRepository.get_by_pair) — техдолг Этапа 1.
+- [ ] GigaCode запускает pytest/python -c не из корня — нужно явно указывать.
 
 ## 6. Ключи / пути / команды
 
@@ -86,7 +66,7 @@
 - **Ruff:** `.venv\Scripts\activate && ruff check backend/`
 - **БД:** Docker `gip_db` на 5555
 - **GitHub:** https://github.com/ABEL678/gip-assistant
-- **Текущий HEAD:** `b0de1f7` (feat(api): add document routes + context sync)
+- **Текущий HEAD:** `333325a` (docs(context): remove duplicate line in CONTEXT)
 
 ## 7. Как продолжить в новом чате
 
@@ -102,7 +82,7 @@
     5. AGENTS.md — правила для GigaCode.
 
     Дальше:
-    - Уровень 1.5, Сессия 5.2f-1 (тесты DocumentType + Document).
+    - Уровень 1.5 закрыт полностью. Сессия 5.4: UI для ГОСТ-документов.
     - Стиль тестов: backend/tests/test_entity_type_service.py.
     - Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
 

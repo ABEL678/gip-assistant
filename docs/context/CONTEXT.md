@@ -4,8 +4,8 @@
 > в начало каждого нового чата с ИИ-ассистентом. Он даёт минимальный
 > контекст, достаточный для продуктивной работы.
 
-**Версия:** 1.2 (14.10.2026)
-**Актуально на:** после 5.2e-3 (регистрация документ-роутов в main.py)
+**Версия:** 1.3 (15.10.2026)
+**Актуально на:** после 5.2f-1 (unit-тесты DocumentType + Document)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -74,7 +74,7 @@
   272f011cf740 (to_section_code), 78ada0d52056 (entity_types + entities).
 - Универсальный Excel-парсер (merged cells, автопоиск шапки, serial-даты).
 - 39 эндпоинтов (17 существующих + 22 для ГОСТ-документов).
-- **73 теста pytest** (65 существующих + 8 для document mapping).
+- **90 тестов pytest** (65 существующих + 8 для document mapping + 23 для сервисов).
 - Гексагональная архитектура: domain / application / adapters.
 - **11 портов репозиториев** (domain/ports/repositories.py):
   Project, Task, CrossTask, ImportLog, User, EntityType, Entity,
@@ -96,6 +96,8 @@
   document_versions.py, document_links.py — 22 эндпоинта.
 - **Регистрация в main.py**: 4 include_router (document_types, documents,
   document_versions, document_links).
+- **23 unit-теста** сервисов: test_document_type_service.py (10),
+  test_document_service.py (13).
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

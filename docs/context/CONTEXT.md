@@ -36,7 +36,7 @@
 |---------|-----|------|--------|
 | 0 | Импорт Excel, матрица, TaskList, Telegram-бот | Прототип | ✅ Сделано |
 | 1 | Универсальные сущности (EntityType + Entity) | MVP, нед. 1-2 | ✅ Backend + UI готовы |
-| 1.5 | ГОСТ-хранение (Document, Version, Link, Type) | MVP-1.5 | ✅ Backend готов |
+| 1.5 | ГОСТ-хранение (Document, Version, Link, Type) | MVP-1.5 | ✅ Backend полностью готов |
 | 2 | Библиотека шаблонов (6 типов) | MVP, нед. 3 | ⏳ Не начато |
 | 2.5 | XML-формат ПД (ТЗ, ПЗ) + валидация XSD | MVP-1.5, 2 недели | ⏳ Не начато |
 | 3 | LLM-ассистент (Qwen 2.5 7B) | MVP-3 | ⏳ Не начато |
@@ -76,7 +76,7 @@
   d357e719c8bf (indexes + xml_schema_code), c719d9b4537e (gost document model).
 - Универсальный Excel-парсер (merged cells, автопоиск шапки, serial-даты).
 - 39 эндпоинтов (17 существующих + 22 для ГОСТ-документов).
-- **96 тестов pytest** (65 существующих + 8 для document mapping + 23 для сервисов).
+- **122 теста pytest** (65 существующих + 8 для document mapping + 23 для сервисов + 26 для DocumentVersion + DocumentLink).
 - Гексагональная архитектура: domain / application / adapters.
 - **11 портов репозиториев** (domain/ports/repositories.py):
   Project, Task, CrossTask, ImportLog, User, EntityType, Entity,
@@ -92,6 +92,7 @@
 - **4 сервиса** (domain/services/): DocumentTypeService, DocumentService,
   DocumentVersionService, DocumentLinkService.
 - **8 сервисов** (было 4: entity_type, entity, import, matrix).
+- **26 unit-тестов** (test_document_version_service.py: 15, test_document_link_service.py: 11).
 - **DI-инфраструктура**: 2 __init__.py + dependencies.py — агрегация
   4 репозиториев и 4 сервисов через FastAPI Depends.
 - **4 роутера** (adapters/api/routes/): document_types.py, documents.py,
@@ -130,13 +131,13 @@
 **Сейчас (15.10.2026):**
 
 - ✅ Уровень 1.5 backend закрыт (14–15.10.2026).
-- ✅ 96 тестов pytest зелёные.
+- ✅ 122 теста pytest зелёные.
 - ✅ 39 эндпоинтов API.
 - ✅ 8 сервисов, 11 репозиториев, 14 таблиц.
 
 **Дальше по плану:**
 
-- Сессия 5.2f-2: unit-тесты DocumentVersionService + DocumentLinkService.
+- Сессия 5.4: UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage.
 - Сессия 5.4: UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage.
 - Неделя 3: Библиотека шаблонов (ИД_ПД, ИД_РД, Запросы, Тома, Письма, Протоколы) + MinIO.
 - Неделя 4: Auth (JWT + Argon2) + Telegram-сводка в проде + деплой на VPS.

@@ -138,7 +138,6 @@
 **Дальше по плану:**
 
 - Сессия 5.4: UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage.
-- Сессия 5.4: UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage.
 - Неделя 3: Библиотека шаблонов (ИД_ПД, ИД_РД, Запросы, Тома, Письма, Протоколы) + MinIO.
 - Неделя 4: Auth (JWT + Argon2) + Telegram-сводка в проде + деплой на VPS.
 - Неделя 5: Лендинг (Next.js) + комплаенс 152-ФЗ + пилот.

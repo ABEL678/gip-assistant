@@ -4,8 +4,8 @@
 > в начало каждого нового чата с ИИ-ассистентом. Он даёт минимальный
 > контекст, достаточный для продуктивной работы.
 
-**Версия:** 1.3 (15.10.2026)
-**Актуально на:** после 5.2f-1 (unit-тесты DocumentType + Document)
+**Версия:** 1.2 (14.10.2026)
+**Актуально на:** после 5.2e-3 (регистрация документ-роутов в main.py)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -66,15 +66,17 @@
 
 ## 4. Что сделано (факт)
 
-**Backend (Этап 1 + Уровень 1):**
+**Backend (Этап 1 + Уровень 1 + Уровень 1.5):**
 
-- 10 таблиц в PostgreSQL: projects, tasks, cross_tasks, task_status_history,
-  executors, users, import_logs, entity_types, entities, alembic_version.
+- 14 таблиц в PostgreSQL: projects, tasks, cross_tasks, task_status_history,
+  executors, users, import_logs, entity_types, entities, alembic_version,
+  document_types, documents, document_versions, document_links.
 - Миграции Alembic: f9f9bed0be0f (initial 7 tables),
-  272f011cf740 (to_section_code), 78ada0d52056 (entity_types + entities).
+  272f011cf740 (to_section_code), 78ada0d52056 (entity_types + entities),
+  d357e719c8bf (indexes + xml_schema_code), c719d9b4537e (gost document model).
 - Универсальный Excel-парсер (merged cells, автопоиск шапки, serial-даты).
 - 39 эндпоинтов (17 существующих + 22 для ГОСТ-документов).
-- **90 тестов pytest** (65 существующих + 8 для document mapping + 23 для сервисов).
+- **96 тестов pytest** (65 существующих + 8 для document mapping + 23 для сервисов).
 - Гексагональная архитектура: domain / application / adapters.
 - **11 портов репозиториев** (domain/ports/repositories.py):
   Project, Task, CrossTask, ImportLog, User, EntityType, Entity,
@@ -96,8 +98,6 @@
   document_versions.py, document_links.py — 22 эндпоинта.
 - **Регистрация в main.py**: 4 include_router (document_types, documents,
   document_versions, document_links).
-- **23 unit-теста** сервисов: test_document_type_service.py (10),
-  test_document_service.py (13).
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 
@@ -127,15 +127,17 @@
 
 ## 5. Что в работе / следующий шаг
 
-**Сейчас (октябрь 2026):**
+**Сейчас (15.10.2026):**
 
-- ✅ Дорожная карта 6.4 — готова.
-- ✅ ТЗ 4.4 — готово.
-- ✅ `CONTEXT.md` — создан.
-- ✅ `AGENTS.md` — создан (в корне, подключён к GigaCode Rules).
+- ✅ Уровень 1.5 backend закрыт (14–15.10.2026).
+- ✅ 96 тестов pytest зелёные.
+- ✅ 39 эндпоинтов API.
+- ✅ 8 сервисов, 11 репозиториев, 14 таблиц.
 
 **Дальше по плану:**
 
+- Сессия 5.2f-2: unit-тесты DocumentVersionService + DocumentLinkService.
+- Сессия 5.4: UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage.
 - Неделя 3: Библиотека шаблонов (ИД_ПД, ИД_РД, Запросы, Тома, Письма, Протоколы) + MinIO.
 - Неделя 4: Auth (JWT + Argon2) + Telegram-сводка в проде + деплой на VPS.
 - Неделя 5: Лендинг (Next.js) + комплаенс 152-ФЗ + пилот.
@@ -156,6 +158,7 @@
   - `RULES.md` — правила кода.
   - `TASKS.md` — что сделано / в работе / дальше.
   - `README.md` — как пользоваться AI-контекстом.
+  - `HANDOFF.md` — эстафета между сессиями.
 - `AGENTS.md` (в корне) — правила для ИИ-агентов.
 
 ---

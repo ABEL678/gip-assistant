@@ -133,91 +133,68 @@
 - ✅ Роутинг в App.tsx (4 маршрута).
 - ✅ TypeScript — без ошибок.
 
----
+### Уровень 1.5 (ГОСТ-хранение) — ��АКРЫТ (14–15.10.2026)
 
-## 2. В работе (In Progress)
-
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.1 — ЗАКРЫТ (14.10.2026)
-
-**Промпт для GigaCode:** `docs/tasks/5.1_prompt.md`.
-
+**Сессия 5.1 (домен + модели):**
 - ✅ Домен: Document, DocumentVersion, DocumentLink, DocumentType.
 - ✅ Value Objects: 4 Enum (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
 - ✅ SQLAlchemy-модели: 4 таблицы.
 - ✅ Миграция Alembic c719d9b4537e + сиды document_types (8 записей).
-- ✅ Проверка: 65 старых тестов зелёные.
 - ✅ Обновление DATABASE.md.
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2a — ЗАКРЫТ (14.10.2026)
-
-- ✅ 4 порта репозиториев: `DocumentTypeRepository`, `DocumentRepository`,
-  `DocumentVersionRepository`, `DocumentLinkRepository` в `domain/ports/repositories.py`.
-- ✅ Domain чистый — без fastapi/sqlalchemy/pydantic.
-- ✅ 65 тестов зелёные.
+**Сессия 5.2a (порты):**
+- ✅ 4 порта репозиториев в domain/ports/repositories.py.
 - ✅ Итого портов: 11 (было 7).
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2b — ЗАКРЫТ (14.10.2026)
-
-- ✅ 4 DTO-файла: `document_type.py`, `document.py`,
-  `document_version.py`, `document_link.py`.
+**Сессия 5.2b (DTO):**
+- ✅ 4 DTO-файла: document_type, document, document_version, document_link.
 - ✅ 13 Pydantic-классов (Base/Create/Update/Read).
-- ✅ Стиль: `Optional[X]`, `List[X]`, `ConfigDict(populate_by_name=True)`.
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2c-1 — ЗАКРЫТ (14.10.2026)
-
-- ✅ 4 SQLAlchemy-репозитория: `document_type_repository.py`,
-  `document_repository.py`, `document_version_repository.py`,
-  `document_link_repository.py`.
-- ✅ Enum-маппинг: конструктор при чтении, `.value` при записи.
+**Сессия 5.2c-1 (репозитории):**
+- ✅ 4 SQLAlchemy-репозитория.
+- ✅ Enum-маппинг: конструктор при чтении, .value при записи.
 - ✅ set_current: два UPDATE в одной транзакции.
 - ✅ Итого репозиториев: 11 (было 7).
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2c-2 — ЗАКРЫТ (14.10.2026)
-
-- ✅ 8 smoke-тестов маппинга: `test_document_mapping.py`.
-- ✅ Покрытие: Enum-маппинг (str ↔ Enum), roundtrip, no timestamps.
+**Сессия 5.2c-2 (smoke-тесты маппинга):**
+- ✅ 8 smoke-тестов: test_document_mapping.py.
 - ✅ Итого тестов pytest: 73 (было 65).
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2d — ЗАКРЫТ (14.10.2026)
-
-- ✅ 4 сервиса: `document_type_service.py`, `document_service.py`,
-  `document_version_service.py`, `document_link_service.py`.
+**Сессия 5.2d (сервисы):**
+- ✅ 4 сервиса: DocumentType, Document, DocumentVersion, DocumentLink.
 - ✅ Валидации: уникальность кода, existence checks, self-link, same project.
 - ✅ set_current: 3 валидации + денормализация current_version_id.
 - ✅ Итого сервисов: 8 (было 4).
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2e-1 — ЗАКРЫТ (14.10.2026)
-
-- ✅ DI-инфраструктура: 2 __init__.py + dependencies.py.
-- ✅ 4 репозитория + 4 сервиса агрегированы.
+**Сессия 5.2e-1 (DI):**
+- ✅ 2 __init__.py + dependencies.py: 4 репо + 4 сервиса.
 - ✅ DocumentServiceDep, DocumentVersionServiceDep, DocumentLinkServiceDep.
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2e-2 — ЗАКРЫТ (14.10.2026)
-
-- ✅ 4 роутера: `document_types.py`, `documents.py`,
-  `document_versions.py`, `document_links.py`.
+**Сессия 5.2e-2 (роуты):**
+- ✅ 4 роутера: document_types, documents, document_versions, document_links.
 - ✅ 22 эндпоинта (6 + 6 + 6 + 4).
-- ✅ Порядок эндпоинтов: /by-code/{code} ПЕРЕД /{id},
-  /by-guid/{guid} ПЕРЕД /{id}, /versions/current ПЕРЕД /versions.
+- ✅ Порядок эндпоинтов: /by-code ПЕРЕД /{id}, /by-guid ПЕРЕД /{id},
+   /versions/current ПЕРЕД /versions.
 - ✅ Роуты через ServiceDep (НЕ RepoDep напрямую).
-- ✅ PATCH: `payload.model_dump(exclude_unset=True, by_alias=False)`.
-- ✅ ruff check — чисто. pytest — 73 passed.
+- ✅ PATCH: payload.model_dump(exclude_unset=True, by_alias=False).
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2e-3 — ЗАКРЫТ (14.10.2026)
+**Сессия 5.2e-3 (регистрация):**
+- ✅ Регистрация роутеров в main.py (4 include_router).
+- ✅ Обновлён routes/__init__.py (+4 импорта).
+- ✅ Обновлён docs/context/API.md (+22 эндпоинта).
+- ✅ Итого эндпоинтов: 39 (было 17).
 
-- ✅ Регистрация роутеров в `main.py` (4 include_router).
-- ✅ Обновлён `routes/__init__.py` (+4 импорта, алфавит).
-- ✅ Обновлён `docs/context/API.md` (+22 эндпоинта в секции 8-11).
-- ✅ ruff check — чисто. pytest — 67 passed.
-- ✅ **Итого эндпоинтов:** 39 (было 17).
+**Сессия 5.2f-1 (unit-тесты сервисов, часть 1):**
+- ✅ test_document_type_service.py (10 тестов).
+- ✅ test_document_service.py (13 тестов).
+- ✅ Стиль: AsyncMock, pytest-asyncio, фикстуры.
+- ✅ Итого тестов pytest: 96 (было 73).
 
-### Уровень 1.5 (ГОСТ-хранение) — Сессия 5.2f-1 — ЗАКРЫТ (15.10.2026)
+---
 
-- ✅ 2 файла тестов: `test_document_type_service.py`, `test_document_service.py`.
-- ✅ 23 теста (10 + 13): create, get, list, update, delete.
-- ✅ Стиль: AsyncMock, pytest-asyncio, фикстуры (по эталону test_entity_type_service.py).
-- ✅ ruff check — чисто. pytest — 90 passed.
-- ✅ **Итого тестов pytest:** 90 (было 73).
+## 2. В работе (In Progress)
+
+**На 15.10.2026 — задач в работе нет. Следующая сессия: 5.2f-2.**
 
 ---
 
@@ -291,7 +268,7 @@
 
 ## 4. Блокеры (Blockers)
 
-**На 13.10.2026 — блокеров нет.**
+**На 15.10.2026 — блокеров нет.**
 
 Все запланированные задачи по инфраструктуре выполнены:
 - ✅ AI-контекст (docs/context/ — 7 файлов).
@@ -299,9 +276,9 @@
 - ✅ GigaCode установлен и протестирован.
 - ✅ Дорожная карта 6.4, ТЗ 4.4.
 - ✅ Уровень 1 (MVP) backend + UI закрыт.
-- ✅ 65 тестов pytest.
+- ✅ 96 тестов pytest.
 
-**Следующие шаги:** Сессия 5.2a — Уровень 1.5 (порты репозиториев для Document).
+**Следующие шаги:** Сессия 5.2f-2 (тесты DocumentVersion + DocumentLink).
 
 ### Известные ограничения (не блокеры)
 
@@ -318,37 +295,12 @@
 
 Краткая история — что делали по датам.
 
-### 14.10.2026 (сессия 5.2c-1)
+### 15.10.2026 (сессия 5.2f-1)
 
-- ✅ Сессия 5.2c-1 закрыта: 4 SQLAlchemy-репозитория для ГОСТ-документов.
-- ✅ Enum-маппинг: конструктор при чтении, .value при записи.
-- ✅ set_current: два UPDATE в одной транзакции.
-- ✅ 65 тестов зелёные.
-
-### 14.10.2026 (сессия 5.2c-2)
-
-- ✅ Сессия 5.2c-2 закрыта: 8 smoke-тестов маппинга документов.
-- ✅ Покрытие: Enum-маппинг, roundtrip, no timestamps.
-- ✅ 73 теста pytest.
-
-### 14.10.2026 (сессия 5.2d)
-
-- ✅ Сессия 5.2d закрыта: 4 сервиса для ГОСТ-документов.
-- ✅ Валидации: уникальность кода, existence checks, self-link, same project.
-- ✅ set_current: 3 валидации + денормализация current_version_id.
-- ✅ 8 сервисов (было 4).
-
-### 14.10.2026 (сессия 5.2e-1)
-
-- ✅ Сессия 5.2e-1 закрыта: DI-инфраструктура для ГОСТ-документов.
-- ✅ 2 __init__.py + dependencies.py: 4 репо + 4 сервиса.
-
-### 14.10.2026 (сессия 5.2e-2)
-
-- ✅ Сессия 5.2e-2 закрыта: 4 роутера для ГОСТ-документов.
-- ✅ 22 эндпоинта (6+6+6+4) с правильным порядком для FastAPI.
-- ✅ PATCH: `payload.model_dump(exclude_unset=True, by_alias=False)`.
-- ✅ 73 теста pytest.
+- ✅ Сессия 5.2f-1 закрыта: unit-тесты DocumentTypeService + DocumentService.
+- ✅ 23 теста (10 + 13): create, get, list, update, delete.
+- ✅ Стиль: AsyncMock, pytest-asyncio, фикстуры.
+- ✅ 96 тестов pytest (было 73).
 
 ### 14.10.2026 (сессия 5.2e-3)
 
@@ -357,12 +309,37 @@
 - ✅ Обновлён API.md (+22 эндпоинта).
 - ✅ 39 эндпоинтов (было 17).
 
-### 15.10.2026 (сессия 5.2f-1)
+### 14.10.2026 (сессия 5.2e-2)
 
-- ✅ Сессия 5.2f-1 закрыта: unit-тесты DocumentTypeService + DocumentService.
-- ✅ 23 теста (10 + 13): create, get, list, update, delete.
-- ✅ Стиль: AsyncMock, pytest-asyncio, фикстуры.
-- ✅ 90 тестов pytest (было 73).
+- ✅ Сессия 5.2e-2 закрыта: 4 роутера для ГОСТ-документов.
+- ✅ 22 эндпоинта (6+6+6+4) с правильным порядком для FastAPI.
+- ✅ PATCH: `payload.model_dump(exclude_unset=True, by_alias=False)`.
+- ✅ 73 теста pytest.
+
+### 14.10.2026 (сессия 5.2e-1)
+
+- ✅ Сессия 5.2e-1 закрыта: DI-инфраструктура для ГОСТ-документов.
+- ✅ 2 __init__.py + dependencies.py: 4 репо + 4 сервиса.
+
+### 14.10.2026 (сессия 5.2d)
+
+- ✅ Сессия 5.2d закрыта: 4 сервиса для ГОСТ-документов.
+- ✅ Валидации: уникальность кода, existence checks, self-link, same project.
+- ✅ set_current: 3 валидации + денормализация current_version_id.
+- ✅ 8 сервисов (было 4).
+
+### 14.10.2026 (сессия 5.2c-2)
+
+- ✅ Сессия 5.2c-2 закрыта: 8 smoke-тестов маппинга документов.
+- ✅ Покрытие: Enum-маппинг, roundtrip, no timestamps.
+- ✅ 73 теста pytest.
+
+### 14.10.2026 (сессия 5.2c-1)
+
+- ✅ Сессия 5.2c-1 закрыта: 4 SQLAlchemy-репозитория для ГОСТ-документов.
+- ✅ Enum-маппинг: конструктор при чтении, .value при записи.
+- ✅ set_current: два UPDATE в одной транзакции.
+- ✅ 65 тестов зелёные.
 
 ### 14.10.2026 (сессия 5.2b)
 
@@ -436,9 +413,9 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest | 90 | 84 (MVP), 107 (MVP-1.5) |
+| Тесты pytest | 96 | 84 (MVP), 107 (MVP-1.5) |
 | Таблиц в БД | 14 | 14 (MVP-1.5) |
-| Эндпоинтов API | 17 | 30+ (MVP) |
+| Эндпоинтов API | 39 | 30+ (MVP) |
 | Покрытие бизнес-логики | Smoke-тесты | 80%+ |
 | Клиентов | 0 | 1 пилот |
 | MRR | 0 ₽ | 5 000 ₽ (первый платёж) |

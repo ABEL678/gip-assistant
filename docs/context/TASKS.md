@@ -251,7 +251,7 @@
 **На 17.10.2026:**
 
 - ✅ **Веха 1a–1d закрыты** (premises + goals + 187 тестов).
-- 🔄 **Веха 1f — UI**: PremisesPage, GoalsPage, GoalProposalList.
+- 🔄 **Веха 1f — UI**: PremisesPage, GoalsPage, GoalProposalList (fix edit forms).
 - ❌ **Пересборка ТЗ 4.4** — отменена в пользу спек по вехам.
 
 ### Веха 1a–1d (закрыта)
@@ -357,6 +357,16 @@
 - ✅ DocumentLinksPage.tsx — добавлен импорт useDocumentsByProject.
 - ✅ vite.config.ts — CSS-минификация заменена на esbuild.
 - ✅ `npm run build` — 0 ошибок TypeScript, сборка успешна.
+
+### 17.10.2026 (Fix: редактирование Premise/Goal — формы не заполняются — ЗАКРЫТО)
+
+- ✅ PremiseCard/GoalCard — `onEdit` теперь передаёт весь объект, а не только `id`.
+- ✅ PremisesPage/GoalsPage — добавлен `editingId`, `initialData` в форму, заголовок модалки переключается.
+- ✅ PremiseForm/GoalForm — добавлен `useEffect` для синхронизации `initialData` → `useState`.
+- ✅ GoalsPage — `premiseNameMap` строится из реальных данных (`usePremises`), а не заглушек.
+- ✅ Dialog `onOpenChange` — сбрасывает `editingId` при закрытии.
+- ✅ `npm run build` — 0 ошибок.
+- ✅ Ветка `fix/edit-forms`, коммит `fix(frontend): populate forms on edit`.
 
 ### 17.10.2026 (Sync context — ЗАКРЫТО)
 

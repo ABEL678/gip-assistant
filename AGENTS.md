@@ -202,6 +202,17 @@ FastAPI 0.143.x + middleware (FastAPIOffline) не совместим с sync
 - Название: `feat/xxx`, `fix/xxx`, `docs/xxx`.
 - **Не коммить в `main` напрямую.**
 
+**После завершения подсессии — мержить в main.**
+
+1. `pytest` + `npm run build` — зелёные.
+2. `git checkout main`.
+3. `git merge <feature-branch>` (fast-forward).
+4. `git push`.
+5. `git branch -d <feature-branch>`.
+6. `git push origin --delete <feature-branch>`.
+
+**Почему:** иначе ветки копятся. 19 веток — это проблема.
+
 ### 5. Коммиты
 
 Формат:
@@ -216,9 +227,11 @@ FastAPI 0.143.x + middleware (FastAPIOffline) не совместим с sync
     fix(gitignore): stop ignoring db models
     docs(context): add ARCHITECTURE.md
 
-### 6. Pull Request (если работаешь через GitHub)
+### 6. Pull Request (опционально)
 
-Описание:
+PR — для ревью кода. Если GigaCode **сам** мержит — PR не обязателен.
+
+**Описание PR (если используешь):**
 
 - **Что:** суть изменения.
 - **Зачем:** какую задачу решает.
@@ -315,7 +328,7 @@ FastAPI 0.143.x + middleware (FastAPIOffline) не совместим с sync
 - ❌ Не импортировать FastAPI/SQLAlchemy в `domain/`.
 - ❌ Не добавлять зависимости без согласования.
 - ❌ Не оставлять `print()`, `TODO`, «заглушки» без задачи.
-- ❌ Не пушить напрямую в `main` (только через PR).
+- ❌ Не пушить напрямую в `main` (только через PR или merge feature-ветки).
 - ❌ Не смешивать правила кода (`RULES.md`) и правила текстов ПД.
 - ❌ Не писать HANDOFF.md без запроса человека (GigaCode не видит лимит
      контекста чата с DeepSeek).

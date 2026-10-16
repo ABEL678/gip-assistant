@@ -50,6 +50,14 @@ export function PremiseForm({
   const [mandatory, setMandatory] = useState(initialData?.mandatory ?? true)
   const [link, setLink] = useState(initialData?.link ?? "")
   const [validUntil, setValidUntil] = useState(initialData?.valid_until ?? "")
+  const [deadline, setDeadline] = useState<string | null>(
+    typeof (initialData?.data as Record<string, unknown> | undefined)?.deadline === "string"
+      ? (initialData?.data as Record<string, unknown>).deadline as string
+      : null,
+  )
+  const [data, setData] = useState<Record<string, unknown>>(
+    initialData?.data ?? {},
+  )
 
   // Sync state when initialData changes (edit mode)
   useEffect(() => {
@@ -62,6 +70,9 @@ export function PremiseForm({
       setMandatory(initialData.mandatory ?? true)
       setLink(initialData.link ?? "")
       setValidUntil(initialData.valid_until ?? "")
+      setData(initialData.data ?? {})
+      const d = (initialData.data as Record<string, unknown>)?.deadline
+      setDeadline(typeof d === "string" ? d : null)
     }
   }, [initialData])
 
@@ -83,6 +94,14 @@ export function PremiseForm({
       return v
     }
 
+    // Build data payload for category-specific fields
+    const dataPayload: Record<string, unknown> = { ...data }
+    if (category === "contract" && deadline) {
+      dataPayload.deadline = toISODate(deadline)
+    } else if (category !== "contract") {
+      delete dataPayload.deadline
+    }
+
     onSubmit({
       category,
       name: name.trim(),
@@ -92,6 +111,7 @@ export function PremiseForm({
       mandatory,
       link: link || null,
       valid_until: toISODate(validUntil),
+      data: dataPayload,
     })
   }
 
@@ -186,6 +206,19 @@ export function PremiseForm({
           onChange={(e) => setValidUntil(e.target.value)}
         />
       </div>
+
+      {category === "contract" && (
+        <div className="space-y-2">
+          <Label htmlFor="deadline">Срок сдачи</Label>
+          <Input
+            id="deadline"
+            type="date"
+            value={deadline ?? ""}
+            onChange={(e) => setDeadline(e.target.value)}
+            placeholder="2026-12-31"
+          />
+        </div>
+      )}
 
       <div className="flex gap-2 justify-end pt-2">
         <Button type="button" variant="outline" onClick={onCancel}>

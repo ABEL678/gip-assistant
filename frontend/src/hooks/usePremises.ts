@@ -24,6 +24,7 @@ export function useCreatePremise(projectId: string) {
       premiseApi.createPremise(projectId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["premises", projectId] })
+      queryClient.invalidateQueries({ queryKey: ["goal-proposals", projectId] })
     },
   })
 }
@@ -50,6 +51,7 @@ export function useDeletePremise(projectId: string) {
     mutationFn: (premiseId: string) => premiseApi.deletePremise(premiseId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["premises", projectId] })
+      queryClient.invalidateQueries({ queryKey: ["goal-proposals", projectId] })
     },
   })
 }

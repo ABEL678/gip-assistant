@@ -118,8 +118,12 @@
 - DocumentCard.tsx — карточка документа (название, шифр, тип, статус, вид, секция/марка, кнопки).
 - DocumentsPage.tsx — страница списка документов (фильтр по lifecycle_status, grid, loading/empty/error).
 - DocumentConstructorPage.tsx — форма создания/редактирования документа (3 карточки, два payload).
+- DocumentVersionsPage.tsx — страница версий документа (сортировка, toggle формы, confirm).
+- VersionCard.tsx — карточка версии (версия, размер, формат, имя файла, хэш, дата).
+- VersionForm.tsx — форма добавления версии (8 полей, владеет state, onSubmit(payload)).
 - Интеграция в ProjectPage.tsx — секция «Документы» (первые 6 карточек, 2 кнопки).
 - Роутинг в App.tsx — 3 маршрута: /documents, /documents/new, /documents/:docId/edit.
+- Роут версий (план 5.4e): /projects/:id/documents/:docId/versions.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.1 (16.10.2026)
-**Актуально на:** после сессии 6.1 (DOMAIN.md v1.1)
+**Версия:** 2.2 (17.10.2026)
+**Актуально на:** после вехи 1d (DOMAIN.md v1.1)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -55,16 +55,16 @@
 
 | Слой | Что | Где документирован |
 |------|-----|---------------------|
-| **Вводные** | Внешняя образующая. Договор, ТЗ, требования, ИД, нормы, НПА, ресурсы. | DOMAIN.md §2 |
-| **Логика управления** | Goal → Decision → Task → Action. RFI — особый Task. | DOMAIN.md §3 |
-| **Структура управления проектом** | Результат. То, что складывается из вводных + логики на конкретном проекте. | DOMAIN.md §4 |
+| **Вводные** | Внешняя образующая. Договор, ТЗ, требования, ИД, нормы, НПА, ресурсы. | DOMAIN.md §3 |
+| **Логика управления** | Goal → Decision → Task → Action. RFI — особый Task. | DOMAIN.md §4 |
+| **Структура управления проектом** | Результат. То, что складывается из вводных + логики на конкретном проекте. | DOMAIN.md §5 |
 
 **Дополнительно:**
 
-- **Document** — полиморфная сущность (триггер / результат / форма / новые ИД). DOMAIN.md §6.1.
-- **Norm** — внешний норматив. DOMAIN.md §6.2.
-- **Агенты** — сотрудники с ролью: сроков, RFI, связей, норм, XML. DOMAIN.md §8.
-- **LLM** — механизм вывода (часть DOMAIN.md §2). Понимает текст, распознаёт, генерирует.
+- **Document** — полиморфная сущность (триггер / результат / форма / новые ИД). DOMAIN.md §7.1.
+- **Norm** — внешний норматив. DOMAIN.md §7.2.
+- **Агенты** — сотрудники с ролью: сроков, RFI, связей, норм, XML. DOMAIN.md §9.
+- **LLM** — механизм вывода (часть DOMAIN.md §9.1). Понимает текст, распознаёт, генерирует.
 - **Второй столп онтологии:** система знает вводные → предлагает структуру → ГИП утверждает. Это не таск-трекер.
 
 **Ключевые свойства ядра:**
@@ -101,13 +101,25 @@
 
 **Backend (Этап 1 + Уровень 1 + Уровень 1.5):**
 
-- 14 таблиц: projects, tasks, cross_tasks, task_status_history, executors, users, import_logs, entity_types, entities, document_types, documents, document_versions, document_links, alembic_version.
-- Миграции: f9f9bed0be0f, 272f011cf740, 78ada0d52056, d357e719c8bf, c719d9b4537e.
+- 17 таблиц: projects, tasks, cross_tasks, task_status_history, executors, users, import_logs, entity_types, entities, document_types, documents, document_versions, document_links, alembic_version, **premises, goals, goal_premises**.
+- Миграции: f9f9bed0be0f, 272f011cf740, 78ada0d52056, d357e719c8bf, c719d9b4537e, **686491cea3fd (premises + goals)**.
 - Универсальный Excel-парсер.
-- 39 эндпоинтов (17 + 22 ГОСТ-документов).
-- 122 теста pytest.
+- 51 эндпоинтов (17 + 22 ГОСТ + 12 premises/goals).
+- 187 теста pytest (122 + 17 сервисов + 17 роутов).
 - Гексагональная архитектура: domain / application / adapters.
-- 11 портов, 11 SQLAlchemy-репозиториев, 8 сервисов.
+- 11 портов, 11 SQLAlchemy-репозиториев, 8 сервисов + **PremiseService, GoalService, GoalProposalService**.
+
+**Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
+
+- 3 новые таблицы: premises, goals, goal_premises.
+- Домен: Premise, Goal, GoalProposal (dataclass).
+- DTO: PremiseSchema, GoalSchema, GoalProposal, GoalProposalApprove.
+- Порты: PremiseRepository, GoalRepository.
+- Сервисы: PremiseService, GoalService, GoalProposalService (4 правила вывода).
+- DI: 6 зависимостей.
+- 12 эндпоинтов (5 premises + 7 goals).
+- 17 тестов роутов (httpx.AsyncClient + ASGITransport).
+- 187 тестов pytest (было 122).
 
 **Frontend:**
 
@@ -133,20 +145,18 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 16.10.2026, после сессии 6.1:**
+**На 17.10.2026, после вехи 1d:**
 
-- ✅ DOMAIN.md v1.1 создан (сессия 6.1 — уточнение онтологии).
-- 🔄 **Написание дорожной карты 7.0** — на основе DOMAIN.md v1.1. Что меняется:
-  - Агенты — не MVP-3, а раньше.
-  - XML — часть агента XML, не отдельная веха.
-  - MinIO — инструмент для документов, не веха.
-  - Новые сущности: Goal, Decision, Action, Norm, RFI.
-  - Task/CrossTask из Этапа 1 — адаптируются.
+- ✅ DOMAIN.md v1.1 создан.
+- ✅ **Веха 1a–1d закрыты** (premises + goals + 187 тестов).
+- 🔄 **Веха 1f — UI**: PremisesPage, GoalsPage, GoalProposalList.
+- Затем — **веха 2** (Action + Task-адаптация).
 
-**Дальше (после пересборки дорожной карты):**
+**Дальше:**
 
-- Сессия 6.2: первая новая сущность (Вводные + Goal).
-- Затем: агенты (начиная с агента сроков и агента RFI).
+- Веха 1f — UI (PremisesPage, GoalsPage, GoalProposalList, API-клиенты, хуки, карточки).
+- Веха 2 — Action + адаптация Task.
+- Затем: агенты (сроков, RFI).
 - Затем: LLM (Qwen 2.5 7B).
 - Затем: MinIO, XML, Auth, деплой.
 

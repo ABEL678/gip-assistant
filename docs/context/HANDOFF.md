@@ -5,57 +5,76 @@
 > или при приближении к лимиту контекста.
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
-**Дата:** 16.10.2026
-**Сессия:** 6.1 (закрыта) — уточнение онтологии
+**Дата:** 17.10.2026
+**Сессия:** 6.3 (закрыта) — веха 1a–1d
 **Статус:** закрыта
 
 ---
 
-## 1. Что было в этой сессии (16.10.2026, сессия 6.1)
+## 1. Что было в этой сессии (17.10.2026, веха 1a–1d)
 
-**Сессия началась как уточнение онтологии ядра.**
+**Веха 1a: домен + модели + миграция**
+- Домен: Premise, Goal, GoalProposal (dataclass).
+- SQLAlchemy-модели: PremiseModel, GoalModel, GoalPremiseModel.
+- Миграция 686491cea3fd (premises + goals + goal_premises).
+- smoke-тесты маппинга.
 
-**Что произошло:**
+**Веха 1b: DTO + порты + репозитории**
+- DTO: PremiseSchema (4 схемы), GoalSchema (5 схем), GoalProposal, GoalProposalApprove.
+- Порты: PremiseRepository, GoalRepository (2 ABC).
+- Репозитории: SqlAlchemyPremiseRepository, SqlAlchemyGoalRepository (CRUD).
 
-1. Обсудили роль системы: не таск-трекер, а соавтор.
-2. Зафиксировали второй столп: «Система знает вводные → предлагает → ГИП утверждает».
-3. Формула ядра стала трёхэлементной: вводные + логика + механизм вывода.
-4. Механизм вывода двухуровневый: правила (вехи 1–5) + LLM (веха 6).
-5. ГИП — редактор, не «кнопка ок». Утверждает, правит, отклоняет, утверждает списком.
-6. Осторожность предложений: вехи 1–5 — только явное из вводных. Веха 6 — адаптивно.
-7. DOMAIN.md обновлён до v1.1.
+**Веха 1c: сервисы + 4 правила вывода**
+- PremiseService (CRUD).
+- GoalService (CRUD).
+- GoalProposalService (4 правила: договор_срок, тз_требование, требование_заказчика, просроченный_ид).
+- Enum-паттерн: `Enum(EnumClass, name="...", create_type=False)`.
+- DateTime(timezone=True) для timestamp-полей.
+- Дедупликация proposals по нормализованной formulation.
+
+**Веха 1d: DI + эндпоинты + тесты роутов**
+- DI: `dependencies.py` — PremiseServiceDep, GoalServiceDep, GoalProposalServiceDep (6 зависимостей).
+- Роуты: `premises.py` (5 эндпоинтов CRUD) + `goals.py` (7 эндпоинтов: CRUD + proposals + from-proposal).
+- 17 тестов роутов: `test_premises_routes.py` (7) + `test_goals_routes.py` (10).
+- httpx.AsyncClient + ASGITransport — обход проблемы FastAPI 0.143.x + TestClient.
+- Все 187 тестов pytest проходят (170 старых + 17 новых).
+- AGENTS.md обновлён: правила для тестов роутов и «не удалять тесты».
+
+---
 
 ## 2. Что делаем сейчас
 
-Ничего в коде. **DOMAIN.md v1.1 зафиксирован.**
+Ничего в коде. Веха 1a–1d закрыта.
+
+---
 
 ## 3. Что дальше
 
-1. **Написать дорожную карту 7.0** на основе DOMAIN.md v1.1.
-   Структура: 6 вех × 4 недели = 24 недели.
-   Вехи:
-   - (1) Система знает вводные и предлагает цели;
-   - (2) Система предлагает действия;
-   - (3) Система предлагает решения и связи;
-   - (4) Система ведёт RFI;
-   - (5) Система следит за сроками;
-   - (6) Пилот (LLM, XML, MinIO, Auth, деплой).
-2. После карты — спеки по вехам (docs/specs/).
-3. После ТЗ — сессия 6.2 (первая новая сущность: Вводные + Goal).
+1. **Веха 1f — UI:**
+   - PremisesPage.tsx, GoalsPage.tsx.
+   - GoalProposalList.tsx.
+   - premiseApi.ts, goalApi.ts.
+   - usePremises, useGoals.
+   - PremiseCard, PremiseForm, GoalCard, GoalForm.
+2. **Затем — веха 2** (Action + Task-адаптация).
+
+---
 
 ## 4. Что уже в контексте (не надо пересказывать)
 
-- **`docs/context/DOMAIN.md`** — **v1.1**. Главный документ онтологии. Читать **первым**, перед всем остальным.
+- **`docs/context/DOMAIN.md`** — v1.1. Главный документ онтологии. Читать первым.
 - `docs/archive/Дорожная_карта_6.4.md` (архив).
 - `docs/archive/ТЗ_4.4.md` (архив).
-- `docs/context/CONTEXT.md` — обновить до v2.1 (формула ядра в §2).
-- `docs/context/TASKS.md` — обновить (сессия 6.1).
-- `docs/context/ARCHITECTURE.md` — структура. Остаётся, но дополняется.
-- `docs/context/DATABASE.md` — 14 таблиц. Новые сущности — после 6.1.
-- `docs/context/API.md` — 39 эндпоинтов. Остаётся.
-- `docs/context/RULES.md` — правила.
-- `docs/context/HANDOFF.md` — эта эстафета.
-- `AGENTS.md` — правила для GigaCode.
+- `docs/context/CONTEXT.md` — v2.2 (обновлено после 1d).
+- `docs/context/TASKS.md` — v2.2 (обновлено после 1d).
+- `docs/context/ARCHITECTURE.md` — структура.
+- `docs/context/DATABASE.md` — 17 таблиц.
+- `docs/context/API.md` — 51 эндпоинт.
+- `docs/context/RULES.md` — правила кода.
+- `docs/specs/spec_week_1.md` — спека вехи 1.
+- `AGENTS.md` — v1.2 (правила для GigaCode, включая тесты роутов).
+
+---
 
 ## 5. Открытые вопросы / блокеры
 
@@ -87,6 +106,8 @@
 - [ ] GigaCode коммитит в main без feature-ветки.
 - [ ] ESLint в frontend не настроен (только tsc).
 
+---
+
 ## 6. Ключи / пути / команды
 
 - **Проект:** `C:\Users\abelo\GIP-Assistant\gip-assistant`
@@ -98,8 +119,10 @@
 - **Ruff:** `.venv\Scripts\activate && ruff check backend/`
 - **БД:** Docker `gip_db` на 5555
 - **GitHub:** https://github.com/ABEL678/gip-assistant
-- **Текущий HEAD:** `76a8a3a` (feat(frontend): add versions and links routing + form buttons + context sync)
+- **Текущий HEAD:** `9a94cda` (feat/week-1d-di-routes)
 - **Ветка в паузе:** `feat/entity-type-templates-domain` (не мержить, не удалять)
+
+---
 
 ## 7. Как продолжить в новом чате
 
@@ -108,20 +131,14 @@
     Привет. Продолжаем проект «ГИП-Ассистент».
 
     Прочитай (по порядку):
-    1. docs/context/DOMAIN.md — онтология ядра (v1.1, обновлено). ЭТО ГЛАВНОЕ.
-    2. docs/context/HANDOFF.md — что было и что дальше.
-    3. docs/context/CONTEXT.md — что за продукт (обновлено до v2.1).
-    4. docs/context/TASKS.md — что сделано.
-    5. docs/context/ARCHITECTURE.md — структура.
-    6. AGENTS.md — правила для GigaCode.
+    1. docs/context/DOMAIN.md — онтология (v1.1).
+    2. docs/context/HANDOFF.md — эстафета (сессия 6.3).
+    3. docs/context/CONTEXT.md — резюме (v2.2).
+    4. docs/context/TASKS.md — статус (v2.2).
+    5. docs/specs/spec_week_1.md — спека вехи 1.
+    6. AGENTS.md — правила (v1.2).
 
-    Дальше:
-    - Сессия 6.1 закрыта. DOMAIN.md v1.1 зафиксирован.
-    - Следующий шаг: написать дорожную карту 7.0 на основе DOMAIN.md v1.1.
-    - Структура карты: 6 вех × 4 недели = 24 недели.
-    - Ветка feat/entity-type-templates-domain — в паузе.
-
-    Начни с карты 7.0.
+    Веха 1a–1d закрыта, 187 тестов зелёных. Идём в веху 1f — UI.
 
 ---
 

@@ -1,21 +1,19 @@
-import { useParams, Link, useNavigate } from "react-router-dom"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useParams, Link } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
 import { projectsApi } from "@/api/projectsApi"
-import { entityApi } from "@/api/entityApi"
+import { premiseApi } from "@/api/premiseApi"
+import { goalApi } from "@/api/goalApi"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Upload, Grid3x3, Plus } from "lucide-react"
 import { TaskList } from "@/components/TaskList"
-import { EntityTypeCard } from "@/components/EntityTypeCard"
 import { useDocumentsByProject } from "@/hooks/useDocuments"
 
 import { DocumentCard } from "@/components/DocumentCard"
 
 export function ProjectPage() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
   const { data: project, isLoading, isError } = useQuery({
     queryKey: ["project", id],
@@ -25,24 +23,17 @@ export function ProjectPage() {
 
   const { data: documents, isLoading: documentsLoading } = useDocumentsByProject(id!)
 
-  const { data: entityTypes, isLoading: typesLoading } = useQuery({
-    queryKey: ["entity-types", id],
-    queryFn: () => entityApi.getTypesByProject(id!),
+  const { data: premises, isLoading: premisesLoading } = useQuery({
+    queryKey: ["premises", id],
+    queryFn: () => premiseApi.fetchPremises(id!),
     enabled: !!id,
   })
 
-  const deleteMutation = useMutation({
-    mutationFn: (entityTypeId: string) => entityApi.deleteType(entityTypeId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["entity-types", id] })
-    },
+  const { data: goals } = useQuery({
+    queryKey: ["goals", id],
+    queryFn: () => goalApi.fetchGoals(id!),
+    enabled: !!id,
   })
-
-  const handleDelete = (entityTypeId: string) => {
-    if (window.confirm("Удалить этот тип сущности?")) {
-      deleteMutation.mutate(entityTypeId)
-    }
-  }
 
   if (isLoading) {
     return <div className="text-muted-foreground">Загрузка проекта...</div>
@@ -161,7 +152,9 @@ export function ProjectPage() {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Вводные</h2>
+          <h2 className="text-xl font-semibold">
+            Вводные <span className="text-muted-foreground">({premises?.length ?? 0})</span>
+          </h2>
           <div className="flex gap-2">
             <Link to={`/projects/${id}/premises`}>
               <Button variant="outline">Все вводные</Button>
@@ -175,28 +168,24 @@ export function ProjectPage() {
           </div>
         </div>
 
-        {typesLoading ? (
+        {premisesLoading ? (
           <p className="text-muted-foreground">Загрузка...</p>
-        ) : !entityTypes || entityTypes.length === 0 ? (
+        ) : !premises || premises.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            Пока нет типов сущностей
+            Пока нет вводных
             <div className="mt-4">
-              <Link to={`/projects/${id}/entity-types/new`}>
-                <Button variant="outline">Создать первый тип</Button>
+              <Link to={`/projects/${id}/premises`}>
+                <Button variant="outline">Добавить вводную</Button>
               </Link>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {entityTypes.map((type) => (
-              <EntityTypeCard
-                key={type.id}
-                entityType={type}
-                onEdit={(entityTypeId) =>
-                  navigate(`/projects/${id}/entity-types/${entityTypeId}/edit`)
-                }
-                onDelete={handleDelete}
-              />
+            {premises.slice(0, 3).map((p) => (
+              <div key={p.id} className="border rounded-lg p-3">
+                <div className="font-medium">{p.name}</div>
+                <div className="text-sm text-muted-foreground">{p.category}</div>
+              </div>
             ))}
           </div>
         )}
@@ -204,15 +193,17 @@ export function ProjectPage() {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Цели</h2>
+          <h2 className="text-xl font-semibold">
+            Цели <span className="text-muted-foreground">({goals?.length ?? 0})</span>
+          </h2>
           <Link to={`/projects/${id}/goals`}>
             <Button variant="outline">Все цели</Button>
           </Link>
         </div>
 
-        {typesLoading ? (
+        {premisesLoading ? (
           <p className="text-muted-foreground">Загрузка...</p>
-        ) : !entityTypes || entityTypes.length === 0 ? (
+        ) : !goals || goals.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             Пока нет целей
             <div className="mt-4">
@@ -222,8 +213,13 @@ export function ProjectPage() {
             </div>
           </div>
         ) : (
-          <div className="text-sm text-muted-foreground">
-            Управление целями проекта
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {goals.slice(0, 3).map((g) => (
+              <div key={g.id} className="border rounded-lg p-3">
+                <div className="font-medium">{g.formulation}</div>
+                <div className="text-sm text-muted-foreground">{g.state}</div>
+              </div>
+            ))}
           </div>
         )}
       </div>

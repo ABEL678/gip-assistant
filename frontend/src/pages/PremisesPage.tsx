@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, Plus } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { projectsApi } from "@/api/projectsApi"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
@@ -23,6 +25,11 @@ export function PremisesPage() {
   const [error, setError] = useState<string | null>(null)
 
   const { data, isLoading, isError } = usePremises(projectId!)
+  const { data: project } = useQuery({
+    queryKey: ["project", projectId],
+    queryFn: () => projectsApi.getById(projectId!),
+    enabled: !!projectId,
+  })
   const createMutation = useCreatePremise(projectId!)
   const deleteMutation = useDeletePremise(projectId!)
 
@@ -69,7 +76,9 @@ export function PremisesPage() {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">Вводные</h1>
+          <h1 className="text-2xl font-bold">
+            Вводные{project ? ` — ${project.name}` : ""}
+          </h1>
           <p className="text-sm text-muted-foreground">
             Управление вводными проекта
           </p>

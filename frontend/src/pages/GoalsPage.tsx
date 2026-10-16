@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, Plus } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { projectsApi } from "@/api/projectsApi"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
@@ -34,6 +36,11 @@ export function GoalsPage() {
   const { data: goals, isLoading: goalsLoading, isError: goalsError } = useGoals(projectId!)
   const { data: proposals, isLoading: proposalsLoading, refetch } = useGoalProposals(projectId!)
   const { data: allPremises } = usePremises(projectId!)
+  const { data: project } = useQuery({
+    queryKey: ["project", projectId],
+    queryFn: () => projectsApi.getById(projectId!),
+    enabled: !!projectId,
+  })
   const createMutation = useCreateGoal(projectId!)
   const deleteMutation = useDeleteGoal(projectId!)
   const approveMutation = useApproveProposal(projectId!)
@@ -102,7 +109,9 @@ export function GoalsPage() {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">Цели</h1>
+          <h1 className="text-2xl font-bold">
+            Цели{project ? ` — ${project.name}` : ""}
+          </h1>
           <p className="text-sm text-muted-foreground">
             Управление целями проекта
           </p>

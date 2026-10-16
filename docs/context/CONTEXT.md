@@ -4,8 +4,8 @@
 > в начало каждого нового чата с ИИ-ассистентом. Он даёт минимальный
 > контекст, достаточный для продуктивной работы.
 
-**Версия:** 1.4 (16.10.2026)
-**Актуально на:** после 5.4a (API-клиенты и хуки для ГОСТ-документов)
+**Версия:** 1.5 (16.10.2026)
+**Актуально на:** после 5.4b-1 (DocumentsPage + DocumentCard)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -113,6 +113,12 @@
 - useDocumentLinks.ts — 4 хука (outgoing, incoming, create, delete).
 - Итого: 5 API-клиентов, 22 хука TanStack Query.
 
+**Frontend (Уровень 1.5 — UI документов, 16.10.2026):**
+
+- DocumentCard.tsx — карточка документа (название, шифр, тип, статус, вид, секция/марка, кнопки).
+- DocumentsPage.tsx — страница списка документов (фильтр по lifecycle_status, grid, loading/empty/error).
+- Интеграция в ProjectPage.tsx — будет в 5.4b-3.
+
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 
 - entityApi.ts — API-клиент.
@@ -150,7 +156,9 @@
 
 **Дальше по плану:**
 
-- Сессия 5.4: UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage.
+- Сессия 5.4b-2: форма создания/редактирования документа.
+- Сессия 5.4b-3: интеграция DocumentsPage в ProjectPage + роутинг.
+- Сессия 5.4c: DocumentVersionsPage + DocumentLinksPage.
 - Неделя 3: Библиотека шаблонов (ИД_ПД, ИД_РД, Запросы, Тома, Письма, Протоколы) + MinIO.
 - Неделя 4: Auth (JWT + Argon2) + Telegram-сводка в проде + деплой на VPS.
 - Неделя 5: Лендинг (Next.js) + комплаенс 152-ФЗ + пилот.

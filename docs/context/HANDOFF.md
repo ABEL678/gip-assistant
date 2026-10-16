@@ -5,36 +5,41 @@
 > или при приближении к лимиту контекста.
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
-**Дата:** 15.10.2026
-**Сессия:** 5.2f (закрыта)
-**Статус:** закрыта
+**Дата:** 16.10.2026
+**Сессия:** 5.4 (закрыта)
+**Статус:** закрыта (пауза)
 
 ---
 
-## 1. Что было в прошлой сессии (15.10.2026, сессии 5.2f-1 и 5.2f-2)
+## 1. Что было в прошлой сессии (16.10.2026, сессия 5.4)
 
-Закрыты unit-тесты для сервисов ГОСТ-документов:
+Закрыта сессия 5.4 (весь уровень: API-клиенты + хуки + UI + роутинг):
 
-- **5.2f-1:** test_document_type_service.py (10 тестов) + test_document_service.py (13 тестов).
-- **5.2f-2:** test_document_version_service.py (15 тестов) + test_document_link_service.py (11 тестов).
+- **5.4a:** 5 API-клиентов + 22 хука TanStack Query.
+- **5.4b-1:** DocumentsPage + DocumentCard.
+- **5.4b-2:** DocumentConstructorPage (форма создания/редактирования).
+- **5.4b-3:** Роутинг в App.tsx + секция «Документы» в ProjectPage.
+- **5.4c:** DocumentVersionsPage + VersionCard + VersionForm.
+- **5.4d:** DocumentLinksPage + LinkCard + LinkForm.
+- **5.4e:** Роутинг версий/связей + кнопки в DocumentConstructorPage.
 
-**Результат:** 14 таблиц, 11 портов, 11 репозиториев, 8 сервисов,
-39 эндпоинтов, 122 теста pytest (все зелёные).
-Уровень 1.5 backend закрыт полностью.
+**Итого:** 5 API-клиентов, 22 хука, 10 UI-файлов, 5 маршрутов документов.
 
-**HEAD:** `333325a` (docs(context): remove duplicate line in CONTEXT).
+**HEAD:** `76a8a3a` (feat(frontend): add versions and links routing + form buttons + context sync).
 
 ## 2. Что делаем сейчас
 
-Следующая сессия: 5.4 (UI DocumentsPage + DocumentVersionsPage + DocumentLinksPage).
-Источник: `docs/tasks/5.4_prompt.md` (создать по мере надобности).
+Следующая сессия: Неделя 3 — Библиотека шаблонов (6 типов) + MinIO
+ИЛИ: MVP-1.5 XML-модуль.
+Решение — на следующей сессии.
 
 ## 3. Что дальше
 
-1. Сессия 5.4: UI для ГОСТ-документов.
-2. Неделя 3: Библиотека шаблонов + MinIO.
-3. Неделя 4: Auth + Telegram + деплой на VPS.
-4. MVP-1.5: XML-модуль.
+1. Библиотека шаблонов (6 типов: ИД_ПД, ИД_РД, Запросы, Тома, Письма, Протоколы).
+2. MinIO AIStor Free — развёртывание + API upload/download.
+3. Auth (JWT + Argon2) + Telegram-сводка + деплой на VPS.
+4. MVP-1.5: XML-модуль (ТЗ и ПЗ + валидация XSD).
+5. MVP-3: LLM-ассистент.
 
 ## 4. Что уже в контексте (не надо пересказывать)
 
@@ -53,7 +58,11 @@
 
 - [ ] GitHub Actions для авто-генерации DATABASE.md / API.md — не настроены.
 - [ ] B027 (TaskRepository.get_by_pair) — техдолг Этапа 1.
-- [ ] GigaCode запускает pytest/python -c не из корня — нужно явно указывать.
+- [ ] GigaCode запускает pytest не из корня.
+- [ ] GigaCode запускает python -c без активации .venv.
+- [ ] GigaCode делает отдельный коммит вместо --amend.
+- [ ] GigaCode коммитит в main без feature-ветки.
+- [ ] ESLint в frontend не настроен (только tsc).
 
 ## 6. Ключи / пути / команды
 
@@ -66,7 +75,7 @@
 - **Ruff:** `.venv\Scripts\activate && ruff check backend/`
 - **БД:** Docker `gip_db` на 5555
 - **GitHub:** https://github.com/ABEL678/gip-assistant
-- **Текущий HEAD:** `333325a` (docs(context): remove duplicate line in CONTEXT)
+- **Текущий HEAD:** `76a8a3a` (feat(frontend): add versions and links routing + form buttons + context sync)
 
 ## 7. Как продолжить в новом чате
 
@@ -82,7 +91,9 @@
     5. AGENTS.md — правила для GigaCode.
 
     Дальше:
-    - Уровень 1.5 закрыт полностью. Сессия 5.4: UI для ГОСТ-документов.
+    - Уровень 1.5 закрыт полностью. Сессия 5.4 закрыта (пауза).
+    - Следующая: Неделя 3 (шаблоны+MinIO) ИЛИ MVP-1.5 XML.
+    - 10 UI-файлов документов, 5 API-клиентов, 22 хука.
     - Стиль тестов: backend/tests/test_entity_type_service.py.
     - Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
 

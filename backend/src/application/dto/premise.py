@@ -24,7 +24,7 @@ class PremiseSchema(BaseModel):
     link: Optional[str] = Field(None, max_length=1000)
     valid_until: Optional[date] = None
     data: dict[str, Any] = Field(default_factory=dict)
-    field_schema: dict[str, Any] = Field(
+    schema_: dict[str, Any] = Field(
         default_factory=dict,
         validation_alias=AliasChoices("schema", "field_schema"),
         serialization_alias="schema",
@@ -54,7 +54,7 @@ class PremiseUpdate(BaseModel):
     link: Optional[str] = Field(None, max_length=1000)
     valid_until: Optional[date] = None
     data: Optional[dict[str, Any]] = None
-    field_schema: Optional[dict[str, Any]] = Field(
+    schema_: Optional[dict[str, Any]] = Field(
         None,
         validation_alias=AliasChoices("schema", "field_schema"),
         serialization_alias="schema",

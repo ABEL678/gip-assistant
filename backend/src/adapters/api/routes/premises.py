@@ -44,7 +44,7 @@ async def create_premise(
             link=payload.link,
             valid_until=payload.valid_until,
             data=payload.data,
-            schema=payload.field_schema,
+            schema=payload.schema_,
         )
     except ValueError as err:
         raise HTTPException(
@@ -95,9 +95,9 @@ async def update_premise(
     service: PremiseServiceDep,
 ) -> PremiseRead:
     data = payload.model_dump(exclude_unset=True, by_alias=False)
-    # Преобразуем field_schema обратно в schema для сервиса
-    if "field_schema" in data:
-        data["schema"] = data.pop("field_schema")
+    # Преобразуем schema_ обратно в schema для сервиса
+    if "schema_" in data:
+        data["schema"] = data.pop("schema_")
     try:
         updated = await service.update(premise_id, **data)
     except ValueError as err:

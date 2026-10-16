@@ -3,43 +3,75 @@
 > **Назначение:** этот файл — «резюме проекта на 2 страницы». Копируй его
 > в начало каждого нового чата с ИИ-ассистентом. Он даёт минимальный
 > контекст, достаточный для продуктивной работы.
+>
+> **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
+> Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 1.6 (16.10.2026)
-**Актуально на:** после 5.4e (роутинг версий/связей + кнопки на форме)
+**Версия:** 2.0 (16.10.2026)
+**Актуально на:** после сессии 6.0 (пересборка ядра, DOMAIN.md v1.0)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
 
 ## 1. Что это за продукт
 
-**ГИП-Ассистент** — SaaS для управления проектной разработкой в микро-студиях
-и проектных институтах. Целевой пользователь — **ГИП** (главный инженер проекта).
+**ГИП-Ассистент** — среда управления проектом для ГИПа (главного инженера
+проекта). Не «удобный Excel» и не «красивый Проводник». А **среда, где
+структура проекта вырастает из вводных и логики управления**.
 
-**Ключевая идея:** мы не заставляем менять рабочий процесс. Мы встраиваемся
-в существующий Excel ГИПа, превращаем его в удобный интерфейс с универсальными
-сущностями и на выходе отдаём документы в XML-формате, требуемом
-государственной экспертизой.
+**Формула ядра:**
+
+    Управление проектом = Вводные предпосылки + Логика управления
+
+- **Вводные предпосылки** — внешняя образующая: договор, ТЗ, требования
+  Заказчика, ИД, нормы, НПА, гос. бюрократия, внутренние ресурсы.
+- **Логика управления** — Goal / Decision / Task / Action.
+- **Вместе** они определяют: какая будет структура управления проектом
+  и какие методы управления применять.
+
+**Что это даёт ГИПу:**
+
+- Видеть проект не как набор файлов, а как **связную картину**:
+  что от чего зависит, что где горит, что блокирует.
+- Не терять связи между документами (письмо → запрос → том → срок).
+- Работать со **структурой, которая не жёсткая** — меняется под ситуацию
+  проекта (договор, команда, площадка).
+- Делегировать рутину **агентам** (сроки, RFI, связи, нормы, XML).
 
 **Топ-5 болей ГИПа (из 12 интервью):**
 
-1. Координация смежников (10/12) — матрица + задачи пары
-2. Контроль просрочек (9/12) — Telegram-сводка
-3. Потеря задач (8/12) — универсальные сущности
-4. Согласования (7/12) — MVP-2
-5. Изменения / РВИ (6/12) — MVP-2
+1. Координация смежников (10/12).
+2. Контроль просрочек (9/12).
+3. Потеря задач (8/12).
+4. Согласования (7/12) — MVP-2.
+5. Изменения / РВИ (6/12) — MVP-2.
 
 ---
 
-## 2. Три (четыре) уровня продукта
+## 2. Ядро продукта
 
-| Уровень | Что | Этап | Статус |
-|---------|-----|------|--------|
-| 0 | Импорт Excel, матрица, TaskList, Telegram-бот | Прототип | ✅ Сделано |
-| 1 | Универсальные сущности (EntityType + Entity) | MVP, нед. 1-2 | ✅ Backend + UI готовы |
-| 1.5 | ГОСТ-хранение (Document, Version, Link, Type) | MVP-1.5 | ✅ Backend полностью готов |
-| 2 | Библиотека шаблонов (6 типов) | MVP, нед. 3 | ⏳ Не начато |
-| 2.5 | XML-формат ПД (ТЗ, ПЗ) + валидация XSD | MVP-1.5, 2 недели | ⏳ Не начато |
-| 3 | LLM-ассистент (Qwen 2.5 7B) | MVP-3 | ⏳ Не начато |
+**Три слоя:**
+
+| Слой | Что | Где документирован |
+|------|-----|---------------------|
+| **Вводные** | Внешняя образующая. Договор, ТЗ, требования, ИД, нормы, НПА, ресурсы. | DOMAIN.md §2 |
+| **Логика управления** | Goal → Decision → Task → Action. RFI — особый Task. | DOMAIN.md §3 |
+| **Структура управления проектом** | Результат. То, что складывается из вводных + логики на конкретном проекте. | DOMAIN.md §4 |
+
+**Дополнительно:**
+
+- **Document** — полиморфная сущность (триггер / результат / форма / новые ИД). DOMAIN.md §6.1.
+- **Norm** — внешний норматив. DOMAIN.md §6.2.
+- **Агенты** — сотрудники с ролью: сроков, RFI, связей, норм, XML. DOMAIN.md §8.
+- **LLM** — мозг. Понимает текст, распознаёт, генерирует.
+
+**Ключевые свойства ядра:**
+
+1. **Вводные и логика — не статичны.** Вводные пополняются через RFI. Логика перестраивается под ситуацию.
+2. **Структура — не модель, а результат.** Разная на разных проектах.
+3. **Гибкость.** ГИП может работать на любом уровне. Система не требует заполнять всё.
+4. **Движение двустороннее.** Сверху вниз (планирование) и снизу вверх (реакция на факт).
+5. **Агент предлагает — ГИП решает.** Автономия — только там, где делегировано.
 
 ---
 
@@ -47,20 +79,19 @@
 
 **Гексагональная:** domain / application / adapters.
 
-- **Backend:** FastAPI + SQLAlchemy 2.0 async + Alembic. Домен чистый,
-  не зависит от FastAPI/SQLAlchemy. Все взаимодействия — через порты
-  (`domain/ports/repositories.py`).
+- **Backend:** FastAPI + SQLAlchemy 2.0 async + Alembic. Домен чистый, не зависит от FastAPI/SQLAlchemy.
 - **Frontend:** React 18 + Vite + TypeScript + shadcn/ui + TanStack Query + Axios.
 - **Bot:** aiogram 3.x.
 - **Storage:** MinIO AIStor Free (S3).
-- **LLM (MVP-3):** Qwen 2.5 7B локально на VPS (16 GB RAM).
+- **LLM:** Qwen 2.5 7B локально на VPS (16 GB RAM).
+- **Агенты:** слой поверх структуры, работают с LLM.
 
 **Гибридная модель данных:**
 
-- **Системные сущности** (фиксированные): Project, Task, CrossTask, ImportLog,
-  User, Executor, Document, XMLSchema, XMLDocument.
-- **Пользовательские сущности** (generic): EntityType + Entity, хранятся
-  в JSONB, схема динамическая.
+- **Системные сущности** (фиксированные): Project, Goal, Decision, Task, Action, RFI, Document, DocumentVersion, DocumentLink, Norm, User, Executor, ImportLog.
+- **Пользовательские сущности** (generic): EntityType + Entity, хранятся в JSONB.
+
+Подробнее — `ARCHITECTURE.md`.
 
 ---
 
@@ -68,77 +99,20 @@
 
 **Backend (Этап 1 + Уровень 1 + Уровень 1.5):**
 
-- 14 таблиц в PostgreSQL: projects, tasks, cross_tasks, task_status_history,
-  executors, users, import_logs, entity_types, entities, alembic_version,
-  document_types, documents, document_versions, document_links.
-- Миграции Alembic: f9f9bed0be0f (initial 7 tables),
-  272f011cf740 (to_section_code), 78ada0d52056 (entity_types + entities),
-  d357e719c8bf (indexes + xml_schema_code), c719d9b4537e (gost document model).
-- Универсальный Excel-парсер (merged cells, автопоиск шапки, serial-даты).
-- 39 эндпоинтов (17 существующих + 22 для ГОСТ-документов).
-- **122 теста pytest** (65 существующих + 8 для document mapping + 23 для сервисов + 26 для DocumentVersion + DocumentLink).
+- 14 таблиц: projects, tasks, cross_tasks, task_status_history, executors, users, import_logs, entity_types, entities, document_types, documents, document_versions, document_links, alembic_version.
+- Миграции: f9f9bed0be0f, 272f011cf740, 78ada0d52056, d357e719c8bf, c719d9b4537e.
+- Универсальный Excel-парсер.
+- 39 эндпоинтов (17 + 22 ГОСТ-документов).
+- 122 теста pytest.
 - Гексагональная архитектура: domain / application / adapters.
-- **11 портов репозиториев** (domain/ports/repositories.py):
-  Project, Task, CrossTask, ImportLog, User, EntityType, Entity,
-  DocumentType, Document, DocumentVersion, DocumentLink.
-- **4 DTO-файла** (application/dto/): document_type, document,
-  document_version, document_link — 13 Pydantic-классов.
-- **4 SQLAlchemy-репозитория** (adapters/db/repositories/):
-  SqlAlchemyDocumentTypeRepository, SqlAlchemyDocumentRepository,
-  SqlAlchemyDocumentVersionRepository, SqlAlchemyDocumentLinkRepository.
-- **11 портов + 11 репозиториев SQLAlchemy**.
-- **8 smoke-тестов маппинга** (test_document_mapping.py): Enum-маппинг,
-  roundtrip, no timestamps.
-- **4 сервиса** (domain/services/): DocumentTypeService, DocumentService,
-  DocumentVersionService, DocumentLinkService.
-- **8 сервисов** (было 4: entity_type, entity, import, matrix).
-- **26 unit-тестов** (test_document_version_service.py: 15, test_document_link_service.py: 11).
-- **DI-инфраструктура**: 2 __init__.py + dependencies.py — агрегация
-  4 репозиториев и 4 сервисов через FastAPI Depends.
-- **4 роутера** (adapters/api/routes/): document_types.py, documents.py,
-  document_versions.py, document_links.py — 22 эндпоинта.
-- **Регистрация в main.py**: 4 include_router (document_types, documents,
-  document_versions, document_links).
+- 11 портов, 11 SQLAlchemy-репозиториев, 8 сервисов.
 
-**Frontend (Уровень 1.5 — API-клиенты и хуки, 16.10.2026):**
+**Frontend:**
 
-- documentEnums.ts — 4 enum-типа (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
-- documentTypesApi.ts — getAll, getById, getByCode, create, update, delete.
-- documentsApi.ts — getByProject, getById, getByGuid, create, update, delete.
-- documentVersionsApi.ts — listByDocument, getCurrent, getById, create, setCurrent, delete.
-- documentLinksApi.ts — listOutgoing, listIncoming, create, delete.
-- useDocumentTypes.ts — 6 хуков (list, by-id, by-code, create, update, delete).
-- useDocuments.ts — 6 хуков (by-project, by-id, by-guid, create, update, delete).
-- useDocumentVersions.ts — 6 хуков (list, current, by-id, create, set-current, delete).
-- useDocumentLinks.ts — 4 хука (outgoing, incoming, create, delete).
-- Итого: 5 API-клиентов, 22 хука TanStack Query.
-
-**Frontend (Уровень 1.5 — UI документов, 16.10.2026):**
-
-- DocumentCard.tsx — карточка документа (название, шифр, тип, статус, вид, секция/марка, кнопки).
-- DocumentsPage.tsx — страница списка документов (фильтр по lifecycle_status, grid, loading/empty/error).
-- DocumentConstructorPage.tsx — форма создания/редактирования документа (3 карточки, два payload).
-- DocumentVersionsPage.tsx — страница версий документа (сортировка, toggle формы, confirm).
-- VersionCard.tsx — карточка версии (версия, размер, формат, имя файла, хэш, дата).
-- VersionForm.tsx — форма добавления версии (8 полей, владеет state, onSubmit(payload)).
-- DocumentLinksPage.tsx — страница связей (2 секции: исходящие/входящие, lookup имён, сортировка).
-- LinkCard.tsx — карточка связи (link_type с локализацией, направление →/←, имя целевого/исходного, дата).
-- LinkForm.tsx — форма добавления связи (Select target_document_id с фильтрацией, Select link_type, валидация).
-- Интеграция в ProjectPage.tsx — секция «Документы» (первые 6 карточек, 2 кнопки).
-- Роутинг в App.tsx — 3 маршрута: /documents, /documents/new, /documents/:docId/edit.
-- Роуты (реализованы 5.4e): /projects/:id/documents/:docId/versions, /projects/:id/documents/:docId/links.
-- DocumentConstructorPage.tsx — кнопки «Версии»/«Связи» (только при isEdit).
-
-**Frontend (Уровень 1 UI — ЗАКРЫТ):**
-
-- entityApi.ts — API-клиент.
-- useEntityTypes.ts, useEntities.ts — TanStack Query хуки.
-- EntityTypesPage.tsx — галерея типов.
-- EntityTypeConstructorPage.tsx — конструктор.
-- EntitiesPage.tsx — записи типа.
-- Компоненты: EntityTypeCard, FieldEditor, FieldList, DynamicField, DynamicTable, textarea.
-- Интеграция в ProjectPage.tsx (секция «Типы сущностей»).
-- Роутинг в App.tsx (4 маршрута).
+- Уровень 1 UI: EntityTypesPage, EntityTypeConstructorPage, EntitiesPage + компоненты.
+- Уровень 1.5 UI: DocumentsPage, DocumentConstructorPage, DocumentVersionsPage, DocumentLinksPage + компоненты.
+- 5 API-клиентов, 22 хука TanStack Query, 9 UI-файлов документов.
+- 5 маршрутов документов.
 
 **Bot:** aiogram 3.x, @gip_assistant_ru_bot, /start /help /link /status.
 
@@ -146,66 +120,69 @@
 
 **AI-контекст и документация:**
 
-- Дорожная карта 6.4 — обновлён раздел 15 (отказ от Cursor / Claude Code,
-  GigaCode + самописный агент).
-- ТЗ 4.4 — обновлены разделы 1.5, 2.5, 12, 13, 15.
-- `docs/context/CONTEXT.md` — создан (этот файл).
-- `AGENTS.md` — в работе.
-- GigaCode — установлен и протестирован.
+- **`docs/context/DOMAIN.md` v1.0** — онтология ядра. **Главный документ.**
+- `docs/Дорожная_карта_6.4.md` — стратегия (**будет пересобрана** на основе DOMAIN.md).
+- `docs/ТЗ_4.4.md` — ТЗ (**будет пересмотрено** в части Уровня 2 и MVP-3).
+- `docs/context/CONTEXT.md` — этот файл.
+- `docs/context/TASKS.md`, `ARCHITECTURE.md`, `DATABASE.md`, `API.md`, `RULES.md`, `HANDOFF.md`.
+- `AGENTS.md` — правила для GigaCode.
 
 ---
 
 ## 5. Что в работе / следующий шаг
 
-**Сейчас (15.10.2026):**
+**На 16.10.2026, после сессии 6.0:**
 
-- ✅ Уровень 1.5 backend закрыт (14–15.10.2026).
-- ✅ 122 теста pytest зелёные.
-- ✅ 39 эндпоинтов API.
-- ✅ 8 сервисов, 11 репозиториев, 14 таблиц.
+- ✅ DOMAIN.md v1.0 создан.
+- 🔄 **Пересборка дорожной карты** — на основе DOMAIN.md. Что меняется:
+  - Агенты — не MVP-3, а раньше.
+  - XML — часть агента XML, не отдельная веха.
+  - MinIO — инструмент для документов, не веха.
+  - Новые сущности: Goal, Decision, Action, Norm, RFI.
+  - Task/CrossTask из Этапа 1 — адаптируются.
 
-**Дальше по плану:**
+**Дальше (после пересборки дорожной карты):**
 
-- Сессия 5.4b-2: форма создания/редактирования документа.
-- Сессия 5.4b-3: интеграция DocumentsPage в ProjectPage + роутинг.
-- Сессия 5.4c: DocumentVersionsPage + DocumentLinksPage.
-- Неделя 3: Библиотека шаблонов (ИД_ПД, ИД_РД, Запросы, Тома, Письма, Протоколы) + MinIO.
-- Неделя 4: Auth (JWT + Argon2) + Telegram-сводка в проде + деплой на VPS.
-- Неделя 5: Лендинг (Next.js) + комплаенс 152-ФЗ + пилот.
-- MVP-1.5: XML-модуль (ТЗ и ПЗ + валидация XSD).
-- MVP-3: LLM-ассистент (Qwen 2.5 7B).
+- Сессия 6.1: первая новая сущность (Goal / Norm / RFI — решить после пересборки).
+- Затем: агенты (начиная с агента сроков и агента RFI).
+- Затем: LLM (Qwen 2.5 7B).
+- Затем: MinIO, XML, Auth, деплой.
+
+**Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.
 
 ---
 
 ## 6. Ключевые документы
 
-- `../Дорожная_карта_6.4.md` / `.docx` — стратегия, roadmap, риски (не коммитится).
-- `../ТЗ_4.4.md` / `.docx` — архитектура, модели, API, UI (не коммитится).
-- `docs/context/` — AI-контекст (**коммитится**).
+- **`docs/context/DOMAIN.md`** — онтология ядра. **Читать первым.**
+- `docs/Дорожная_карта_6.4.md` — стратегия (будет пересобрана).
+- `docs/ТЗ_4.4.md` — ТЗ (будет пересмотрено).
+- `docs/context/` — AI-контекст (**коммитится**):
   - `CONTEXT.md` — этот файл.
   - `ARCHITECTURE.md` — структура и слои.
-  - `DATABASE.md` — схема БД (MVP-2: автогенерация).
-  - `API.md` — эндпоинты (MVP-2: автогенерация).
+  - `DATABASE.md` — схема БД.
+  - `API.md` — эндпоинты.
   - `RULES.md` — правила кода.
   - `TASKS.md` — что сделано / в работе / дальше.
-  - `README.md` — как пользоваться AI-контекстом.
-  - `HANDOFF.md` — эстафета между сессиями.
+  - `HANDOFF.md` — эстафета.
 - `AGENTS.md` (в корне) — правила для ИИ-агентов.
 
 ---
 
 ## 7. Ключевые принципы
 
-1. Домен чистый (без FastAPI/SQLAlchemy).
-2. Порты и адаптеры (гексагональная архитектура).
-3. Универсальные сущности — ядро продукта.
-4. XML — обязательное требование экспертизы.
-5. AI-контекст — часть продукта.
-6. ИИ-инструменты — только с поддержкой в РФ: GigaCode (PyCharm). Самописный агент — отложен.
-7. Один шаг за раз, с проверками.
-8. Тесты для бизнес-логики обязательны.
-9. Не коммитить в main напрямую.
-10. Не менять `.env` и секреты.
+1. **Домен чистый** (без FastAPI/SQLAlchemy).
+2. **Порты и адаптеры** (гексагональная архитектура).
+3. **Вводные + логика = структура управления проектом.** Ядро продукта.
+4. **Структура не жёсткая.** Вырастает из вводных. Меняется под ситуацию.
+5. **Агент предлагает — ГИП решает.** Автономия — только там, где делегировано.
+6. **XML — обязательное требование экспертизы.**
+7. **AI-контекст — часть продукта.**
+8. **ИИ-инструменты — только с поддержкой в РФ:** GigaCode (PyCharm).
+9. **Один шаг за раз, с проверками.**
+10. **Тесты для бизнес-логики обязательны.**
+11. **Не коммитить в main напрямую.**
+12. **Не менять `.env` и секреты.**
 
 ---
 
@@ -216,8 +193,11 @@
 - Не менять архитектуру без согласования.
 - Не использовать `try/except` для валидации (Pydantic).
 - Не добавлять новые зависимости без явного разрешения.
-- Не смешивать правила кода (RULES.md) и правила текстов ПД (PROMPTS.md).
-- Не коммитить в `main` напрямую (только feature-ветки + PR).
+- Не смешивать правила кода (RULES.md) и правила текстов ПД.
+- Не коммитить в `main` напрямую.
+- **Не строить продукт на описании, которое человек дал постфактум.** Проверять модель на реальных сценариях.
+- **Не навязывать структуру.** Система поддерживает все уровни, но не требует заполнять всё.
+- **Не путать «документооборот» и «управление проектом».** Продукт — второе.
 
 ---
 
@@ -234,4 +214,4 @@
 
 ---
 
-**Конец CONTEXT.md.**
+**Конец CONTEXT.md v2.0.**

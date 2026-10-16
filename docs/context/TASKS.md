@@ -2,9 +2,12 @@
 
 > **Назначение:** что сделано / в работе / дальше. Обновляется перед каждым
 > новым чатом с ИИ. Помогает понять статус проекта без пересказа.
+>
+> **Главный документ проекта — `DOMAIN.md`.** TASKS.md — статус.
+> Если противоречие между TASKS.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 1.3
-**Обновлено:** 15.10.2026
+**Версия:** 2.0
+**Обновлено:** 16.10.2026
 **Автор:** ГИП, руководитель разработки
 
 ---
@@ -50,10 +53,10 @@
 
 - ✅ React 18 + Vite + TypeScript + shadcn/ui + Tailwind.
 - ✅ TanStack Query + React Router + Axios.
-- ✅ Импорт Excel (dropzone + селектор шапки + маппинг).
+- ✅ Импорт Excel.
 - ✅ TaskList (500+ задач, фильтры, inline).
 - ✅ Матрица смежников (10×10, 14 ячеек, цвета, смена статуса).
-- ✅ Страница задач пары (группировка).
+- ✅ Страница задач пары.
 
 **Bot:**
 
@@ -75,452 +78,349 @@
 - ✅ Миграция 78ada0d52056 (entity_types + entities + GIN-индекс).
 - ✅ DTO: EntityTypeSchema, FieldDefinition, EntityTypeCreate/Read/Update,
   EntityCreate/Read/Update (с AliasChoices для schema).
-- ✅ Порты репозиториев (EntityTypeRepository, EntityRepository) в
-  domain/ports/repositories.py.
-- ✅ Репозитории (SqlAlchemy*) — в стиле проекта (save через merge).
-- ✅ Сервисы: EntityTypeService, EntityService (валидация JSONB по схеме).
-- ✅ API: 10 эндпоинтов (`POST/GET/PATCH/DELETE` для типов и записей).
-- ✅ DI: EntityTypeServiceDep, EntityServiceDep в dependencies.py.
-- ✅ 26 unit-тестов pytest (все зелёные).
+- ✅ Порты репозиториев (EntityTypeRepository, EntityRepository).
+- ✅ Репозитории (SqlAlchemy*) — save через merge.
+- ✅ Сервисы: EntityTypeService, EntityService.
+- ✅ API: 10 эндпоинтов.
+- ✅ DI: EntityTypeServiceDep, EntityServiceDep.
+- ✅ 26 unit-тестов pytest.
 - ✅ **Итого в проекте: 65 тестов pytest**.
 
 ### AI-контекст и документация (октябрь 2026)
 
-- ✅ Дорожная карта 6.4 — готова.
-- ✅ ТЗ 4.4 — готово.
-- ✅ `.gitignore` обновлён (исключение `!docs/context/`).
-- ✅ `docs/context/CONTEXT.md` — создан.
+- ✅ Дорожная карта 6.4 — готова (**будет пересобрана**).
+- ✅ ТЗ 4.4 — готово (**будет пересмотрено**).
+- ✅ `docs/context/CONTEXT.md` — создан (**v2.0** после сессии 6.0).
 - ✅ `docs/context/ARCHITECTURE.md` — создан.
-- ✅ `docs/context/DATABASE.md` — создан (10 таблиц, 21 индекс).
-- ✅ `docs/context/API.md` — создан (17 эндпоинтов).
+- ✅ `docs/context/DATABASE.md` — создан.
+- ✅ `docs/context/API.md` — создан.
 - ✅ `docs/context/RULES.md` — создан.
-- ✅ `docs/context/TASKS.md` — создан (этот файл).
+- ✅ `docs/context/TASKS.md` — создан (этот файл, v2.0).
 - ✅ `docs/context/README.md` — создан.
 - ✅ `AGENTS.md` — создан (в корне).
 - ✅ GigaCode — установлен и протестирован.
+- ✅ **`docs/context/DOMAIN.md` v1.0** — создан в сессии 6.0.
 
   **GigaCode:**
-  - ✅ Плагин установлен в PyCharm (Marketplace + Sber ID).
+  - ✅ Плагин установлен в PyCharm.
   - ✅ Project Context → `docs/context/` подключён.
   - ✅ `AGENTS.md` подключён через Rules (apply: always, mode: all).
   - ✅ Auto-Approve — пусто (безопасно).
-  - ✅ Протестирован на 5 сценариях: Ask (CONTEXT.md), Plan (эндпоинт),
-    Agent (создание `__init__.py`), Agent (запуск pytest с активацией `.venv`),
-    Agent (запуск alembic current).
+  - ✅ Протестирован на 5 сценариях.
   - ✅ Вывод: GigaCode заменяет 80% запланированного самописного агента.
-
-  **Самописный ИИ-агент (отложен):**
-  - ❌ Не пишем в MVP. Экономия 1-2 дня.
-  - ⏳ Вернуться, если через 2-4 недели появится задача, которую
-       GigaCode не решает.
-  - ⏳ Потенциальные задачи: whitelist команд, Plan Mode с обязательным
-       approve, специфичные Alembic-манипуляции.
 
 ### Уровень 1 (MVP): UI конструктора типов — ЗАКРЫТ (12.10.2026)
 
-- ✅ entityApi.ts — API-клиент для EntityType + Entity.
-- ✅ useEntityTypes.ts, useEntities.ts — TanStack Query хуки.
-- ✅ EntityTypeCard.tsx — карточка типа (галерея).
-- ✅ FieldEditor.tsx — редактор поля.
-- ✅ FieldList.tsx — список полей.
-- ✅ EntityTypesPage.tsx — галерея типов.
-- ✅ EntityTypeConstructorPage.tsx — конструктор типа.
-- ✅ DynamicField.tsx — рендер поля по типу.
-- ✅ DynamicTable.tsx — универсальная таблица.
-- ✅ EntitiesPage.tsx — записи типа.
+- ✅ entityApi.ts.
+- ✅ useEntityTypes.ts, useEntities.ts.
+- ✅ EntityTypeCard.tsx, FieldEditor.tsx, FieldList.tsx.
+- ✅ EntityTypesPage.tsx, EntityTypeConstructorPage.tsx.
+- ✅ DynamicField.tsx, DynamicTable.tsx, EntitiesPage.tsx.
 - ✅ textarea.tsx (shadcn/ui).
-- ✅ Интеграция в ProjectPage.tsx — секция «Типы сущностей» + empty state.
+- ✅ Интеграция в ProjectPage.tsx.
 - ✅ Роутинг в App.tsx (4 маршрута).
 - ✅ TypeScript — без ошибок.
 
 ### Сессия 5.4a (Frontend API-клиенты и хуки для ГОСТ-документов) — ЗАКРЫТ (16.10.2026)
 
-- ✅ documentEnums.ts — 4 enum-типа (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
-- ✅ documentTypesApi.ts — 6 методов API.
-- ✅ documentsApi.ts — 6 методов API.
-- ✅ documentVersionsApi.ts — 6 методов API.
-- ✅ documentLinksApi.ts — 4 метода API.
-- ✅ useDocumentTypes.ts — 6 хуков.
-- ✅ useDocuments.ts — 6 хуков.
-- ✅ useDocumentVersions.ts — 6 хуков.
-- ✅ useDocumentLinks.ts — 4 хука.
+- ✅ documentEnums.ts — 4 enum-типа.
+- ✅ 4 API-клиента: documentTypesApi, documentsApi, documentVersionsApi, documentLinksApi.
+- ✅ 4 хуковых файла: useDocumentTypes, useDocuments, useDocumentVersions, useDocumentLinks.
 - ✅ TypeScript — без ошибок.
-- ✅ **Итого в проекте: 22 хука, 5 API-клиентов.**
+- ✅ **Итого: 22 хука, 5 API-клиентов.**
 
-### Сессия 5.4b-1 (Frontend DocumentsPage + DocumentCard) — ЗАКРЫТ (16.10.2026)
+### Сессия 5.4b-1 (DocumentsPage + DocumentCard) — ЗАКРЫТ (16.10.2026)
 
-- ✅ DocumentCard.tsx — карточка документа (название, шифр, тип, статус, вид, секция/марка).
-- ✅ DocumentsPage.tsx — страница списка документов (фильтр по lifecycle_status, grid, empty/error/loading states).
+- ✅ DocumentCard.tsx.
+- ✅ DocumentsPage.tsx (фильтр по lifecycle_status, grid, empty/error/loading).
 - ✅ TypeScript — без ошибок.
-- ✅ **Итого в проекте: 22 хука, 5 API-клиентов, 2 новых UI-файла.**
 
-### Сессия 5.4b-2 (Frontend DocumentConstructorPage — форма) — ЗАКРЫТ (16.10.2026)
+### Сессия 5.4b-2 (DocumentConstructorPage — форма) — ЗАКРЫТ (16.10.2026)
 
-- ✅ DocumentConstructorPage.tsx — форма создания/редактирования документа.
-- ✅ 3 карточки: Обозначение, Наименование, Классификация.
-- ✅ Два разных payload: create (все поля) / update (PATCH, без document_type_id и cipher).
-- ✅ Sentinel "__none__" для пустых опциональных Select.
+- ✅ DocumentConstructorPage.tsx (3 карточки).
+- ✅ Два payload: create / update (PATCH).
+- ✅ Sentinel "__none__".
 - ✅ TypeScript — без ошибок.
-- ✅ **Итого в проекте: 22 хука, 5 API-клиентов, 3 UI-файла.**
 
-### Сессия 5.4b-3 (Frontend роутинг + секция «Документы» в ProjectPage) — ЗАКРЫТ (16.10.2026)
+### Сессия 5.4b-3 (роутинг + секция «Документы» в ProjectPage) — ЗАКРЫТ (16.10.2026)
 
-- ✅ App.tsx — 3 маршрута: /documents, /documents/new, /documents/:docId/edit.
-- ✅ ProjectPage.tsx — секция «Документы» (первые 6 карточек, 2 кнопки).
-- ✅ DocumentCard.tsx — URL кнопки «Открыть» → /edit.
+- ✅ App.tsx — 3 маршрута документов.
+- ✅ ProjectPage.tsx — секция «Документы».
 - ✅ TypeScript — без ошибок.
-- ✅ **Итого в проекте: 22 хука, 5 API-клиентов, 3 UI-файла, 3 маршрута документов.**
 
-### Сессия 5.4c (Frontend DocumentVersionsPage + VersionCard + VersionForm) — ЗАКРЫТ (16.10.2026)
+### Сессия 5.4c (DocumentVersionsPage + VersionCard + VersionForm) — ЗАКРЫТ (16.10.2026)
 
-- ✅ VersionCard.tsx — карточка версии (версия, размер KB/MB, формат, имя файла, хэш, дата, кнопки).
-- ✅ VersionForm.tsx — форма добавления версии (8 полей, владеет state, onSubmit(payload)).
-- ✅ DocumentVersionsPage.tsx — страница версий (сортировка: current-first + по дате DESC, toggle формы, confirm).
-- ✅ useCurrentDocumentVersion НЕ используется — is_current из списка.
+- ✅ VersionCard.tsx, VersionForm.tsx, DocumentVersionsPage.tsx.
 - ✅ TypeScript — без ошибок.
-- ✅ **Итого в проекте: 22 хука, 5 API-клиентов, 6 UI-файлов.**
 
-### Сессия 5.4d (Frontend DocumentLinksPage + LinkCard + LinkForm) — ЗАКРЫТ (16.10.2026)
+### Сессия 5.4d (DocumentLinksPage + LinkCard + LinkForm) — ЗАКРЫТ (16.10.2026)
 
-- ✅ LinkCard.tsx — карточка связи (link_type с локализацией, направление →/←, имя целевого/исходного, дата).
-- ✅ LinkForm.tsx — форма добавления связи (Select target_document_id с фильтрацией, Select link_type, валидация).
-- ✅ DocumentLinksPage.tsx — страница связей (2 секции: исходящие/входящие, lookup имён, сортировка по created_at DESC).
+- ✅ LinkCard.tsx, LinkForm.tsx, DocumentLinksPage.tsx.
 - ✅ TypeScript — без ошибок.
-- ✅ **Итого в проекте: 22 хука, 5 API-клиентов, 9 UI-файлов.**
 
-### Сессия 5.4e (Frontend роутинг версий/связей + кнопки на форме) — ЗАКРЫТ (16.10.2026)
+### Сессия 5.4e (роутинг версий/связей + кнопки на форме) — ЗАКРЫТ (16.10.2026)
 
-- ✅ App.tsx — 2 маршрута: /:docId/versions, /:docId/links.
-- ✅ DocumentConstructorPage.tsx — кнопки «Версии»/«Связи» (только при isEdit).
+- ✅ App.tsx — 2 маршрута (versions, links).
+- ✅ DocumentConstructorPage.tsx — кнопки «Версии»/«Связи».
 - ✅ TypeScript — без ошибок.
-- ✅ **Итого в проекте: 22 хука, 5 API-клиентов, 9 UI-файлов, 5 маршрутов документов.**
+- ✅ **Итого: 5 маршрутов документов, 9 UI-файлов.**
 
-### Уровень 1.5 (ГОСТ-хранение) — ��АКРЫТ (14–15.10.2026)
+### Уровень 1.5 (ГОСТ-хранение) — ЗАКРЫТ (14–15.10.2026)
 
 **Сессия 5.1 (домен + модели):**
 - ✅ Домен: Document, DocumentVersion, DocumentLink, DocumentType.
-- ✅ Value Objects: 4 Enum (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
+- ✅ VO: 4 Enum.
 - ✅ SQLAlchemy-модели: 4 таблицы.
-- ✅ Миграция Alembic c719d9b4537e + сиды document_types (8 записей).
+- ✅ Миграция c719d9b4537e + сиды document_types.
 - ✅ Обновление DATABASE.md.
 
 **Сессия 5.2a (порты):**
-- ✅ 4 порта репозиториев в domain/ports/repositories.py.
-- ✅ Итого портов: 11 (было 7).
+- ✅ 4 порта репозиториев.
+- ✅ Итого портов: 11.
 
 **Сессия 5.2b (DTO):**
-- ✅ 4 DTO-файла: document_type, document, document_version, document_link.
-- ✅ 13 Pydantic-классов (Base/Create/Update/Read).
+- ✅ 4 DTO-файла: 13 Pydantic-классов.
 
 **Сессия 5.2c-1 (репозитории):**
 - ✅ 4 SQLAlchemy-репозитория.
-- ✅ Enum-маппинг: конструктор при чтении, .value при записи.
+- ✅ Enum-маппинг.
 - ✅ set_current: два UPDATE в одной транзакции.
-- ✅ Итого репозиториев: 11 (было 7).
+- ✅ Итого репозиториев: 11.
 
 **Сессия 5.2c-2 (smoke-тесты маппинга):**
 - ✅ 8 smoke-тестов: test_document_mapping.py.
-- ✅ Итого тестов pytest: 73 (было 65).
+- ✅ Итого тестов pytest: 73.
 
 **Сессия 5.2d (сервисы):**
 - ✅ 4 сервиса: DocumentType, Document, DocumentVersion, DocumentLink.
 - ✅ Валидации: уникальность кода, existence checks, self-link, same project.
-- ✅ set_current: 3 валидации + денормализация current_version_id.
-- ✅ Итого сервисов: 8 (было 4).
+- ✅ Итого сервисов: 8.
 
 **Сессия 5.2e-1 (DI):**
-- ✅ 2 __init__.py + dependencies.py: 4 репо + 4 сервиса.
-- ✅ DocumentServiceDep, DocumentVersionServiceDep, DocumentLinkServiceDep.
+- ✅ 2 __init__.py + dependencies.py.
 
 **Сессия 5.2e-2 (роуты):**
-- ✅ 4 роутера: document_types, documents, document_versions, document_links.
-- ✅ 22 эндпоинта (6 + 6 + 6 + 4).
-- ✅ Порядок эндпоинтов: /by-code ПЕРЕД /{id}, /by-guid ПЕРЕД /{id},
-   /versions/current ПЕРЕД /versions.
-- ✅ Роуты через ServiceDep (НЕ RepoDep напрямую).
-- ✅ PATCH: payload.model_dump(exclude_unset=True, by_alias=False).
+- ✅ 4 роутера: 22 эндпоинта.
+- ✅ Порядок: /by-code ПЕРЕД /{id}.
+- ✅ Роуты через ServiceDep.
 
 **Сессия 5.2e-3 (регистрация):**
-- ✅ Регистрация роутеров в main.py (4 include_router).
-- ✅ Обновлён routes/__init__.py (+4 импорта).
-- ✅ Обновлён docs/context/API.md (+22 эндпоинта).
-- ✅ Итого эндпоинтов: 39 (было 17).
+- ✅ Регистрация в main.py.
+- ✅ API.md: +22 эндпоинта.
+- ✅ Итого эндпоинтов: 39.
 
 **Сессия 5.2f-1 (unit-тесты сервисов, часть 1):**
 - ✅ test_document_type_service.py (10 тестов).
 - ✅ test_document_service.py (13 тестов).
-- ✅ Стиль: AsyncMock, pytest-asyncio, фикстуры.
-- ✅ Итого тестов pytest: 96 (было 73).
+- ✅ Итого тестов pytest: 96.
 
 **Сессия 5.2f-2 (unit-тесты сервисов, часть 2):**
 - ✅ test_document_version_service.py (15 тестов).
 - ✅ test_document_link_service.py (11 тестов).
-- ✅ Стиль: AsyncMock, pytest-asyncio, фикстуры.
-- ✅ Итого тестов pytest: 122 (было 96).
+- ✅ Итого тестов pytest: 122.
+
+### Сессия 6.0 (Пересборка ядра продукта) — ЗАКРЫТ (16.10.2026)
+
+- ✅ **`docs/context/DOMAIN.md` v1.0** — онтология ядра.
+- ✅ Формула: `вводные + логика = структура управления проектом и методы управления`.
+- ✅ Вводные предпосылки: договор, ТЗ, требования Заказчика, ИД, нормы, НПА, гос. бюрократия, внутренние ресурсы.
+- ✅ Логика управления: Goal → Decision → Task → Action.
+- ✅ Task — группа действий (не уровень между Decision и Action).
+- ✅ Постановка задачи и закрытие — тоже Action.
+- ✅ RFI — особый Task (причина — нехватка ИД, результат — Document, пополняющий вводные).
+- ✅ Norm — внешний норматив, отдельная сущность.
+- ✅ Агенты: сроков, RFI, связей, норм, XML. Сотрудники с ролью.
+- ✅ LLM — мозг, пассивный. Агенты — руки, активные.
+- ✅ Отменены: «6 шаблонов документов», «Реестры» в UI, «вкладки как папки».
+- ✅ Ветка `feat/entity-type-templates-domain` — в паузе.
 
 ---
 
 ## 2. В работе (In Progress)
 
-**На 16.10.2026 — задач в работе нет. Сессии 5.4b-1..5.4e закрыты.**
+**На 16.10.2026:**
+
+- 🔄 **Пересборка дорожной карты** на основе DOMAIN.md v1.0.
+  - Агенты — не MVP-3, а раньше.
+  - XML — часть агента XML, не отдельная веха.
+  - MinIO — инструмент для документов, не веха.
+  - Новые сущности: Goal, Decision, Action, Norm, RFI.
+  - Task/CrossTask из Этапа 1 — адаптируются.
+- 🔄 **Пересборка ТЗ 4.4** — разделы про Уровень 2, MVP-1.5, MVP-3.
 
 ---
 
 ## 3. Дальше (Next)
 
-### Неделя 3 MVP: Библиотека шаблонов + MinIO
+### Пересборка дорожной карты и ТЗ (сейчас)
 
-- ⏳ Таблица `entity_type_templates`.
-- ⏳ 6 шаблонов: ИД_ПД, ИД_РД, Запросы, Тома, Письма, Протоколы.
-- ⏳ Endpoint `GET /api/entity-type-templates`.
-- ⏳ Endpoint `POST /api/projects/{id}/entity-types/from-template/{code}`.
-- ⏳ UI: `TemplateGallery.tsx`.
-- ⏳ Развёртывание MinIO AIStor Free в Docker.
-- ⏳ Модель `Document` (метаданные).
-- ⏳ API: upload / download / list / delete.
-- ⏳ UI: `FileUploader.tsx`, `DocumentList.tsx`.
+- 🔄 Новая дорожная карта на основе DOMAIN.md.
+- 🔄 Обновление ТЗ 4.4.
 
-### Неделя 4 MVP: Auth + Telegram + Деплой
+### Сессия 6.1 — первая новая сущность
 
-- ⏳ Аутентификация: JWT + Argon2.
-- ⏳ Регистрация / логин / logout.
-- ⏳ Middleware `current_user`.
-- ⏳ Роли: ГИП / Дизайнер / Наблюдатель.
-- ⏳ UI: `LoginPage.tsx`, `AuthGuard.tsx`.
-- ⏳ Telegram-сводка в проде (digest_worker + cron 09:00).
-- ⏳ Привязка Telegram к user (/link).
-- ⏳ Деплой на VPS (Timeweb / Aeza / FirstVDS).
-- ⏳ Nginx + SSL (Let's Encrypt).
-- ⏳ Домен gip-assistant.ru.
-- ⏳ GitHub Actions CI (lint + test).
+- ⏳ Выбор: Goal / Norm / RFI.
+- ⏳ Домен + SQLAlchemy-модель + миграция.
+- ⏳ DTO + репозиторий + сервис.
+- ⏳ DI + эндпоинты.
+- ⏳ Тесты.
+- ⏳ Frontend (API-клиент + хук + UI).
 
-### Неделя 5 MVP: Лендинг + Комплаенс + Пилот
+### Сессия 6.2 — следующие сущности
 
-- ⏳ Лендинг Next.js 14.
-- ⏳ Форма заявки + чекбокс 152-ФЗ.
-- ⏳ Комплаенс 152-ФЗ (уведомление Роскомнадзора, политика).
-- ⏳ Пилот (7 дней бесплатно, онбординг-звонок, первый платёж).
+- ⏳ Decision.
+- ⏳ Action.
+- ⏳ Обновление Task / CrossTask.
 
-### MVP-1.5: XML-формат ПД (2 недели)
+### Сессия 6.3 — первые агенты
 
-- ⏳ Модель `XMLSchema` + таблица `xml_schemas`.
-- ⏳ Модель `XMLDocument` + таблица `xml_documents`.
-- ⏳ Порт `XMLPort` + адаптер `lxml_adapter.py`.
-- ⏳ `SchemaService` (скачивание схем с Минстроя, кэш, обновление).
-- ⏳ `XMLService` (генерация, валидация по XSD).
-- ⏳ API: `/api/xml-schemas`, `/api/projects/{id}/xml-export`, `/api/xml-documents/{id}`.
-- ⏳ UI: `XMLDocumentsPage.tsx`, `XMLExportWizard.tsx`.
-- ⏳ 23 новых теста (XMLService, SchemaService, XSD-валидация).
+- ⏳ Агент сроков.
+- ⏳ Агент RFI.
 
-### MVP-2: Расширение (4 недели)
+### LLM (Qwen 2.5 7B)
 
-- ⏳ Модуль согласований (РСО, МЧС, экспертиза).
-- ⏳ Модуль изменений (РВИ).
-- ⏳ Тома — % готовности + итерации.
-- ⏳ Финансы — договоры, авансы, остатки.
-- ⏳ Дашборд для руководства.
-- ⏳ Мультипроектность.
-- ⏳ Background-агенты для документации (BugBot, Context-keeper).
+- ⏳ Развёртывание на VPS (16 GB RAM).
+- ⏳ Подключение к агентам.
+- ⏳ Распознавание структуры в тексте.
 
-### MVP-3: LLM-ассистент (5 недель)
+### Затем
 
-- ⏳ Qwen 2.5 7B локально на VPS (16 GB RAM).
-- ⏳ pgvector для эмбеддингов.
-- ⏳ RAG по документам проекта.
-- ⏳ Генерация писем, отчётов, ТЗ.
-- ⏳ Извлечение задач из протоколов.
-- ⏳ Чат с проектом.
-- ⏳ Sub-агенты: XML-validator, Test-writer, Doc-keeper, Migration-checker.
+- ⏳ MinIO (хранилище документов).
+- ⏳ XML (агент XML + валидация XSD).
+- ⏳ Auth (JWT + Argon2) + Telegram-сводка + деплой на VPS.
+- ⏳ Лендинг + комплаенс 152-ФЗ + пилот.
 
 ---
 
 ## 4. Блокеры (Blockers)
 
-**На 15.10.2026 — блокеров нет.**
+**На 16.10.2026 — блокеров нет.**
 
-Все запланированные задачи по инфраструктуре выполнены:
-- ✅ AI-контекст (docs/context/ — 7 файлов).
-- ✅ AGENTS.md (в корне).
-- ✅ GigaCode установлен и протестирован.
-- ✅ Дорожная карта 6.4, ТЗ 4.4.
-- ✅ Уровень 1 (MVP) backend + UI закрыт.
-- ✅ 96 тестов pytest.
+**Известные ограничения (не блокеры):**
 
-**Следующие шаги:** Сессия 5.2f-2 (тесты DocumentVersion + DocumentLink).
-
-### Известные ограничения (не блокеры)
-
-- ⚠️ **GigaCode может «перебирать варианты»** — если задача сформулирована двусмысленно. **Решение:** давать явные команды (см. `AGENTS.md`, секция «Готовые команды»).
-- ⚠️ **`.gigacode/plans/` создаёт временные файлы** — игнорируются через `.gitignore`.
-- ⚠️ **GigaCode Agent не имеет whitelist** — но Auto-Approve пусто, каждое действие требует approve.
-- ⚠️ **B027: TaskRepository.get_by_pair без @abstractmethod** — ruff B027.
-  Технический долг Этапа 1 (не связан с ГОСТ-моделями). Починить отдельным
-  коммитом при случае (одна строка — @abstractmethod над методом).
+- ⚠️ **Ветка `feat/entity-type-templates-domain`** — в паузе. Не мержить, не удалять. Решение — после пересборки дорожной карты.
+- ⚠️ **GigaCode может «перебирать варианты»** — давать явные команды.
+- ⚠️ **GigaCode Agent не имеет whitelist** — Auto-Approve пусто.
+- ⚠️ **B027: TaskRepository.get_by_pair без @abstractmethod** — техдолг Этапа 1.
+- ⚠️ **GitHub Actions** для авто-генерации DATABASE.md / API.md — не настроены.
+- ⚠️ **ESLint в frontend** — не настроен (только tsc).
 
 ---
 
 ## 5. Журнал (Changelog)
 
-Краткая история — что делали по датам.
+### 16.10.2026 (сессия 6.0)
+
+- ✅ Пересборка ядра продукта.
+- ✅ Создан `docs/context/DOMAIN.md` v1.0 — онтология.
+- ✅ Формула: вводные + логика = структура управления проектом.
+- ✅ Отменены: «6 шаблонов документов», «Реестры», «вкладки как папки».
+- ✅ Ветка `feat/entity-type-templates-domain` — в паузе.
+- ✅ CONTEXT.md обновлён до v2.0.
+- ✅ TASKS.md обновлён до v2.0.
+- 🔄 Дорожная карта и ТЗ — будут пересобраны.
 
 ### 16.10.2026 (сессия 5.4e)
 
-- ✅ Сессия 5.4e закрыта: роутинг версий/связей + кнопки на форме.
-- ✅ 2 маршрута в App.tsx, кнопки «Версии»/«Связи» на DocumentConstructorPage.
-- ✅ TypeScript: без ошибок.
+- ✅ Роутинг версий/связей + кнопки на форме.
+- ✅ 2 маршрута в App.tsx.
 
 ### 16.10.2026 (сессия 5.4d)
 
-- ✅ Сессия 5.4d закрыта: DocumentLinksPage + LinkCard + LinkForm.
-- ✅ 3 UI-файла: карточка связи, форма, страница связей.
-- ✅ 2 секции: исходящие/входящие, lookup имён документов, сортировка.
-- ✅ TypeScript: без ошибок.
+- ✅ DocumentLinksPage + LinkCard + LinkForm.
 
 ### 16.10.2026 (сессия 5.4c)
 
-- ✅ Сессия 5.4c закрыта: DocumentVersionsPage + VersionCard + VersionForm.
-- ✅ 3 UI-файла: карточка версии, форма, страница списка.
-- ✅ useCurrentDocumentVersion НЕ используется — is_current из списка.
-- ✅ TypeScript: без ошибок.
+- ✅ DocumentVersionsPage + VersionCard + VersionForm.
 
 ### 16.10.2026 (сессия 5.4b-3)
 
-- ✅ Сессия 5.4b-3 закрыта: роутинг + секция «Документы» в ProjectPage.
-- ✅ 3 маршрута в App.tsx, секция в ProjectPage, URL в DocumentCard.
-- ✅ TypeScript: без ошибок.
+- ✅ Роутинг + секция «Документы» в ProjectPage.
 
 ### 16.10.2026 (сессия 5.4b-2)
 
-- ✅ Сессия 5.4b-2 закрыта: DocumentConstructorPage.
-- ✅ Форма создания/редактирования документа (3 карточки).
-- ✅ Два разных payload: create (все поля) / update (PATCH).
-- ✅ Sentinel "__none__" для пустых опциональных Select.
-- ✅ TypeScript: без ошибок.
+- ✅ DocumentConstructorPage.
 
 ### 16.10.2026 (сессия 5.4b-1)
 
-- ✅ Сессия 5.4b-1 закрыта: DocumentsPage + DocumentCard.
-- ✅ 2 UI-файла: DocumentCard.tsx, DocumentsPage.tsx.
-- ✅ Фильтр по lifecycle_status, grid карточек, empty/error/loading states.
-- ✅ TypeScript: без ошибок.
+- ✅ DocumentsPage + DocumentCard.
 
 ### 16.10.2026 (сессия 5.4a)
 
-- ✅ Сессия 5.4a закрыта: 4 API-клиента + 1 enum-файл + 4 хуковых файла.
-- ✅ 22 хука (6 + 6 + 6 + 4): useDocumentTypes, useDocuments, useDocumentVersions, useDocumentLinks.
-- ✅ 5 API-клиентов (entityApi + 4 ГОСТ-клиента).
-- ✅ TypeScript: без ошибок.
+- ✅ 4 API-клиента + 4 хуковых файла + enum-файл.
+- ✅ 22 хука.
 
 ### 15.10.2026 (сессия 5.2f-2)
 
-- ✅ Сессия 5.2f-2 закрыта: unit-тесты DocumentVersionService + DocumentLinkService.
-- ✅ 26 тестов (15 + 11): create, get, list, set_current, delete.
-- ✅ Стиль: AsyncMock, pytest-asyncio, фикстуры.
-- ✅ 122 теста pytest (было 96).
-- ✅ Уровень 1.5 backend закрыт полностью.
+- ✅ unit-тесты DocumentVersionService + DocumentLinkService (26 тестов).
+- ✅ 122 теста pytest. Уровень 1.5 backend закрыт полностью.
 
 ### 15.10.2026 (сессия 5.2f-1)
 
-- ✅ Сессия 5.2f-1 закрыта: unit-тесты DocumentTypeService + DocumentService.
-- ✅ 23 теста (10 + 13): create, get, list, update, delete.
-- ✅ Стиль: AsyncMock, pytest-asyncio, фикстуры.
-- ✅ 96 тестов pytest (было 73).
+- ✅ unit-тесты DocumentTypeService + DocumentService (23 теста).
+- ✅ 96 тестов pytest.
 
 ### 14.10.2026 (сессия 5.2e-3)
 
-- ✅ Сессия 5.2e-3 закрыта: регистрация роутеров в main.py.
-- ✅ 4 include_router (document_types, documents, document_versions, document_links).
-- ✅ Обновлён API.md (+22 эндпоинта).
-- ✅ 39 эндпоинтов (было 17).
+- ✅ Регистрация роутеров в main.py.
+- ✅ 39 эндпоинтов.
 
 ### 14.10.2026 (сессия 5.2e-2)
 
-- ✅ Сессия 5.2e-2 закрыта: 4 роутера для ГОСТ-документов.
-- ✅ 22 эндпоинта (6+6+6+4) с правильным порядком для FastAPI.
-- ✅ PATCH: `payload.model_dump(exclude_unset=True, by_alias=False)`.
-- ✅ 73 теста pytest.
+- ✅ 4 роутера: 22 эндпоинта.
 
 ### 14.10.2026 (сессия 5.2e-1)
 
-- ✅ Сессия 5.2e-1 закрыта: DI-инфраструктура для ГОСТ-документов.
-- ✅ 2 __init__.py + dependencies.py: 4 репо + 4 сервиса.
+- ✅ DI-инфраструктура для ГОСТ-документов.
 
 ### 14.10.2026 (сессия 5.2d)
 
-- ✅ Сессия 5.2d закрыта: 4 сервиса для ГОСТ-документов.
-- ✅ Валидации: уникальность кода, existence checks, self-link, same project.
-- ✅ set_current: 3 валидации + денормализация current_version_id.
-- ✅ 8 сервисов (было 4).
+- ✅ 4 сервиса для ГОСТ-документов.
 
 ### 14.10.2026 (сессия 5.2c-2)
 
-- ✅ Сессия 5.2c-2 закрыта: 8 smoke-тестов маппинга документов.
-- ✅ Покрытие: Enum-маппинг, roundtrip, no timestamps.
-- ✅ 73 теста pytest.
+- ✅ 8 smoke-тестов маппинга.
 
 ### 14.10.2026 (сессия 5.2c-1)
 
-- ✅ Сессия 5.2c-1 закрыта: 4 SQLAlchemy-репозитория для ГОСТ-документов.
-- ✅ Enum-маппинг: конструктор при чтении, .value при записи.
-- ✅ set_current: два UPDATE в одной транзакции.
-- ✅ 65 тестов зелёные.
+- ✅ 4 SQLAlchemy-репозитория.
 
 ### 14.10.2026 (сессия 5.2b)
 
-- ✅ Сессия 5.2b закрыта: 4 DTO-файла для ГОСТ-документов.
-- ✅ 13 Pydantic-классов: DocumentType, Document, DocumentVersion, DocumentLink.
-- ✅ 65 тестов зелёные.
+- ✅ 4 DTO-файла (13 Pydantic-классов).
 
 ### 14.10.2026 (сессия 5.2a)
 
-- ✅ Сессия 5.2a закрыта: 4 порта репозиториев для ГОСТ-документов.
-- ✅ DocumentTypeRepository, DocumentRepository, DocumentVersionRepository,
-  DocumentLinkRepository — ABC-классы в domain/ports/repositories.py.
-- ✅ Domain чистый, 65 тестов зелёные.
-- ✅ Итого портов: 11.
+- ✅ 4 порта репозиториев.
 
 ### 13.10.2026 (сессия 5.1)
 
-- ✅ Сессия 5.1 закрыта: домен + модели + миграция для ГОСТ-документов.
-- ✅ 4 новые таблицы: document_types, documents, document_versions, document_links.
-- ✅ 8 сидов document_types.
-- ✅ Обновлены TASKS.md, DATABASE.md.
-- ✅ 65 тестов зелёные.
+- ✅ Домен + модели + миграция для ГОСТ-документов.
+- ✅ 4 новые таблицы.
 
 ### 13.10.2026 (сессия 5)
 
-- ✅ Обновлён AGENTS.md: правило авто-синхронизации контекста.
-- ✅ Создан HANDOFF.md — механизм передачи между сессиями.
-- ✅ Обновлено правило про HANDOFF (по запросу человека, не автоматом).
-- ⏸ Пауза до Сессии 5.1 (Уровень 1.5 — домен + модели).
+- ✅ AGENTS.md: правило авто-синхронизации контекста.
+- ✅ Создан HANDOFF.md.
 
 ### 12.10.2026 (сессия 4)
 
-- ✅ Уровень 1 UI закрыт: 12 файлов (entityApi, хуки, страницы, компоненты).
-- ✅ Интеграция в ProjectPage.tsx: секция «Типы сущностей».
-- ✅ TypeScript: без ошибок.
-- ✅ Все залиты на GitHub.
+- ✅ Уровень 1 UI закрыт.
 
 ### 11.10.2026
 
-- ✅ Дорожная карта 6.4 — обновлён раздел 15 (GigaCode + самописный агент).
+- ✅ Дорожная карта 6.4 — обновлён раздел 15.
 - ✅ ТЗ 4.4 — обновлены разделы 1.4, 1.5, 2.5, 2.6, 12, 15.
 - ✅ `.gitignore` — исключение для `docs/context/`.
-- ✅ `CONTEXT.md` — создан, закоммичен на GitHub.
-- 🔄 `TASKS.md` — создаётся (этот файл).
+- ✅ `CONTEXT.md` — создан.
 
 ### 10.10.2026
 
 - ✅ Уровень 1 backend: EntityType + Entity (26 тестов).
-- ✅ Коммит 71de995: universal entities.
-- ✅ Обновление `docs/context/CONTEXT.md` (v1.1).
-- ✅ Раздел 15 в Дорожной карте (Части 1 и 2).
 
 ### 09.10.2026
 
-- ✅ Уровень 1: миграция `78ada0d52056` (entity_types + entities).
-- ✅ Репозитории, сервисы, API.
-- ✅ Первые тесты (26).
+- ✅ Уровень 1: миграция `78ada0d52056`.
 
 ### 08.10.2026
 
@@ -537,19 +437,22 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest | 122 | 84 (MVP), 107 (MVP-1.5) |
-| Таблиц в БД | 14 | 14 (MVP-1.5) |
-| Эндпоинтов API | 39 | 30+ (MVP) |
-| Покрытие бизнес-логики | Smoke-тесты | 80%+ |
+| Тесты pytest | 122 | — |
+| Таблиц в БД | 14 | — |
+| Эндпоинтов API | 39 | — |
 | Клиентов | 0 | 1 пилот |
-| MRR | 0 ₽ | 5 000 ₽ (первый платёж) |
-| `docs/context/` готовность | 7/7 файлов | 7/7 |
-| UI Уровня 1 | 100% | 100% |
-| Портов репозиториев | 11 | 11 |
-| Репозиториев SQLAlchemy | 11 | 11 |
-| Сервисов | 8 | 8 |
-| API-клиентов | 5 | 5 |
-| Хуков TanStack Query | 22 | 22 |
+| MRR | 0 ₽ | 5 000 ₽ |
+| `docs/context/` готовность | 8/8 файлов | 8/8 |
+| UI Уровня 1 | 100% | — |
+| UI Уровня 1.5 | 100% | — |
+| Портов репозиториев | 11 | — |
+| Репозиториев SQLAlchemy | 11 | — |
+| Сервисов | 8 | — |
+| API-клиентов | 5 | — |
+| Хуков TanStack Query | 22 | — |
+| **DOMAIN.md** | **v1.0** | — |
+| **Новых сущностей (Goal/Decision/Action/Norm/RFI)** | **0** | **5** |
+| **Агентов** | **0** | **5** |
 
 ---
 
@@ -563,7 +466,7 @@
 4. **Раз в неделю** — проверь блокеры и метрики.
 5. **Не удаляй старые записи** из журнала — это история.
 
-**Формат даты:** `DD.MM.YYYY` (например, 12.10.2026).
+**Формат даты:** `DD.MM.YYYY`.
 
 **Порядок разделов (не меняй):**
 
@@ -577,4 +480,4 @@
 
 ---
 
-**Конец TASKS.md.**
+**Конец TASKS.md v2.0.**

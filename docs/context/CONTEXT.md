@@ -117,6 +117,7 @@
 
 - DocumentCard.tsx — карточка документа (название, шифр, тип, статус, вид, секция/марка, кнопки).
 - DocumentsPage.tsx — страница списка документов (фильтр по lifecycle_status, grid, loading/empty/error).
+- DocumentConstructorPage.tsx — форма создания/редактирования документа (3 карточки, два payload).
 - Интеграция в ProjectPage.tsx — будет в 5.4b-3.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**

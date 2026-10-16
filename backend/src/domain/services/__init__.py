@@ -6,8 +6,11 @@ from backend.src.domain.services.document_type_service import DocumentTypeServic
 from backend.src.domain.services.document_version_service import DocumentVersionService
 from backend.src.domain.services.entity_service import EntityService
 from backend.src.domain.services.entity_type_service import EntityTypeService
+from backend.src.domain.services.goal_proposal_service import GoalProposalService
+from backend.src.domain.services.goal_service import GoalService
 from backend.src.domain.services.import_service import ImportService
 from backend.src.domain.services.matrix_service import MatrixService
+from backend.src.domain.services.premise_service import PremiseService
 
 __all__ = [
     "DocumentLinkService",
@@ -16,6 +19,9 @@ __all__ = [
     "DocumentVersionService",
     "EntityService",
     "EntityTypeService",
+    "GoalProposalService",
+    "GoalService",
     "ImportService",
     "MatrixService",
+    "PremiseService",
 ]

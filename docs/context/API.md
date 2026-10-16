@@ -29,6 +29,8 @@
 | Documents | 6 | `/api/projects/{id}/documents`, `/api/documents` |
 | DocumentVersions | 6 | `/api/documents/{id}/versions`, `/api/document-versions` |
 | DocumentLinks | 4 | `/api/documents/{id}/links`, `/api/document-links` |
+| Premises | 5 | `/api/projects/{id}/premises`, `/api/premises` |
+| Goals | 7 | `/api/projects/{id}/goals`, `/api/goals`, `/api/projects/{id}/goals/proposals` |
 | System | 3 | `/api/health`, `/api/version`, `/api/ai/ping` |
 
 ---
@@ -592,7 +594,137 @@
 
 ---
 
-## 12. System
+## 12. Premises (Вводные)
+
+### POST /api/projects/{project_id}/premises
+
+**Описание:** создать вводную в проекте.
+
+**Body:**
+    {
+      "category": "contract",
+      "name": "Договор на разработку",
+      "source": "Письмо №12",
+      "actual": true,
+      "mandatory": true,
+      "link": "http://example.com/contract",
+      "data": {"deadline": "2026-12-01"},
+      "schema": {"deadline": "date"}
+    }
+
+**Ответ 201:** созданная вводная.
+
+**Ошибка 400:** название не может быть пустым.
+
+### GET /api/projects/{project_id}/premises
+
+**Описание:** список вводных проекта.
+
+**Ответ 200:** `[Premise, ...]`.
+
+### GET /api/premises/{premise_id}
+
+**Описание:** вводная по ID.
+
+**Ответ 200:** вводная.
+
+**Ошибка 404:** не найдена.
+
+### PATCH /api/premises/{premise_id}
+
+**Описание:** обновить вводную.
+
+**Body:** любое подмножество полей.
+
+**Ответ 200:** обновлённая вводная.
+
+### DELETE /api/premises/{premise_id}
+
+**Описание:** удалить вводную.
+
+**Ответ 204:** пусто.
+
+---
+
+## 13. Goals (Цели)
+
+### POST /api/projects/{project_id}/goals
+
+**Описание:** создать цель в проекте.
+
+**Body:**
+    {
+      "formulation": "Сдать том 7 в экспертизу",
+      "state": "plan",
+      "priority": 3,
+      "premise_ids": ["uuid", "uuid"]
+    }
+
+**Ответ 201:** созданная цель.
+
+**Ошибка 400:** формулировка не может быть пустой.
+
+### GET /api/projects/{project_id}/goals
+
+**Описание:** список целей проекта.
+
+**Ответ 200:** `[Goal, ...]`.
+
+### GET /api/projects/{project_id}/goals/proposals
+
+**Описание:** предложенные цели (выводятся из вводных по 4 правилам).
+
+**Ответ 200:**
+    [
+      {
+        "formulation": "Сдать Том 7 к 2026-12-01",
+        "deadline": "2026-12-01",
+        "premise_ids": ["uuid"],
+        "rule": "договор_срок"
+      }
+    ]
+
+Правила: `договор_срок`, `тз_требование`, `требование_заказчика`, `просроченный_ид`.
+
+### POST /api/projects/{project_id}/goals/from-proposal
+
+**Описание:** утвердить предложенную цель (ГИП может править).
+
+**Body:**
+    {
+      "formulation": "Сдать том 7 в экспертизу",
+      "premise_ids": ["uuid"],
+      "deadline": "2026-12-01",
+      "priority": 3
+    }
+
+**Ответ 201:** созданная цель.
+
+### GET /api/goals/{goal_id}
+
+**Описание:** цель по ID.
+
+**Ответ 200:** цель.
+
+**Ошибка 404:** не найдена.
+
+### PATCH /api/goals/{goal_id}
+
+**Описание:** обновить цель.
+
+**Body:** любое подмножество полей.
+
+**Ответ 200:** обновлённая цель.
+
+### DELETE /api/goals/{goal_id}
+
+**Описание:** удалить цель.
+
+**Ответ 204:** пусто.
+
+---
+
+## 14. System
 
 ### GET /api/health
 

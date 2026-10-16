@@ -21,8 +21,14 @@ from backend.src.adapters.db.repositories.entity_repository import (
 from backend.src.adapters.db.repositories.entity_type_repository import (
     SqlAlchemyEntityTypeRepository,
 )
+from backend.src.adapters.db.repositories.goal_repository import (
+    SqlAlchemyGoalRepository,
+)
 from backend.src.adapters.db.repositories.import_log_repo import (
     SqlAlchemyImportLogRepository,
+)
+from backend.src.adapters.db.repositories.premise_repository import (
+    SqlAlchemyPremiseRepository,
 )
 from backend.src.adapters.db.repositories.project_repo import (
     SqlAlchemyProjectRepository,
@@ -42,7 +48,9 @@ __all__ = [
     "SqlAlchemyDocumentVersionRepository",
     "SqlAlchemyEntityRepository",
     "SqlAlchemyEntityTypeRepository",
+    "SqlAlchemyGoalRepository",
     "SqlAlchemyImportLogRepository",
+    "SqlAlchemyPremiseRepository",
     "SqlAlchemyProjectRepository",
     "SqlAlchemyTaskRepository",
     "SqlAlchemyUserRepository",

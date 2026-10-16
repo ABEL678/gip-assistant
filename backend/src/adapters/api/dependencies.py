@@ -22,7 +22,9 @@ from backend.src.adapters.db.repositories import (
     SqlAlchemyDocumentVersionRepository,
     SqlAlchemyEntityRepository,
     SqlAlchemyEntityTypeRepository,
+    SqlAlchemyGoalRepository,
     SqlAlchemyImportLogRepository,
+    SqlAlchemyPremiseRepository,
     SqlAlchemyProjectRepository,
     SqlAlchemyTaskRepository,
 )
@@ -35,7 +37,9 @@ from backend.src.domain.ports.repositories import (
     DocumentVersionRepository,
     EntityRepository,
     EntityTypeRepository,
+    GoalRepository,
     ImportLogRepository,
+    PremiseRepository,
     ProjectRepository,
     TaskRepository,
 )
@@ -46,8 +50,11 @@ from backend.src.domain.services import (
     DocumentVersionService,
     EntityService,
     EntityTypeService,
+    GoalProposalService,
+    GoalService,
     ImportService,
     MatrixService,
+    PremiseService,
 )
 
 # ---------- Session ----------
@@ -115,6 +122,14 @@ def get_document_link_repo(session: DbSession) -> DocumentLinkRepository:
     return SqlAlchemyDocumentLinkRepository(session)
 
 
+def get_premise_repo(session: DbSession) -> PremiseRepository:
+    return SqlAlchemyPremiseRepository(session)
+
+
+def get_goal_repo(session: DbSession) -> GoalRepository:
+    return SqlAlchemyGoalRepository(session)
+
+
 ProjectRepoDep = Annotated[ProjectRepository, Depends(get_project_repo)]
 TaskRepoDep = Annotated[TaskRepository, Depends(get_task_repo)]
 CrossTaskRepoDep = Annotated[CrossTaskRepository, Depends(get_cross_task_repo)]
@@ -126,6 +141,8 @@ DocumentTypeRepoDep = Annotated[DocumentTypeRepository, Depends(get_document_typ
 DocumentRepoDep = Annotated[DocumentRepository, Depends(get_document_repo)]
 DocumentVersionRepoDep = Annotated[DocumentVersionRepository, Depends(get_document_version_repo)]
 DocumentLinkRepoDep = Annotated[DocumentLinkRepository, Depends(get_document_link_repo)]
+PremiseRepoDep = Annotated[PremiseRepository, Depends(get_premise_repo)]
+GoalRepoDep = Annotated[GoalRepository, Depends(get_goal_repo)]
 
 
 # ---------- Domain services ----------
@@ -203,6 +220,25 @@ def get_document_link_service(
     )
 
 
+def get_premise_service(
+    premise_repo: PremiseRepoDep,
+) -> PremiseService:
+    return PremiseService(repo=premise_repo)
+
+
+def get_goal_service(
+    goal_repo: GoalRepoDep,
+    premise_repo: PremiseRepoDep,
+) -> GoalService:
+    return GoalService(repo=goal_repo, premise_repo=premise_repo)
+
+
+def get_goal_proposal_service(
+    premise_repo: PremiseRepoDep,
+) -> GoalProposalService:
+    return GoalProposalService(premise_repo=premise_repo)
+
+
 ImportServiceDep = Annotated[ImportService, Depends(get_import_service)]
 MatrixServiceDep = Annotated[MatrixService, Depends(get_matrix_service)]
 EntityTypeServiceDep = Annotated[EntityTypeService, Depends(get_entity_type_service)]
@@ -212,3 +248,6 @@ DocumentTypeServiceDep = Annotated[DocumentTypeService, Depends(get_document_typ
 DocumentServiceDep = Annotated[DocumentService, Depends(get_document_service)]
 DocumentVersionServiceDep = Annotated[DocumentVersionService, Depends(get_document_version_service)]
 DocumentLinkServiceDep = Annotated[DocumentLinkService, Depends(get_document_link_service)]
+PremiseServiceDep = Annotated[PremiseService, Depends(get_premise_service)]
+GoalServiceDep = Annotated[GoalService, Depends(get_goal_service)]
+GoalProposalServiceDep = Annotated[GoalProposalService, Depends(get_goal_proposal_service)]

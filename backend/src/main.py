@@ -11,8 +11,10 @@ from backend.src.adapters.api.routes import (
     document_versions_router,
     documents_router,
     entity_types_router,
+    goals_router,
     import_excel_router,
     matrix_router,
+    premises_router,
     projects_router,
     tasks_router,
 )
@@ -56,6 +58,8 @@ app.include_router(document_types_router)
 app.include_router(documents_router)
 app.include_router(document_versions_router)
 app.include_router(document_links_router)
+app.include_router(premises_router)
+app.include_router(goals_router)
 
 
 # ---------- System routes ----------

@@ -63,8 +63,26 @@ class GoalProposal(BaseModel):
     Используется в GoalProposalService для возврата предложенных целей.
     """
 
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
     formulation: str
     deadline: Optional[date] = None
     priority: Optional[int] = None
     premise_ids: list[uuid.UUID] = Field(default_factory=list)
     rule: str  # название правила: "договор_срок", "тз_требование", ...
+
+
+# Псевдоним для роутов — GoalProposalRead = GoalProposal
+GoalProposalRead = GoalProposal
+
+
+class GoalProposalApprove(BaseModel):
+    """DTO для утверждения предложения цели.
+
+    ГИП может править перед утверждением.
+    """
+
+    formulation: str = Field(..., min_length=1, max_length=1000)
+    deadline: Optional[date] = None
+    priority: Optional[int] = None
+    premise_ids: list[uuid.UUID] = Field(default_factory=list)

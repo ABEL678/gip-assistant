@@ -3,11 +3,12 @@
 import uuid
 from datetime import date as date_type
 
-from sqlalchemy import Boolean, Date, ForeignKey, Index, String
+from sqlalchemy import Boolean, Date, Enum, ForeignKey, Index, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.src.adapters.db.base import Base, TimestampMixin
+from backend.src.domain.value_objects.enums import PremiseCategory
 
 
 class PremiseModel(Base, TimestampMixin):
@@ -31,7 +32,8 @@ class PremiseModel(Base, TimestampMixin):
         nullable=False,
     )
     category: Mapped[str] = mapped_column(
-        String(50), nullable=False
+        Enum(PremiseCategory, name="premise_category", create_type=False),
+        nullable=False,
     )
     name: Mapped[str] = mapped_column(String(500), nullable=False)
     source: Mapped[str | None] = mapped_column(String(500), nullable=True)

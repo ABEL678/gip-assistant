@@ -2,11 +2,12 @@
 
 import uuid
 
-from sqlalchemy import Date, ForeignKey, Index, Integer, String
+from sqlalchemy import Date, Enum, ForeignKey, Index, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.src.adapters.db.base import Base, TimestampMixin
+from backend.src.domain.value_objects.enums import GoalState
 
 
 class GoalModel(Base, TimestampMixin):
@@ -38,7 +39,9 @@ class GoalModel(Base, TimestampMixin):
     )
     priority: Mapped[int | None] = mapped_column(Integer, nullable=True)
     state: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="plan"
+        Enum(GoalState, name="goal_state", create_type=False),
+        nullable=False,
+        default=GoalState.PLAN,
     )
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),

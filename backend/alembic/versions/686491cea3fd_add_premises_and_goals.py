@@ -1,8 +1,8 @@
 """"add_premises_and_goals"
 
-Revision ID: 190ba4651c4f
+Revision ID: 686491cea3fd
 Revises: c719d9b4537e
-Create Date: 2026-10-16 23:18:36.266425
+Create Date: 2026-10-16 23:31:43.527237
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '190ba4651c4f'
+revision: str = '686491cea3fd'
 down_revision: Union[str, None] = 'c719d9b4537e'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,7 +27,7 @@ def upgrade() -> None:
     sa.Column('deadline', sa.Date(), nullable=True),
     sa.Column('responsible_id', sa.UUID(), nullable=True),
     sa.Column('priority', sa.Integer(), nullable=True),
-    sa.Column('state', sa.String(length=20), nullable=False),
+    sa.Column('state', sa.Enum('PLAN', 'IN_PROGRESS', 'ACHIEVED', 'CANCELLED', name='goal_state'), nullable=False),
     sa.Column('created_by', sa.UUID(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
@@ -42,7 +42,7 @@ def upgrade() -> None:
     op.create_table('premises',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('project_id', sa.UUID(), nullable=False),
-    sa.Column('category', sa.String(length=50), nullable=False),
+    sa.Column('category', sa.Enum('CONTRACT', 'TZ', 'CUSTOMER_REQUIREMENT', 'SOURCE_DATA', 'NORM', 'NPA', 'BUREAUCRACY', 'INTERNAL', name='premise_category'), nullable=False),
     sa.Column('name', sa.String(length=500), nullable=False),
     sa.Column('source', sa.String(length=500), nullable=True),
     sa.Column('date', sa.Date(), nullable=True),
@@ -63,7 +63,7 @@ def upgrade() -> None:
     op.create_table('goal_premises',
     sa.Column('goal_id', sa.UUID(), nullable=False),
     sa.Column('premise_id', sa.UUID(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['goal_id'], ['goals.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['premise_id'], ['premises.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('goal_id', 'premise_id')

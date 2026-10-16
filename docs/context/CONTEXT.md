@@ -123,8 +123,8 @@
 **AI-контекст и документация:**
 
 - **`docs/context/DOMAIN.md` v1.1** — онтология ядра. **Главный документ.
-- `docs/Дорожная_карта_6.4.md` — стратегия (**будет пересобрана** на основе DOMAIN.md).
-- `docs/ТЗ_4.4.md` — ТЗ (**будет пересмотрено** в части Уровня 2 и MVP-3).
+- `docs/archive/Дорожная_карта_6.4.md` (архив).
+- `docs/archive/ТЗ_4.4.md` (архив).
 - `docs/context/CONTEXT.md` — этот файл.
 - `docs/context/TASKS.md`, `ARCHITECTURE.md`, `DATABASE.md`, `API.md`, `RULES.md`, `HANDOFF.md`.
 - `AGENTS.md` — правила для GigaCode.
@@ -157,8 +157,8 @@
 ## 6. Ключевые документы
 
 - **`docs/context/DOMAIN.md`** — онтология ядра. **Читать первым.**
-- `docs/Дорожная_карта_6.4.md` — стратегия (будет пересобрана).
-- `docs/ТЗ_4.4.md` — ТЗ (будет пересмотрено).
+- `docs/archive/Дорожная_карта_6.4.md` (архив).
+- `docs/archive/ТЗ_4.4.md` (архив).
 - `docs/context/` — AI-контекст (**коммитится**):
   - `CONTEXT.md` — этот файл.
   - `ARCHITECTURE.md` — структура и слои.

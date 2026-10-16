@@ -70,9 +70,21 @@ export function GoalForm({
     e.preventDefault()
     if (!formulation.trim()) return
 
+    // Convert deadline to ISO format
+    const toISODate = (v: string): string | null => {
+      if (!v) return null
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v
+      const m = v.match(/^(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})$/)
+      if (m) {
+        const [, day, month, year] = m
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
+      }
+      return v
+    }
+
     onSubmit({
       formulation: formulation.trim(),
-      deadline: deadline || null,
+      deadline: toISODate(deadline),
       priority: priority ? Number(priority) : null,
       state,
       premise_ids: selectedPremises,

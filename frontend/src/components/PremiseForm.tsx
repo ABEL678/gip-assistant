@@ -69,15 +69,29 @@ export function PremiseForm({
     e.preventDefault()
     if (!name.trim()) return
 
+    // Convert date strings to ISO format (YYYY-MM-DD)
+    const toISODate = (v: string): string | null => {
+      if (!v) return null
+      // Already ISO
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v
+      // Try parsing DD.MM.YYYY or DD/MM/YYYY
+      const m = v.match(/^(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})$/)
+      if (m) {
+        const [, day, month, year] = m
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
+      }
+      return v
+    }
+
     onSubmit({
       category,
       name: name.trim(),
       source: source || null,
-      date: date || null,
+      date: toISODate(date),
       actual,
       mandatory,
       link: link || null,
-      valid_until: validUntil || null,
+      valid_until: toISODate(validUntil),
     })
   }
 

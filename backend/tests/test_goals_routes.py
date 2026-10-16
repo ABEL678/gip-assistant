@@ -329,3 +329,31 @@ class TestGoalsRoutes:
 
         # Pydantic вернёт 422 для невалидного UUID
         assert response.status_code == 422
+
+    async def test_create_goal_with_deadline(self, client, mock_goal_service):
+        """POST с deadline — 201, ISO формат."""
+        project_id = uuid4()
+        created_goal = _make_goal(
+            id=uuid4(),
+            formulation="Цель со сроком",
+            deadline=date(2026, 12, 31),
+        )
+        mock_goal_service.create.return_value = created_goal
+
+        response = await client.post(
+            f"/api/projects/{project_id}/goals",
+            json={
+                "formulation": "Цель со сроком",
+                "premise_ids": [str(uuid4())],
+                "deadline": "2026-12-31",
+                "responsible_id": None,
+                "priority": 2,
+                "state": "plan",
+                "created_by": None,
+            },
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["formulation"] == "Цель со сроком"
+        assert data["deadline"] == "2026-12-31"

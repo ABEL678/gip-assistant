@@ -54,3 +54,25 @@ class ImportStatus(StrEnum):
     SUCCESS = "SUCCESS"
     PARTIAL = "PARTIAL"
     FAILED = "FAILED"
+
+
+class PremiseCategory(StrEnum):
+    """Категория вводной (Premise)."""
+
+    CONTRACT = "contract"             # Договор
+    TZ = "tz"                         # ТЗ
+    CUSTOMER_REQUIREMENT = "customer_requirement"  # Требования Заказчика
+    SOURCE_DATA = "source_data"       # Исходные данные
+    NORM = "norm"                     # Нормативные документы
+    NPA = "npa"                       # НПА
+    BUREAUCRACY = "bureaucracy"       # Гос. бюрократия
+    INTERNAL = "internal"             # Внутренние причины
+
+
+class GoalState(StrEnum):
+    """Состояние цели (Goal)."""
+
+    PLAN = "plan"         # В плане
+    IN_PROGRESS = "in_progress"  # В работе
+    ACHIEVED = "achieved"        # Достигнута
+    CANCELLED = "cancelled"      # Отменена

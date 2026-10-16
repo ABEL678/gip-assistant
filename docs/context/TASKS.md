@@ -133,6 +133,20 @@
 - ✅ Роутинг в App.tsx (4 маршрута).
 - ✅ TypeScript — без ошибок.
 
+### Сессия 5.4a (Frontend API-клиенты и хуки для ГОСТ-документов) — ЗАКРЫТ (16.10.2026)
+
+- ✅ documentEnums.ts — 4 enum-типа (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
+- ✅ documentTypesApi.ts — 6 методов API.
+- ✅ documentsApi.ts — 6 методов API.
+- ✅ documentVersionsApi.ts — 6 методов API.
+- ✅ documentLinksApi.ts — 4 метода API.
+- ✅ useDocumentTypes.ts — 6 хуков.
+- ✅ useDocuments.ts — 6 хуков.
+- ✅ useDocumentVersions.ts — 6 хуков.
+- ✅ useDocumentLinks.ts — 4 хука.
+- ✅ TypeScript — без ошибок.
+- ✅ **Итого в проекте: 22 хука, 5 API-клиентов.**
+
 ### Уровень 1.5 (ГОСТ-хранение) — ��АКРЫТ (14–15.10.2026)
 
 **Сессия 5.1 (домен + модели):**
@@ -301,6 +315,13 @@
 
 Краткая история — что делали по датам.
 
+### 16.10.2026 (сессия 5.4a)
+
+- ✅ Сессия 5.4a закрыта: 4 API-клиента + 1 enum-файл + 4 хуковых файла.
+- ✅ 22 хука (6 + 6 + 6 + 4): useDocumentTypes, useDocuments, useDocumentVersions, useDocumentLinks.
+- ✅ 5 API-клиентов (entityApi + 4 ГОСТ-клиента).
+- ✅ TypeScript: без ошибок.
+
 ### 15.10.2026 (сессия 5.2f-2)
 
 - ✅ Сессия 5.2f-2 закрыта: unit-тесты DocumentVersionService + DocumentLinkService.
@@ -438,6 +459,8 @@
 | Портов репозиториев | 11 | 11 |
 | Репозиториев SQLAlchemy | 11 | 11 |
 | Сервисов | 8 | 8 |
+| API-клиентов | 5 | 5 |
+| Хуков TanStack Query | 22 | 22 |
 
 ---
 

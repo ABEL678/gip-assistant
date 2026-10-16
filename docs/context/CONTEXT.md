@@ -4,8 +4,8 @@
 > в начало каждого нового чата с ИИ-ассистентом. Он даёт минимальный
 > контекст, достаточный для продуктивной работы.
 
-**Версия:** 1.3 (15.10.2026)
-**Актуально на:** после 5.2e-3 (регистрация документ-роутов в main.py)
+**Версия:** 1.4 (16.10.2026)
+**Актуально на:** после 5.4a (API-клиенты и хуки для ГОСТ-документов)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -50,7 +50,7 @@
 - **Backend:** FastAPI + SQLAlchemy 2.0 async + Alembic. Домен чистый,
   не зависит от FastAPI/SQLAlchemy. Все взаимодействия — через порты
   (`domain/ports/repositories.py`).
-- **Frontend:** React 18 + Vite + TypeScript + shadcn/ui + TanStack Query.
+- **Frontend:** React 18 + Vite + TypeScript + shadcn/ui + TanStack Query + Axios.
 - **Bot:** aiogram 3.x.
 - **Storage:** MinIO AIStor Free (S3).
 - **LLM (MVP-3):** Qwen 2.5 7B локально на VPS (16 GB RAM).
@@ -99,6 +99,19 @@
   document_versions.py, document_links.py — 22 эндпоинта.
 - **Регистрация в main.py**: 4 include_router (document_types, documents,
   document_versions, document_links).
+
+**Frontend (Уровень 1.5 — API-клиенты и хуки, 16.10.2026):**
+
+- documentEnums.ts — 4 enum-типа (DocumentKind, DocPartType, LifecycleStatus, DocumentLinkType).
+- documentTypesApi.ts — getAll, getById, getByCode, create, update, delete.
+- documentsApi.ts — getByProject, getById, getByGuid, create, update, delete.
+- documentVersionsApi.ts — listByDocument, getCurrent, getById, create, setCurrent, delete.
+- documentLinksApi.ts — listOutgoing, listIncoming, create, delete.
+- useDocumentTypes.ts — 6 хуков (list, by-id, by-code, create, update, delete).
+- useDocuments.ts — 6 хуков (by-project, by-id, by-guid, create, update, delete).
+- useDocumentVersions.ts — 6 хуков (list, current, by-id, create, set-current, delete).
+- useDocumentLinks.ts — 4 хука (outgoing, incoming, create, delete).
+- Итого: 5 API-клиентов, 22 хука TanStack Query.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

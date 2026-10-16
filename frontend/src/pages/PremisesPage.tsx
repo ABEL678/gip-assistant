@@ -13,11 +13,13 @@ import { usePremises, useCreatePremise, useDeletePremise } from "@/hooks/usePrem
 import { PremiseCard } from "@/components/PremiseCard"
 import { PremiseForm } from "@/components/PremiseForm"
 import { type PremiseCreate, type PremiseUpdate } from "@/api/premiseApi"
+import { premiseApi } from "@/api/premiseApi"
 
 export function PremisesPage() {
   const { id: projectId } = useParams<{ id: string }>()
 
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const { data, isLoading, isError } = usePremises(projectId!)
@@ -25,10 +27,18 @@ export function PremisesPage() {
   const deleteMutation = useDeletePremise(projectId!)
 
   const handleCreate = (data: PremiseCreate | PremiseUpdate) => {
-    createMutation.mutate(data as never, {
-      onError: (err: Error) => setError(err.message),
-      onSuccess: () => setShowForm(false),
-    })
+    if (editingId) {
+      // Update existing premise
+      premiseApi.updatePremise(editingId, data as PremiseUpdate).then(() => {
+        setEditingId(null)
+        setShowForm(false)
+      }).catch((err: Error) => setError(err.message))
+    } else {
+      createMutation.mutate(data as never, {
+        onError: (err: Error) => setError(err.message),
+        onSuccess: () => setShowForm(false),
+      })
+    }
   }
 
   const handleDelete = (id: string) => {
@@ -89,7 +99,10 @@ export function PremisesPage() {
             <PremiseCard
               key={premise.id}
               premise={premise}
-              onEdit={() => setShowForm(true)}
+              onEdit={(p) => {
+                setEditingId(p.id)
+                setShowForm(true)
+              }}
               onDelete={handleDelete}
             />
           ))}
@@ -97,16 +110,25 @@ export function PremisesPage() {
       )}
 
       {/* Form Modal */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
+      <Dialog open={showForm} onOpenChange={(open) => {
+        if (!open) {
+          setShowForm(false)
+          setEditingId(null)
+        }
+      }}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              Добавить вводную
+              {editingId ? "Редактировать вводную" : "Добавить вводную"}
             </DialogTitle>
           </DialogHeader>
           <PremiseForm
+            initialData={editingId ? (data?.find((p) => p.id === editingId)) as PremiseUpdate : undefined}
             onSubmit={handleCreate}
-            onCancel={() => setShowForm(false)}
+            onCancel={() => {
+              setShowForm(false)
+              setEditingId(null)
+            }}
             submitLabel="Сохранить"
           />
         </DialogContent>

@@ -21,7 +21,7 @@ const STATE_BADGE: Record<GoalState, "default" | "secondary" | "destructive" | "
 interface GoalCardProps {
   goal: Goal
   premiseNames?: string[]
-  onEdit: (id: string) => void
+  onEdit: (goal: Goal) => void
   onDelete: (id: string) => void
 }
 
@@ -66,7 +66,7 @@ export function GoalCard({ goal, premiseNames = [], onEdit, onDelete }: GoalCard
           size="sm"
           onClick={(e) => {
             e.stopPropagation()
-            onEdit(id)
+            onEdit(goal)
           }}
         >
           <Pencil className="h-4 w-4 mr-1" /> Изменить

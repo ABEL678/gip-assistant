@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   type PremiseCreate,
   type PremiseUpdate,
@@ -50,6 +50,20 @@ export function PremiseForm({
   const [mandatory, setMandatory] = useState(initialData?.mandatory ?? true)
   const [link, setLink] = useState(initialData?.link ?? "")
   const [validUntil, setValidUntil] = useState(initialData?.valid_until ?? "")
+
+  // Sync state when initialData changes (edit mode)
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData.name ?? "")
+      setCategory(initialData.category ?? "contract")
+      setSource(initialData.source ?? "")
+      setDate(initialData.date ?? "")
+      setActual(initialData.actual ?? true)
+      setMandatory(initialData.mandatory ?? true)
+      setLink(initialData.link ?? "")
+      setValidUntil(initialData.valid_until ?? "")
+    }
+  }, [initialData])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

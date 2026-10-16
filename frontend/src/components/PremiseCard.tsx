@@ -28,7 +28,7 @@ const CATEGORY_BADGE: Record<string, "default" | "secondary" | "outline"> = {
 
 interface PremiseCardProps {
   premise: Premise
-  onEdit: (id: string) => void
+  onEdit: (premise: Premise) => void
   onDelete: (id: string) => void
 }
 
@@ -76,7 +76,7 @@ export function PremiseCard({ premise, onEdit, onDelete }: PremiseCardProps) {
           size="sm"
           onClick={(e) => {
             e.stopPropagation()
-            onEdit(id)
+            onEdit(premise)
           }}
         >
           <Pencil className="h-4 w-4 mr-1" /> Изменить

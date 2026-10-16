@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   type GoalCreate,
   type GoalUpdate,
@@ -46,6 +46,17 @@ export function GoalForm({
   const [selectedPremises, setSelectedPremises] = useState<string[]>(
     initialData?.premise_ids ?? [],
   )
+
+  // Sync state when initialData changes (edit mode)
+  useEffect(() => {
+    if (initialData) {
+      setFormulation(initialData.formulation ?? "")
+      setDeadline(initialData.deadline ?? "")
+      setPriority(initialData.priority?.toString() ?? "1")
+      setState(initialData.state ?? "plan")
+      setSelectedPremises(initialData.premise_ids ?? [])
+    }
+  }, [initialData])
 
   const togglePremise = (premiseId: string) => {
     setSelectedPremises((prev) =>

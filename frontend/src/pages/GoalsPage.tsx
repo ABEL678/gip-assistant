@@ -16,39 +16,47 @@ import {
   useDeleteGoal,
   useApproveProposal,
 } from "@/hooks/useGoals"
+import { usePremises } from "@/hooks/usePremises"
 import { GoalCard } from "@/components/GoalCard"
 import { GoalForm } from "@/components/GoalForm"
 import { GoalProposalList } from "@/components/GoalProposalList"
 import { type GoalProposalApprove, type GoalProposal } from "@/api/goalApi"
 import { type GoalCreate, type GoalUpdate } from "@/api/goalApi"
+import { goalApi } from "@/api/goalApi"
 
 export function GoalsPage() {
   const { id: projectId } = useParams<{ id: string }>()
 
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const { data: goals, isLoading: goalsLoading, isError: goalsError } = useGoals(projectId!)
   const { data: proposals, isLoading: proposalsLoading, refetch } = useGoalProposals(projectId!)
+  const { data: allPremises } = usePremises(projectId!)
   const createMutation = useCreateGoal(projectId!)
   const deleteMutation = useDeleteGoal(projectId!)
   const approveMutation = useApproveProposal(projectId!)
 
-  // Build premise name map from goals
+  // Build premise name map from all project premises
   const premiseNameMap = new Map<string, string>()
-  goals?.forEach((goal) => {
-    goal.premise_ids?.forEach((pid) => {
-      if (!premiseNameMap.has(pid)) {
-        premiseNameMap.set(pid, `Вводная ${pid.slice(0, 8)}...`)
-      }
-    })
+  allPremises?.forEach((p) => {
+    premiseNameMap.set(p.id, p.name)
   })
 
   const handleCreate = (data: GoalCreate | GoalUpdate) => {
-    createMutation.mutate(data as never, {
-      onError: (err: Error) => setError(err.message),
-      onSuccess: () => setShowForm(false),
-    })
+    if (editingId) {
+      // Update existing goal
+      goalApi.updateGoal(editingId, data as GoalUpdate).then(() => {
+        setEditingId(null)
+        setShowForm(false)
+      }).catch((err: Error) => setError(err.message))
+    } else {
+      createMutation.mutate(data as never, {
+        onError: (err: Error) => setError(err.message),
+        onSuccess: () => setShowForm(false),
+      })
+    }
   }
 
   const handleDelete = (id: string) => {
@@ -67,7 +75,8 @@ export function GoalsPage() {
     // Remove from local list only (not saved)
   }
 
-  const handleEditProposal = (_proposal: GoalProposal) => {
+  const handleEditProposal = (proposal: GoalProposal) => {
+    setEditingId(proposal.premise.id)
     setShowForm(true)
   }
 
@@ -136,7 +145,10 @@ export function GoalsPage() {
               key={goal.id}
               goal={goal}
               premiseNames={goal.premise_ids?.map((pid) => premiseNameMap.get(pid) ?? "Вводная") ?? []}
-              onEdit={() => setShowForm(true)}
+              onEdit={(g) => {
+                setEditingId(g.id)
+                setShowForm(true)
+              }}
               onDelete={handleDelete}
             />
           ))}
@@ -144,16 +156,26 @@ export function GoalsPage() {
       )}
 
       {/* Form Modal */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
+      <Dialog open={showForm} onOpenChange={(open) => {
+        if (!open) {
+          setShowForm(false)
+          setEditingId(null)
+        }
+      }}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              Добавить цель
+              {editingId ? "Редактировать цель" : "Добавить цель"}
             </DialogTitle>
           </DialogHeader>
           <GoalForm
+            initialData={editingId ? (goals?.find((g) => g.id === editingId)) as GoalUpdate : undefined}
+            premiseNames={premiseNameMap}
             onSubmit={handleCreate}
-            onCancel={() => setShowForm(false)}
+            onCancel={() => {
+              setShowForm(false)
+              setEditingId(null)
+            }}
             submitLabel="Сохранить"
           />
         </DialogContent>

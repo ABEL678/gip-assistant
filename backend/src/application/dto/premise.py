@@ -1,7 +1,7 @@
 """DTO для вводных (Premise)."""
 
 import uuid
-from datetime import date, datetime
+from datetime import date as _date, datetime
 from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -13,16 +13,16 @@ from backend.src.domain.value_objects.enums import PremiseCategory
 class PremiseSchema(BaseModel):
     """Базовые поля для вводных."""
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True)
 
     category: PremiseCategory
     name: str = Field(..., min_length=1, max_length=500)
     source: Optional[str] = Field(None, max_length=500)
-    date: Optional[date] = None
+    date: Optional[_date] = None
     actual: bool = True
     mandatory: bool = True
     link: Optional[str] = Field(None, max_length=1000)
-    valid_until: Optional[date] = None
+    valid_until: Optional[_date] = None
     data: dict[str, Any] = Field(default_factory=dict)
     schema_: dict[str, Any] = Field(
         default_factory=dict,
@@ -48,11 +48,11 @@ class PremiseUpdate(BaseModel):
     category: Optional[PremiseCategory] = None
     name: Optional[str] = Field(None, min_length=1, max_length=500)
     source: Optional[str] = Field(None, max_length=500)
-    date: Optional[date] = None
+    date: Optional[_date] = None
     actual: Optional[bool] = None
     mandatory: Optional[bool] = None
     link: Optional[str] = Field(None, max_length=1000)
-    valid_until: Optional[date] = None
+    valid_until: Optional[_date] = None
     data: Optional[dict[str, Any]] = None
     schema_: Optional[dict[str, Any]] = Field(
         None,

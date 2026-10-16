@@ -199,3 +199,31 @@ class TestPremisesRoutes:
 
         # Pydantic вернёт 422 для невалидного enum
         assert response.status_code == 422
+
+    async def test_create_premise_with_date(self, client, mock_service):
+        """POST с датой — 201, ISO формат."""
+        project_id = uuid4()
+        created_premise = _make_premise(
+            id=uuid4(),
+            name="Вводная с датой",
+            category=PremiseCategory.CONTRACT,
+            date_val=date(2026, 10, 17),
+        )
+        mock_service.create.return_value = created_premise
+
+        response = await client.post(
+            f"/api/projects/{project_id}/premises",
+            json={
+                "category": "contract",
+                "name": "Вводная с датой",
+                "date": "2026-10-17",
+                "valid_until": "2027-01-01",
+                "actual": True,
+                "mandatory": True,
+            },
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["name"] == "Вводная с датой"
+        assert data["date"] == "2026-10-17"

@@ -5,7 +5,6 @@ import uuid
 from backend.src.adapters.db.models.goal import GoalModel
 from backend.src.adapters.db.models.goal_premise import GoalPremiseModel
 from backend.src.adapters.db.repositories.goal_repository import (
-    SqlAlchemyGoalPremiseRepository,
     SqlAlchemyGoalRepository,
 )
 from backend.src.domain.entities.goal import Goal
@@ -65,12 +64,12 @@ def test_goal_roundtrip():
     assert goal2.premise_ids == []
 
 
-def test_goal_premise_mapping():
-    """GoalPremise: создание связи Goal ↔ Premise."""
+def test_goal_premise_model():
+    """GoalPremiseModel: создание связи Goal ↔ Premise."""
     goal_id = uuid.uuid4()
     premise_id = uuid.uuid4()
 
-    model = SqlAlchemyGoalPremiseRepository._to_model(goal_id, premise_id)
+    model = GoalPremiseModel(goal_id=goal_id, premise_id=premise_id)
 
     assert model.goal_id == goal_id
     assert model.premise_id == premise_id

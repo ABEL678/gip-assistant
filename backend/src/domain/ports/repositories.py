@@ -15,7 +15,9 @@ from backend.src.domain.entities.document_type import DocumentType
 from backend.src.domain.entities.document_version import DocumentVersion
 from backend.src.domain.entities.entity import Entity
 from backend.src.domain.entities.entity_type import EntityType
+from backend.src.domain.entities.goal import Goal
 from backend.src.domain.entities.import_log import ImportLog
+from backend.src.domain.entities.premise import Premise
 from backend.src.domain.entities.project import Project
 from backend.src.domain.entities.task import Task
 from backend.src.domain.entities.user import User
@@ -287,3 +289,43 @@ class DocumentLinkRepository(ABC):
     @abstractmethod
     async def delete(self, id: UUID) -> None:
         """Удалить связь по ID."""
+
+
+class PremiseRepository(ABC):
+    """Порт репозитория вводных (Premise)."""
+
+    @abstractmethod
+    async def get_by_id(self, premise_id: UUID) -> Premise | None:
+        """Найти вводную по ID."""
+
+    @abstractmethod
+    async def list_by_project(self, project_id: UUID) -> list[Premise]:
+        """Вводные проекта, сортировка по created_at DESC."""
+
+    @abstractmethod
+    async def save(self, premise: Premise) -> Premise:
+        """Создать или обновить вводную (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, premise_id: UUID) -> None:
+        """Удалить вводную по ID."""
+
+
+class GoalRepository(ABC):
+    """Порт репозитория целей (Goal)."""
+
+    @abstractmethod
+    async def get_by_id(self, goal_id: UUID) -> Goal | None:
+        """Найти цель по ID."""
+
+    @abstractmethod
+    async def list_by_project(self, project_id: UUID) -> list[Goal]:
+        """Цели проекта, сортировка по created_at DESC."""
+
+    @abstractmethod
+    async def save(self, goal: Goal) -> Goal:
+        """Создать или обновить цель (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, goal_id: UUID) -> None:
+        """Удалить цель по ID."""

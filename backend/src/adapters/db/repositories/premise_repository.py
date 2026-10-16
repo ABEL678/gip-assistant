@@ -1,15 +1,49 @@
-"""Репозиторий Premise (минимальный, для маппинга)."""
+"""SQLAlchemy-реализация PremiseRepository."""
 
-from datetime import date
+from datetime import date as date_type
 from uuid import UUID
+
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.adapters.db.models.premise import PremiseModel
 from backend.src.domain.entities.premise import Premise
+from backend.src.domain.ports.repositories import PremiseRepository
 from backend.src.domain.value_objects.enums import PremiseCategory
 
 
-class SqlAlchemyPremiseRepository:
-    """Минимальный репозиторий Premise (только маппинг для тестов)."""
+class SqlAlchemyPremiseRepository(PremiseRepository):
+    """Репозиторий вводных на SQLAlchemy."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def get_by_id(self, premise_id: UUID) -> Premise | None:
+        model = await self._session.get(PremiseModel, premise_id)
+        return self._to_domain(model) if model else None
+
+    async def list_by_project(self, project_id: UUID) -> list[Premise]:
+        stmt = (
+            select(PremiseModel)
+            .where(PremiseModel.project_id == project_id)
+            .order_by(PremiseModel.created_at.desc())
+        )
+        result = await self._session.execute(stmt)
+        return [self._to_domain(m) for m in result.scalars().all()]
+
+    async def save(self, premise: Premise) -> Premise:
+        model = self._to_model(premise)
+        merged = await self._session.merge(model)
+        await self._session.flush()
+        await self._session.refresh(merged)
+        return self._to_domain(merged)
+
+    async def delete(self, premise_id: UUID) -> None:
+        stmt = delete(PremiseModel).where(PremiseModel.id == premise_id)
+        await self._session.execute(stmt)
+        await self._session.flush()
+
+    # ---------- Mapping ----------
 
     @staticmethod
     def _to_domain(model: PremiseModel) -> Premise:

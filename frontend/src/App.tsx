@@ -8,6 +8,8 @@ import { CrossTaskTasksPage } from "@/pages/CrossTaskTasksPage"
 import { EntityTypesPage } from "@/pages/EntityTypesPage"
 import { EntityTypeConstructorPage } from "@/pages/EntityTypeConstructorPage"
 import { EntitiesPage } from "@/pages/EntitiesPage"
+import { DocumentConstructorPage } from "@/pages/DocumentConstructorPage"
+import { DocumentsPage } from "@/pages/DocumentsPage"
 
 function App() {
   return (
@@ -23,6 +25,9 @@ function App() {
           <Route path="projects/:id/entity-types/new" element={<EntityTypeConstructorPage />} />
           <Route path="projects/:id/entity-types/:entityTypeId/edit" element={<EntityTypeConstructorPage />} />
           <Route path="projects/:id/entity-types/:entityTypeId" element={<EntitiesPage />} />
+          <Route path="projects/:id/documents" element={<DocumentsPage />} />
+          <Route path="projects/:id/documents/new" element={<DocumentConstructorPage />} />
+          <Route path="projects/:id/documents/:docId/edit" element={<DocumentConstructorPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

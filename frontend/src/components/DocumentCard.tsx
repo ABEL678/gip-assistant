@@ -96,7 +96,7 @@ export function DocumentCard({ document, documentType, onDelete }: DocumentCardP
       </CardContent>
 
       <CardFooter className="gap-2 pt-2">
-        <Link to={`/projects/${projectId}/documents/${id}`} onClick={(e) => e.stopPropagation()}>
+        <Link to={`/projects/${projectId}/documents/${id}/edit`} onClick={(e) => e.stopPropagation()}>
           <Button variant="outline" size="sm">
             <ExternalLink className="h-4 w-4 mr-1" />
             Открыть

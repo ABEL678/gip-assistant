@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Upload, Grid3x3, Plus } from "lucide-react"
 import { TaskList } from "@/components/TaskList"
 import { EntityTypeCard } from "@/components/EntityTypeCard"
+import { useDocumentsByProject } from "@/hooks/useDocuments"
+import { DocumentCard } from "@/components/DocumentCard"
 
 export function ProjectPage() {
   const { id } = useParams<{ id: string }>()
@@ -19,6 +21,8 @@ export function ProjectPage() {
     queryFn: () => projectsApi.getById(id!),
     enabled: !!id,
   })
+
+  const { data: documents, isLoading: documentsLoading } = useDocumentsByProject(id!)
 
   const { data: entityTypes, isLoading: typesLoading } = useQuery({
     queryKey: ["entity-types", id],
@@ -117,6 +121,42 @@ export function ProjectPage() {
           <TaskList projectId={id!} />
         </CardContent>
       </Card>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Документы</h2>
+          <div className="flex gap-2">
+            <Link to={`/projects/${id}/documents`}>
+              <Button variant="outline">Все документы</Button>
+            </Link>
+            <Link to={`/projects/${id}/documents/new`}>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Создать документ
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {documentsLoading ? (
+          <p className="text-muted-foreground">Загрузка...</p>
+        ) : !documents || documents.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Пока нет документов
+            <div className="mt-4">
+              <Link to={`/projects/${id}/documents/new`}>
+                <Button variant="outline">Создать первый документ</Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {documents.slice(0, 6).map((doc) => (
+              <DocumentCard key={doc.id} document={doc} />
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">

@@ -121,9 +121,12 @@
 - DocumentVersionsPage.tsx — страница версий документа (сортировка, toggle формы, confirm).
 - VersionCard.tsx — карточка версии (версия, размер, формат, имя файла, хэш, дата).
 - VersionForm.tsx — форма добавления версии (8 полей, владеет state, onSubmit(payload)).
+- DocumentLinksPage.tsx — страница связей (2 секции: исходящие/входящие, lookup имён, сортировка).
+- LinkCard.tsx — карточка связи (link_type с локализацией, направление →/←, имя целевого/исходного, дата).
+- LinkForm.tsx — форма добавления связи (Select target_document_id с фильтрацией, Select link_type, валидация).
 - Интеграция в ProjectPage.tsx — секция «Документы» (первые 6 карточек, 2 кнопки).
 - Роутинг в App.tsx — 3 маршрута: /documents, /documents/new, /documents/:docId/edit.
-- Роут версий (план 5.4e): /projects/:id/documents/:docId/versions.
+- Роуты (план 5.4e): /projects/:id/documents/:docId/versions, /projects/:id/documents/:docId/links.
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

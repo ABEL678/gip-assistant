@@ -9,6 +9,7 @@ import { ArrowLeft, Upload, Grid3x3, Plus } from "lucide-react"
 import { TaskList } from "@/components/TaskList"
 import { EntityTypeCard } from "@/components/EntityTypeCard"
 import { useDocumentsByProject } from "@/hooks/useDocuments"
+
 import { DocumentCard } from "@/components/DocumentCard"
 
 export function ProjectPage() {
@@ -160,13 +161,18 @@ export function ProjectPage() {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Типы сущностей</h2>
-          <Link to={`/projects/${id}/entity-types/new`}>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Добавить тип
-            </Button>
-          </Link>
+          <h2 className="text-xl font-semibold">Вводные</h2>
+          <div className="flex gap-2">
+            <Link to={`/projects/${id}/premises`}>
+              <Button variant="outline">Все вводные</Button>
+            </Link>
+            <Link to={`/projects/${id}/premises`}>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Добавить вводную
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {typesLoading ? (
@@ -192,6 +198,32 @@ export function ProjectPage() {
                 onDelete={handleDelete}
               />
             ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Цели</h2>
+          <Link to={`/projects/${id}/goals`}>
+            <Button variant="outline">Все цели</Button>
+          </Link>
+        </div>
+
+        {typesLoading ? (
+          <p className="text-muted-foreground">Загрузка...</p>
+        ) : !entityTypes || entityTypes.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Пока нет целей
+            <div className="mt-4">
+              <Link to={`/projects/${id}/goals`}>
+                <Button variant="outline">Перейти к целям</Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            Управление целями проекта
           </div>
         )}
       </div>

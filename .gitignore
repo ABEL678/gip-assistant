@@ -90,6 +90,7 @@ docs/*
 !docs/context/**
 !docs/ТЗ_4.4.md
 !docs/Дорожная_карта_6.4.md
+!docs/Дорожная_карта_7.0.md
 !docs/tasks/
 !docs/tasks/**
 !docs/templates/

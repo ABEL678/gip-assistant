@@ -9,6 +9,8 @@ import { EntityTypesPage } from "@/pages/EntityTypesPage"
 import { EntityTypeConstructorPage } from "@/pages/EntityTypeConstructorPage"
 import { EntitiesPage } from "@/pages/EntitiesPage"
 import { DocumentConstructorPage } from "@/pages/DocumentConstructorPage"
+import { DocumentLinksPage } from "@/pages/DocumentLinksPage"
+import { DocumentVersionsPage } from "@/pages/DocumentVersionsPage"
 import { DocumentsPage } from "@/pages/DocumentsPage"
 
 function App() {
@@ -28,6 +30,8 @@ function App() {
           <Route path="projects/:id/documents" element={<DocumentsPage />} />
           <Route path="projects/:id/documents/new" element={<DocumentConstructorPage />} />
           <Route path="projects/:id/documents/:docId/edit" element={<DocumentConstructorPage />} />
+          <Route path="projects/:id/documents/:docId/versions" element={<DocumentVersionsPage />} />
+          <Route path="projects/:id/documents/:docId/links" element={<DocumentLinksPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

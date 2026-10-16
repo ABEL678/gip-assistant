@@ -4,8 +4,8 @@
 > в начало каждого нового чата с ИИ-ассистентом. Он даёт минимальный
 > контекст, достаточный для продуктивной работы.
 
-**Версия:** 1.5 (16.10.2026)
-**Актуально на:** после 5.4b-1 (DocumentsPage + DocumentCard)
+**Версия:** 1.6 (16.10.2026)
+**Актуально на:** после 5.4e (роутинг версий/связей + кнопки на форме)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -126,7 +126,8 @@
 - LinkForm.tsx — форма добавления связи (Select target_document_id с фильтрацией, Select link_type, валидация).
 - Интеграция в ProjectPage.tsx — секция «Документы» (первые 6 карточек, 2 кнопки).
 - Роутинг в App.tsx — 3 маршрута: /documents, /documents/new, /documents/:docId/edit.
-- Роуты (план 5.4e): /projects/:id/documents/:docId/versions, /projects/:id/documents/:docId/links.
+- Роуты (реализованы 5.4e): /projects/:id/documents/:docId/versions, /projects/:id/documents/:docId/links.
+- DocumentConstructorPage.tsx — кнопки «Версии»/«Связи» (только при isEdit).
 
 **Frontend (Уровень 1 UI — ЗАКРЫТ):**
 

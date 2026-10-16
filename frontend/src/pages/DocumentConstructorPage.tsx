@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, FileText, Link as LinkIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -139,6 +139,22 @@ export function DocumentConstructorPage() {
             {isEdit ? "Редактировать документ" : "Создать документ"}
           </h1>
         </div>
+        {isEdit && docId && (
+          <div className="flex gap-2">
+            <Link to={`/projects/${projectId}/documents/${docId}/versions`}>
+              <Button variant="outline" size="sm">
+                <FileText className="h-4 w-4 mr-2" />
+                Версии
+              </Button>
+            </Link>
+            <Link to={`/projects/${projectId}/documents/${docId}/links`}>
+              <Button variant="outline" size="sm">
+                <LinkIcon className="h-4 w-4 mr-2" />
+                Связи
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Form */}

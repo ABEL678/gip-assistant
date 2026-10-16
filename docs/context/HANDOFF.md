@@ -6,12 +6,41 @@
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
 **Дата:** 17.10.2026
-**Сессия:** 6.3 (закрыта) — веха 1a–1d
+**Сессия:** 6.4 (закрыта) — веха 1f + fix TypeScript
 **Статус:** закрыта
 
 ---
 
-## 1. Что было в этой сессии (17.10.2026, веха 1a–1d)
+## 1. Что было в этой сессии (17.10.2026, веха 1f + fix TypeScript)
+
+**Веха 1a–1d: Backend (premises + goals)**
+- Домен, модели, миграция 686491cea3fd.
+- DTO, порты, репозитории.
+- Сервисы + 4 правила вывода.
+- DI + 12 эндпоинтов + 17 тестов роутов.
+- 187 тестов pytest зелёных.
+
+**Веха 1f: Frontend (UI для premises + goals)**
+- API-клиенты: premiseApi, goalApi.
+- Хуки: usePremises, useGoals.
+- Компоненты: PremiseCard, PremiseForm, GoalCard, GoalForm, GoalProposalList.
+- Страницы: PremisesPage, GoalsPage.
+- Секции «Вводные» и «Цели» в ProjectPage.
+- Роутинг в App.tsx.
+
+**Fix: 18 ошибок TypeScript**
+- DocumentCard.tsx — STATUS_COLORS типа Record<..., string>.
+- documentLinksApi.ts — добавлен export DocumentLinkType.
+- useDocumentLinks.ts, useDocuments.ts — исправлены импорты.
+- useDocumentVersions.ts, DocumentConstructorPage.tsx — убраны неиспользуемые импорты.
+- DocumentLinksPage.tsx — добавлен импорт useDocumentsByProject.
+- vite.config.ts — CSS-минификация заменена на esbuild.
+- `npm run build` — 0 ошибок, сборка успешна.
+
+**Sync context**
+- CONTEXT.md — §4, §5 обновлены.
+- TASKS.md — 1f + fix + sync.
+- HANDOFF.md — обновлён.
 
 **Веха 1a: домен + модели + миграция**
 - Домен: Premise, Goal, GoalProposal (dataclass).

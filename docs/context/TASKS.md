@@ -337,6 +337,33 @@
 - ✅ `AGENTS.md` обновлён: правила для тестов роутов и «не удалять тесты».
 - ✅ Ветка `feat/week-1d-di-routes` запушена.
 
+### 17.10.2026 (веха 1f — ЗАКРЫТО)
+
+- ✅ Frontend: PremisesPage, GoalsPage, GoalProposalList.
+- ✅ API-клиенты: premiseApi, goalApi.
+- ✅ Хуки: usePremises, useGoals.
+- ✅ Компоненты: PremiseCard, PremiseForm, GoalCard, GoalForm, GoalProposalList.
+- ✅ Секции «Вводные» и «Цели» в ProjectPage.
+- ✅ Роутинг в App.tsx.
+
+### 17.10.2026 (Fix: 18 ошибок TypeScript — ЗАКРЫТО)
+
+- ✅ DocumentCard.tsx — STATUS_COLORS типа Record<..., string>.
+- ✅ documentLinksApi.ts — добавлен export DocumentLinkType.
+- ✅ useDocumentLinks.ts — убран неиспользуемый DocumentLink.
+- ✅ useDocuments.ts — LifecycleStatus из documentEnums.
+- ✅ useDocumentVersions.ts — убран неиспользуемый DocumentVersion.
+- ✅ DocumentConstructorPage.tsx — убраны неиспользуемые импорты.
+- ✅ DocumentLinksPage.tsx — добавлен импорт useDocumentsByProject.
+- ✅ vite.config.ts — CSS-минификация заменена на esbuild.
+- ✅ `npm run build` — 0 ошибок TypeScript, сборка успешна.
+
+### 17.10.2026 (Sync context — ЗАКРЫТО)
+
+- ✅ CONTEXT.md — §4, §5 обновлены.
+- ✅ TASKS.md — 1f + fix + sync.
+- ✅ HANDOFF.md — обновлён.
+
 ### 16.10.2026 (сессия 6.1)
 
 - ✅ Уточнение онтологии ядра.

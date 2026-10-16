@@ -121,6 +121,16 @@
 - 17 тестов роутов (httpx.AsyncClient + ASGITransport).
 - 187 тестов pytest (было 122).
 
+**Веха 1f (октябрь 2026) — ЗАКРЫТО:**
+
+- Frontend: PremisesPage, GoalsPage, GoalProposalList.
+- API-клиенты: premiseApi, goalApi.
+- Хуки: usePremises, useGoals.
+- Компоненты: PremiseCard, PremiseForm, GoalCard, GoalForm, GoalProposalList.
+- Секции «Вводные» и «Цели» в ProjectPage.
+- Fix: 18 ошибок TypeScript в Уровне 1.5 починены.
+- Fix: lightningcss CSS-минификация заменена на esbuild.
+
 **Frontend:**
 
 - Уровень 1 UI: EntityTypesPage, EntityTypeConstructorPage, EntitiesPage + компоненты.
@@ -145,12 +155,12 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 17.10.2026, после вехи 1d:**
+**На 17.10.2026, после вехи 1:**
 
 - ✅ DOMAIN.md v1.1 создан.
-- ✅ **Веха 1a–1d закрыты** (premises + goals + 187 тестов).
-- 🔄 **Веха 1f — UI**: PremisesPage, GoalsPage, GoalProposalList.
-- Затем — **веха 2** (Action + Task-адаптация).
+- ✅ **Веха 1 (1a–1f) закрыта** (premises + goals + 187 тестов + frontend).
+- 🔄 **Спека вехи 2** (Action + Task-адаптация).
+- Затем — **реализация вехи 2**.
 
 **Дальше:**
 

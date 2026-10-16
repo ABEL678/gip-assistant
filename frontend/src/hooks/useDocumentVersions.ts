@@ -1,8 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import {
-  documentVersionsApi,
-  type DocumentVersion,
-} from "@/api/documentVersionsApi"
+import { documentVersionsApi } from "@/api/documentVersionsApi"
 
 export function useDocumentVersions(documentId: string) {
   return useQuery({

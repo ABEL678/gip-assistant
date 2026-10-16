@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { documentsApi, type Document, type LifecycleStatus } from "@/api/documentsApi"
+import { documentsApi, type Document } from "@/api/documentsApi"
+import { type LifecycleStatus } from "@/api/documentEnums"
 
 export function useDocumentsByProject(
   projectId: string,

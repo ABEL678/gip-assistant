@@ -1,6 +1,8 @@
 import { apiClient } from "./client"
 import { type DocumentLinkType } from "./documentEnums"
 
+export type { DocumentLinkType }
+
 // ====== Типы ======
 
 export interface DocumentLink {

@@ -1,9 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import {
-  documentLinksApi,
-  type DocumentLink,
-  type DocumentLinkType,
-} from "@/api/documentLinksApi"
+import { documentLinksApi, type DocumentLinkType } from "@/api/documentLinksApi"
 
 export function useDocumentLinks(documentId: string) {
   return useQuery({

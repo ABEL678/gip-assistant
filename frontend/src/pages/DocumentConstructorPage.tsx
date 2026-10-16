@@ -15,9 +15,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useDocument, useCreateDocument, useUpdateDocument } from "@/hooks/useDocuments"
 import { useDocumentTypes } from "@/hooks/useDocumentTypes"
-import { type Document, type LifecycleStatus } from "@/api/documentsApi"
-import { type DocumentType } from "@/api/documentTypesApi"
-import { type DocumentKind, type DocPartType } from "@/api/documentEnums"
+import { type DocumentKind, type DocPartType, type LifecycleStatus } from "@/api/documentEnums"
 
 const LIFECYCLE_OPTIONS: { value: LifecycleStatus; label: string }[] = [
   { value: "DRAFT", label: "Черновик" },

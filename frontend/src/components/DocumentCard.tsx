@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Trash2, ExternalLink } from "lucide-react"
 
-const STATUS_COLORS: Record<LifecycleStatus, { bg: string; text: string }> = {
+const STATUS_COLORS: Record<LifecycleStatus, string> = {
   DRAFT: "bg-gray-200 text-gray-700",
   IN_REVIEW: "bg-blue-200 text-blue-700",
   NORMOCONTROL: "bg-yellow-200 text-yellow-700",

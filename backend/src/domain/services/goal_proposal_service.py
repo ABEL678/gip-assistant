@@ -49,14 +49,17 @@ class GoalProposalService:
     def _rule_contract(self, premises: list[Premise]) -> list[GoalProposal]:
         """Правило 1 — договор со сроком → Goal.
 
-        Если premise.category == CONTRACT и premise.data содержит deadline,
-        предложить цель "Сдать {name} к {deadline}".
+        Если premise.category == CONTRACT и есть deadline
+        (из data['deadline'] или p.date), предложить цель
+        "Сдать {name} к {deadline}".
         """
         results: list[GoalProposal] = []
         for p in premises:
             if p.category != PremiseCategory.CONTRACT:
                 continue
-            deadline_str = p.data.get("deadline")
+            deadline_str = p.data.get("deadline") if p.data else None
+            if not deadline_str and p.date:
+                deadline_str = p.date.isoformat()
             if not deadline_str:
                 continue
 
@@ -73,21 +76,20 @@ class GoalProposalService:
         return results
 
     def _rule_tz(self, premises: list[Premise]) -> list[GoalProposal]:
-        """Правило 2 — ТЗ с требованием → Goal.
+        """Правило 2 — ТЗ → Goal.
 
-        Если premise.category == TZ и premise.data содержит requirement,
-        предложить цель с формулировкой из requirement.
+        Если premise.category == TZ, предложить цель с формулировкой
+        из data['requirement'] или "Подготовить {name}".
         """
         results: list[GoalProposal] = []
         for p in premises:
             if p.category != PremiseCategory.TZ:
                 continue
-            requirement = p.data.get("requirement")
-            if not requirement:
-                continue
+            requirement = p.data.get("requirement") if p.data else None
+            formulation = requirement or f"Подготовить {p.name}"
 
             results.append(GoalProposal(
-                formulation=requirement,
+                formulation=formulation,
                 rule="тз_требование",
                 premise_ids=[p.id],
             ))
@@ -98,19 +100,18 @@ class GoalProposalService:
     ) -> list[GoalProposal]:
         """Правило 3 — требование Заказчика → Goal.
 
-        Если premise.category == CUSTOMER_REQUIREMENT и premise.data
-        содержит content, предложить цель с формулировкой из content.
+        Если premise.category == CUSTOMER_REQUIREMENT, предложить цель
+        с формулировкой из data['content'] или "Выполнить требование: {name}".
         """
         results: list[GoalProposal] = []
         for p in premises:
             if p.category != PremiseCategory.CUSTOMER_REQUIREMENT:
                 continue
-            content = p.data.get("content")
-            if not content:
-                continue
+            content = p.data.get("content") if p.data else None
+            formulation = content or f"Выполнить требование: {p.name}"
 
             results.append(GoalProposal(
-                formulation=content,
+                formulation=formulation,
                 rule="требование_заказчика",
                 premise_ids=[p.id],
             ))

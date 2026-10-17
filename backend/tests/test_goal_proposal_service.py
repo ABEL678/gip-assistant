@@ -96,8 +96,30 @@ async def test_rule_contract_serves(service: GoalProposalService, mock_repo: Asy
 
 
 @pytest.mark.asyncio
+async def test_rule_contract_with_date(service: GoalProposalService, mock_repo: AsyncMock):
+    """Правило 1 — срабатывает с p.date вместо data['deadline']."""
+    mock_repo.list_by_project.return_value = [
+        Premise(
+            id=uuid4(),
+            project_id=uuid4(),
+            category=PremiseCategory.CONTRACT,
+            name="Том 7",
+            data={},
+            date=date(2026, 12, 1),
+        )
+    ]
+
+    proposals = await service.propose_goals(uuid4())
+
+    assert len(proposals) == 1
+    assert proposals[0].rule == "договор_срок"
+    assert "Том 7" in proposals[0].formulation
+    assert proposals[0].deadline == date(2026, 12, 1)
+
+
+@pytest.mark.asyncio
 async def test_rule_contract_no_deadline(service: GoalProposalService, mock_repo: AsyncMock):
-    """Правило 1 — не срабатывает без deadline."""
+    """Правило 1 — не срабатывает без deadline и без date."""
     mock_repo.list_by_project.return_value = [
         Premise(
             id=uuid4(),
@@ -130,14 +152,34 @@ async def test_rule_tz_serves(service: GoalProposalService, mock_repo: AsyncMock
 
 
 @pytest.mark.asyncio
-async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: AsyncMock):
-    """Правило 2 — не срабатывает без requirement."""
+async def test_rule_tz_without_requirement(service: GoalProposalService, mock_repo: AsyncMock):
+    """Правило 2 — срабатывает с p.name вместо data['requirement']."""
     mock_repo.list_by_project.return_value = [
         Premise(
             id=uuid4(),
             project_id=uuid4(),
             category=PremiseCategory.TZ,
-            name="Пустое ТЗ",
+            name="ТЗ на разработку",
+            data={},
+        )
+    ]
+
+    proposals = await service.propose_goals(uuid4())
+
+    assert len(proposals) == 1
+    assert proposals[0].rule == "тз_требование"
+    assert proposals[0].formulation == "Подготовить ТЗ на разработку"
+
+
+@pytest.mark.asyncio
+async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: AsyncMock):
+    """Правило 2 — не срабатывает без category TZ."""
+    mock_repo.list_by_project.return_value = [
+        Premise(
+            id=uuid4(),
+            project_id=uuid4(),
+            category=PremiseCategory.CONTRACT,
+            name="Не ТЗ",
             data={},
         )
     ]
@@ -166,16 +208,38 @@ async def test_rule_customer_req_serves(
 
 
 @pytest.mark.asyncio
-async def test_rule_customer_req_no_content(
+async def test_rule_customer_req_without_content(
     service: GoalProposalService, mock_repo: AsyncMock,
 ):
-    """Правило 3 — не срабатывает без content."""
+    """Правило 3 — срабатывает с p.name вместо data['content']."""
     mock_repo.list_by_project.return_value = [
         Premise(
             id=uuid4(),
             project_id=uuid4(),
             category=PremiseCategory.CUSTOMER_REQUIREMENT,
-            name="Пустое требование",
+            name="Требование заказчика",
+            data={},
+        )
+    ]
+
+    proposals = await service.propose_goals(uuid4())
+
+    assert len(proposals) == 1
+    assert proposals[0].rule == "требование_заказчика"
+    assert proposals[0].formulation == "Выполнить требование: Требование заказчика"
+
+
+@pytest.mark.asyncio
+async def test_rule_customer_req_no_content(
+    service: GoalProposalService, mock_repo: AsyncMock,
+):
+    """Правило 3 — не срабатывает без category CUSTOMER_REQUIREMENT."""
+    mock_repo.list_by_project.return_value = [
+        Premise(
+            id=uuid4(),
+            project_id=uuid4(),
+            category=PremiseCategory.CONTRACT,
+            name="Не требование",
             data={},
         )
     ]

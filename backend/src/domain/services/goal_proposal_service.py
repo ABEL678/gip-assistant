@@ -73,21 +73,22 @@ class GoalProposalService:
         return results
 
     def _rule_tz(self, premises: list[Premise]) -> list[GoalProposal]:
-        """Правило 2 — ТЗ с требованием → Goal.
+        """Правило 2 — ТЗ → Goal.
 
-        Если premise.category == TZ и premise.data содержит requirement,
-        предложить цель с формулировкой из requirement.
+        Если premise.category == TZ:
+        - Если premise.data содержит requirement → использовать requirement.
+        - Иначе → использовать name.
         """
         results: list[GoalProposal] = []
         for p in premises:
             if p.category != PremiseCategory.TZ:
                 continue
-            requirement = p.data.get("requirement")
-            if not requirement:
+            formulation = p.data.get("requirement") or p.name
+            if not formulation:
                 continue
 
             results.append(GoalProposal(
-                formulation=requirement,
+                formulation=formulation,
                 rule="тз_требование",
                 premise_ids=[p.id],
             ))

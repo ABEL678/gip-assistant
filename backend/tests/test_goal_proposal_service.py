@@ -131,13 +131,13 @@ async def test_rule_tz_serves(service: GoalProposalService, mock_repo: AsyncMock
 
 @pytest.mark.asyncio
 async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: AsyncMock):
-    """Правило 2 — не срабатывает без requirement."""
+    """Правило 2 — без requirement использует name как fallback."""
     mock_repo.list_by_project.return_value = [
         Premise(
             id=uuid4(),
             project_id=uuid4(),
             category=PremiseCategory.TZ,
-            name="Пустое ТЗ",
+            name="ТЗ на разработку",
             data={},
         )
     ]
@@ -145,7 +145,8 @@ async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: A
     proposals = await service.propose_goals(uuid4())
 
     rule_proposals = [p for p in proposals if p.rule == "тз_требование"]
-    assert len(rule_proposals) == 0
+    assert len(rule_proposals) == 1
+    assert rule_proposals[0].formulation == "ТЗ на разработку"
 
 
 # ---------- Правило 3: требование Заказчика ----------
@@ -248,6 +249,25 @@ async def test_deduplication(service: GoalProposalService, mock_repo: AsyncMock)
     assert proposals[0].rule == "договор_срок"  # первый rule
     # premise_ids должны быть объединены
     assert len(proposals[0].premise_ids) == 2
+
+
+@pytest.mark.asyncio
+async def test_rule_tz_empty_name(service: GoalProposalService, mock_repo: AsyncMock):
+    """Правило 2 — не срабатывает если requirement и name оба пустые."""
+    mock_repo.list_by_project.return_value = [
+        Premise(
+            id=uuid4(),
+            project_id=uuid4(),
+            category=PremiseCategory.TZ,
+            name="",
+            data={},
+        )
+    ]
+
+    proposals = await service.propose_goals(uuid4())
+
+    rule_proposals = [p for p in proposals if p.rule == "тз_требование"]
+    assert len(rule_proposals) == 0
 
 
 @pytest.mark.asyncio

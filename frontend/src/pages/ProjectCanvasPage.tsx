@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from "react"
+import { useMemo, useCallback, useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
   ReactFlow,
@@ -30,7 +30,7 @@ const nodeTypes = {
 
 export function ProjectCanvasPage() {
   const { id: projectId } = useParams<{ id: string }>()
-  const { data, isLoading } = useCanvas(projectId!)
+  const { data, isLoading, refetch } = useCanvas(projectId!)
   const approveProposal = useApproveProposal(projectId!)
   const updateGoal = useUpdateGoal()
   const deleteGoal = useDeleteGoal(projectId!)
@@ -82,7 +82,7 @@ export function ProjectCanvasPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
-  useMemo(() => {
+  useEffect(() => {
     setNodes(initialNodes)
     setEdges(initialEdges)
   }, [initialNodes, initialEdges, setNodes, setEdges])
@@ -161,6 +161,8 @@ export function ProjectCanvasPage() {
       priority: proposal.priority ?? 3,
       premise_ids: proposal.premise_ids,
     })
+    // Обновляем канвас — новая цель должна появиться с связями
+    await refetch()
   }
 
   if (isLoading) {

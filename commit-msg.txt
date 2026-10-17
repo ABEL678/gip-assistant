@@ -1,0 +1,6 @@
+fix(canvas): refetch canvas after approve proposal
+
+- useApproveProposal: invalidate "canvas" queryKey (was missing)
+- handleApprove: call refetch() after mutateAsync
+- useMemo → useEffect for setNodes/setEdges (side-effect needed)
+- New goal appears on canvas immediately with correct premise_ids links

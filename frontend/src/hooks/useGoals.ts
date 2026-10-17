@@ -69,6 +69,7 @@ export function useApproveProposal(projectId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["goals", projectId] })
       queryClient.invalidateQueries({ queryKey: ["goal-proposals", projectId] })
+      queryClient.invalidateQueries({ queryKey: ["canvas", projectId] })
     },
   })
 }

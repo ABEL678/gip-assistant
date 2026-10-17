@@ -22,6 +22,7 @@ class GoalProposal:
         deadline: Срок (опционально).
         priority: Приоритет (опционально).
         premise_ids: Какие вводные стали источником.
+        confidence: Уверенность правила (0.0–1.0).
     """
 
     formulation: str
@@ -29,3 +30,4 @@ class GoalProposal:
     deadline: Optional[date] = None
     priority: Optional[int] = None
     premise_ids: list[UUID] = field(default_factory=list)
+    confidence: float = 1.0

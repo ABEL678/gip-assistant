@@ -127,11 +127,12 @@ async def test_rule_tz_serves(service: GoalProposalService, mock_repo: AsyncMock
     assert len(proposals) == 1
     assert proposals[0].rule == "тз_требование"
     assert proposals[0].formulation == "Расчёт ВК"
+    assert proposals[0].confidence == 1.0
 
 
 @pytest.mark.asyncio
 async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: AsyncMock):
-    """Правило 2 — без requirement использует name + (LLM TODO)."""
+    """Правило 2 — без requirement: формулировка из name + confidence=0.5."""
     mock_repo.list_by_project.return_value = [
         Premise(
             id=uuid4(),
@@ -146,7 +147,8 @@ async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: A
 
     rule_proposals = [p for p in proposals if p.rule == "тз_требование"]
     assert len(rule_proposals) == 1
-    assert rule_proposals[0].formulation == "ТЗ на разработку (LLM TODO)"
+    assert rule_proposals[0].formulation == "Выполнить ТЗ на разработку"
+    assert rule_proposals[0].confidence == 0.5
 
 
 # ---------- Правило 3: требование Заказчика ----------
@@ -268,6 +270,17 @@ async def test_rule_tz_empty_name(service: GoalProposalService, mock_repo: Async
 
     rule_proposals = [p for p in proposals if p.rule == "тз_требование"]
     assert len(rule_proposals) == 0
+
+
+@pytest.mark.asyncio
+async def test_rule_contract_confidence(service: GoalProposalService, mock_repo: AsyncMock, contract_premise: Premise):
+    """Правило 1 — confidence=1.0."""
+    mock_repo.list_by_project.return_value = [contract_premise]
+
+    proposals = await service.propose_goals(uuid4())
+
+    assert len(proposals) == 1
+    assert proposals[0].confidence == 1.0
 
 
 @pytest.mark.asyncio

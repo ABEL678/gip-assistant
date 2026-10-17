@@ -20,6 +20,7 @@ import { useUpdateGoal } from "@/hooks/useGoals"
 import { PremiseNode } from "@/components/canvas/PremiseNode"
 import { GoalNode } from "@/components/canvas/GoalNode"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 const nodeTypes = {
   premise: PremiseNode,
@@ -126,7 +127,12 @@ export function ProjectCanvasPage() {
         ) : (
           <div className="space-y-2">
             {data.proposals.map((p) => (
-              <div key={p.id} className="border rounded-lg p-3 bg-yellow-50">
+              <div key={p.id} className="border rounded-lg p-3 bg-yellow-50 relative">
+                {p.confidence < 1 && (
+                  <Badge className="absolute top-2 right-2 bg-orange-400 text-white hover:bg-orange-500">
+                    LLM TODO
+                  </Badge>
+                )}
                 <div className="text-xs font-semibold text-yellow-800 mb-1">
                   {p.rule}
                 </div>

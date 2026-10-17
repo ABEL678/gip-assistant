@@ -70,6 +70,7 @@ class GoalProposal(BaseModel):
     priority: Optional[int] = None
     premise_ids: list[uuid.UUID] = Field(default_factory=list)
     rule: str  # название правила: "договор_срок", "тз_требование", ...
+    confidence: float = 1.0  # 1.0 = явное правило, < 1.0 = нужен LLM
 
 
 # Псевдоним для роутов — GoalProposalRead = GoalProposal

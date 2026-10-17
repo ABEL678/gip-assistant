@@ -35,6 +35,18 @@ class GoalProposalService:
             Список предложений целей (не сохраняется в БД).
         """
         premises = await self._premise_repo.list_by_project(project_id)
+        logger.info(
+            "Proposing goals for project %s: %d premises",
+            project_id,
+            len(premises),
+        )
+        for p in premises:
+            logger.info(
+                "  Premise: cat=%s name=%r data=%s",
+                p.category,
+                p.name,
+                p.data,
+            )
 
         proposals: list[GoalProposal] = []
         proposals.extend(self._rule_contract(premises))
@@ -42,7 +54,13 @@ class GoalProposalService:
         proposals.extend(self._rule_customer_requirement(premises))
         proposals.extend(self._rule_source_data(premises))
 
-        return self._deduplicate(proposals)
+        logger.info("Proposals before dedup: %d", len(proposals))
+        result = self._deduplicate(proposals)
+        logger.info("Proposals after dedup: %d", len(result))
+        for r in result:
+            logger.info("  Proposal: rule=%s formulation=%r", r.rule, r.formulation)
+
+        return result
 
     # ---------- Правила ----------
 
@@ -76,8 +94,8 @@ class GoalProposalService:
         """Правило 2 — ТЗ → Goal.
 
         Если premise.category == TZ:
-        - Если premise.data содержит requirement → использовать requirement.
-        - Иначе → использовать name + " (LLM TODO)".
+        - Если premise.data содержит requirement → confident formulation.
+        - Иначе → формулировка из name + confidence=0.5 (LLM TODO marker).
         """
         results: list[GoalProposal] = []
         for p in premises:
@@ -86,8 +104,10 @@ class GoalProposalService:
             requirement = p.data.get("requirement")
             if requirement:
                 formulation = requirement
+                confidence = 1.0
             elif p.name:
-                formulation = f"{p.name} (LLM TODO)"
+                formulation = f"Выполнить {p.name}"
+                confidence = 0.5
             else:
                 continue
 
@@ -95,6 +115,7 @@ class GoalProposalService:
                 formulation=formulation,
                 rule="тз_требование",
                 premise_ids=[p.id],
+                confidence=confidence,
             ))
         return results
 
@@ -163,13 +184,15 @@ class GoalProposalService:
         """Дедупликация по formulation.
 
         Если два правила дают одинаковую формулировку — объединить
-        premise_ids, оставить первый rule.
+        premise_ids, оставить первый rule и minimum confidence.
         """
         seen: dict[str, GoalProposal] = {}
         for proposal in proposals:
             key = proposal.formulation.strip().lower()
             if key in seen:
                 seen[key].premise_ids.extend(proposal.premise_ids)
+                # minimum confidence — если есть хотя бы один с confidence < 1
+                seen[key].confidence = min(seen[key].confidence, proposal.confidence)
             else:
                 seen[key] = GoalProposal(
                     formulation=proposal.formulation,
@@ -177,5 +200,6 @@ class GoalProposalService:
                     deadline=proposal.deadline,
                     priority=proposal.priority,
                     premise_ids=list(proposal.premise_ids),
+                    confidence=proposal.confidence,
                 )
         return list(seen.values())

@@ -1,0 +1,6 @@
+fix(goal-proposal): add confidence field + LLM TODO orange badge
+
+- Add confidence (0.0-1.0) to GoalProposal entity and DTO
+- Rule 2: requirement → confidence=1.0, no requirement → "Выполнить {name}" + confidence=0.5
+- UI: orange "LLM TODO" badge in top-right corner when confidence < 1
+- Deduplication preserves minimum confidence across merged proposals

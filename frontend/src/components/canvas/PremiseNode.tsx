@@ -1,4 +1,5 @@
 import { Handle, Position } from "@xyflow/react"
+import { Trash2 } from "lucide-react"
 import type { Premise } from "@/api/premiseApi"
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -23,14 +24,31 @@ const CATEGORY_COLORS: Record<string, string> = {
   internal: "bg-gray-100 border-gray-300",
 }
 
-export function PremiseNode({ data }: { data: { premise: Premise } }) {
+export function PremiseNode({
+  data,
+}: {
+  data: { premise: Premise; onDelete?: (premiseId: string) => void }
+}) {
   const p = data.premise
+  const onDelete = data.onDelete
   return (
     <div
-      className={`rounded-lg border-2 p-3 min-w-[200px] max-w-[280px] ${
+      className={`rounded-lg border-2 p-3 min-w-[200px] max-w-[280px] relative ${
         CATEGORY_COLORS[p.category] || "bg-gray-100 border-gray-300"
       }`}
     >
+      {onDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete(p.id)
+          }}
+          className="absolute top-1 right-1 p-1 rounded hover:bg-red-200 text-gray-500 hover:text-red-600 transition-colors"
+          title="Удалить вводную"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      )}
       <div className="text-xs font-semibold uppercase text-gray-600 mb-1">
         {CATEGORY_LABELS[p.category] || p.category}
       </div>

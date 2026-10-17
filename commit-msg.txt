@@ -1,0 +1,9 @@
+fix(canvas): restore delete edge/goal/premise
+
+Restore deletion functionality removed in 7d1eba7:
+- useState for edgeToDelete, goalToDelete, premiseToDelete
+- onEdgeClick on ReactFlow
+- ConfirmDialog × 3 (edge, goal, premise)
+- useDeleteGoal, useDeletePremise hooks
+- Trash2 buttons on PremiseNode and GoalNode
+- confidence + LLM TODO badge preserved

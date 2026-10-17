@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react"
+import { useMemo, useCallback, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
   ReactFlow,
@@ -15,10 +15,11 @@ import {
 } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
 import { useCanvas } from "@/hooks/useCanvas"
-import { useApproveProposal } from "@/hooks/useGoals"
-import { useUpdateGoal } from "@/hooks/useGoals"
+import { useApproveProposal, useUpdateGoal, useDeleteGoal } from "@/hooks/useGoals"
+import { useDeletePremise } from "@/hooks/usePremises"
 import { PremiseNode } from "@/components/canvas/PremiseNode"
 import { GoalNode } from "@/components/canvas/GoalNode"
+import { ConfirmDialog } from "@/components/canvas/ConfirmDialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
@@ -32,6 +33,20 @@ export function ProjectCanvasPage() {
   const { data, isLoading } = useCanvas(projectId!)
   const approveProposal = useApproveProposal(projectId!)
   const updateGoal = useUpdateGoal()
+  const deleteGoal = useDeleteGoal(projectId!)
+  const deletePremise = useDeletePremise(projectId!)
+
+  const [edgeToDelete, setEdgeToDelete] = useState<Edge | null>(null)
+  const [goalToDelete, setGoalToDelete] = useState<string | null>(null)
+  const [premiseToDelete, setPremiseToDelete] = useState<string | null>(null)
+
+  const handleDeletePremise = useCallback((premiseId: string) => {
+    setPremiseToDelete(premiseId)
+  }, [])
+
+  const handleDeleteGoal = useCallback((goalId: string) => {
+    setGoalToDelete(goalId)
+  }, [])
 
   const initialNodes: Node[] = useMemo(() => {
     if (!data) return []
@@ -39,16 +54,16 @@ export function ProjectCanvasPage() {
       id: `premise-${p.id}`,
       type: "premise",
       position: { x: 50, y: 100 + i * 120 },
-      data: { premise: p },
+      data: { premise: p, onDelete: handleDeletePremise },
     }))
     const goalNodes = data.goals.map((g, i) => ({
       id: `goal-${g.id}`,
       type: "goal",
       position: { x: 500, y: 100 + i * 150 },
-      data: { goal: g },
+      data: { goal: g, onDelete: handleDeleteGoal },
     }))
     return [...premiseNodes, ...goalNodes]
-  }, [data])
+  }, [data, handleDeletePremise, handleDeleteGoal])
 
   const initialEdges: Edge[] = useMemo(() => {
     if (!data) return []
@@ -71,6 +86,43 @@ export function ProjectCanvasPage() {
     setNodes(initialNodes)
     setEdges(initialEdges)
   }, [initialNodes, initialEdges, setNodes, setEdges])
+
+  const confirmPremiseDelete = useCallback(() => {
+    if (!premiseToDelete) return
+    deletePremise.mutate(premiseToDelete)
+    setNodes((nds) => nds.filter((n) => n.id !== `premise-${premiseToDelete}`))
+    setEdges((eds) =>
+      eds.filter((e) => e.source !== `premise-${premiseToDelete}`),
+    )
+    setPremiseToDelete(null)
+  }, [premiseToDelete, deletePremise, setNodes, setEdges])
+
+  const confirmGoalDelete = useCallback(() => {
+    if (!goalToDelete) return
+    deleteGoal.mutate(goalToDelete)
+    setNodes((nds) => nds.filter((n) => n.id !== `goal-${goalToDelete}`))
+    setEdges((eds) =>
+      eds.filter((e) => e.target !== `goal-${goalToDelete}`),
+    )
+    setGoalToDelete(null)
+  }, [goalToDelete, deleteGoal, setNodes, setEdges])
+
+  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation()
+    setEdgeToDelete(edge)
+  }, [])
+
+  const confirmEdgeDelete = useCallback(() => {
+    if (!edgeToDelete || !data) return
+    const premiseId = edgeToDelete.source.replace("premise-", "")
+    const goalId = edgeToDelete.target.replace("goal-", "")
+    const goal = data.goals.find((g) => g.id === goalId)
+    if (!goal) return
+    const newPremiseIds = goal.premise_ids.filter((id) => id !== premiseId)
+    updateGoal.mutate({ goalId, payload: { premise_ids: newPremiseIds } })
+    setEdges((eds) => eds.filter((e) => e.id !== edgeToDelete.id))
+    setEdgeToDelete(null)
+  }, [edgeToDelete, data, updateGoal, setEdges])
 
   const onConnect = useCallback(
     (connection: Connection) => {
@@ -161,6 +213,7 @@ export function ProjectCanvasPage() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onEdgeClick={onEdgeClick}
           nodeTypes={nodeTypes}
           fitView
         >
@@ -169,6 +222,30 @@ export function ProjectCanvasPage() {
           <MiniMap />
         </ReactFlow>
       </div>
+
+      <ConfirmDialog
+        open={!!edgeToDelete}
+        title="Удалить связь?"
+        description="Связь между вводной и целью будет удалена."
+        onConfirm={confirmEdgeDelete}
+        onCancel={() => setEdgeToDelete(null)}
+      />
+
+      <ConfirmDialog
+        open={!!goalToDelete}
+        title="Удалить цель?"
+        description="Цель будет удалена. Связи с вводными — тоже."
+        onConfirm={confirmGoalDelete}
+        onCancel={() => setGoalToDelete(null)}
+      />
+
+      <ConfirmDialog
+        open={!!premiseToDelete}
+        title="Удалить вводную?"
+        description="Вводная будет удалена. Связи с целями — тоже."
+        onConfirm={confirmPremiseDelete}
+        onCancel={() => setPremiseToDelete(null)}
+      />
     </div>
   )
 }

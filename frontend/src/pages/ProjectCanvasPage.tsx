@@ -178,9 +178,20 @@ export function ProjectCanvasPage() {
         ) : (
           <div className="space-y-2">
             {data.proposals.map((p) => (
-              <div key={p.id} className="border rounded-lg p-3 bg-yellow-50">
-                <div className="text-xs font-semibold text-yellow-800 mb-1">
-                  {p.rule}
+              <div
+                key={p.id}
+                className="border rounded-lg p-3 bg-yellow-50"
+                title={p.is_llm_todo ? "Формулировка будет улучшена LLM (веха 6)" : ""}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="text-xs font-semibold text-yellow-800">
+                    {p.rule}
+                  </div>
+                  {p.is_llm_todo && (
+                    <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded">
+                      LLM TODO
+                    </span>
+                  )}
                 </div>
                 <div className="text-sm font-medium">{p.formulation}</div>
                 {p.deadline && (

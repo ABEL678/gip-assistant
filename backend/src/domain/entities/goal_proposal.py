@@ -29,3 +29,4 @@ class GoalProposal:
     deadline: Optional[date] = None
     priority: Optional[int] = None
     premise_ids: list[UUID] = field(default_factory=list)
+    is_llm_todo: bool = False

@@ -79,19 +79,23 @@ class GoalProposalService:
         """Правило 2 — ТЗ → Goal.
 
         Если premise.category == TZ, предложить цель с формулировкой
-        из data['requirement'] или "Подготовить {name}".
+        из data['requirement'] или "Выполнить ТЗ: {name}".
+
+        TODO: LLM (веха 6) — извлечь суть из содержания документа,
+        а не из p.name. Пока — временное решение.
         """
         results: list[GoalProposal] = []
         for p in premises:
             if p.category != PremiseCategory.TZ:
                 continue
             requirement = p.data.get("requirement") if p.data else None
-            formulation = requirement or f"Подготовить {p.name}"
+            formulation = requirement or f"Выполнить ТЗ: {p.name}"
 
             results.append(GoalProposal(
                 formulation=formulation,
                 rule="тз_требование",
                 premise_ids=[p.id],
+                is_llm_todo=True,
             ))
         return results
 
@@ -173,5 +177,6 @@ class GoalProposalService:
                     deadline=proposal.deadline,
                     priority=proposal.priority,
                     premise_ids=list(proposal.premise_ids),
+                    is_llm_todo=proposal.is_llm_todo,
                 )
         return list(seen.values())

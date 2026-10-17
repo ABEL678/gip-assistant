@@ -62,6 +62,7 @@ export interface GoalProposal {
   premise_ids: string[]
   rule: string
   confidence: number
+  is_llm_todo: boolean
   created_at: string
 }
 

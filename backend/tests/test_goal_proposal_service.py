@@ -93,6 +93,7 @@ async def test_rule_contract_serves(service: GoalProposalService, mock_repo: Asy
     assert proposals[0].rule == "договор_срок"
     assert "Том 7" in proposals[0].formulation
     assert proposals[0].premise_ids == [contract_premise.id]
+    assert proposals[0].is_llm_todo is False
 
 
 @pytest.mark.asyncio
@@ -149,6 +150,7 @@ async def test_rule_tz_serves(service: GoalProposalService, mock_repo: AsyncMock
     assert len(proposals) == 1
     assert proposals[0].rule == "тз_требование"
     assert proposals[0].formulation == "Расчёт ВК"
+    assert proposals[0].is_llm_todo is True
 
 
 @pytest.mark.asyncio
@@ -168,7 +170,8 @@ async def test_rule_tz_without_requirement(service: GoalProposalService, mock_re
 
     assert len(proposals) == 1
     assert proposals[0].rule == "тз_требование"
-    assert proposals[0].formulation == "Подготовить ТЗ на разработку"
+    assert proposals[0].formulation == "Выполнить ТЗ: ТЗ на разработку"
+    assert proposals[0].is_llm_todo is True
 
 
 @pytest.mark.asyncio
@@ -205,6 +208,7 @@ async def test_rule_customer_req_serves(
     assert len(proposals) == 1
     assert proposals[0].rule == "требование_заказчика"
     assert proposals[0].formulation == "Добавить раздел Х"
+    assert proposals[0].is_llm_todo is False
 
 
 @pytest.mark.asyncio
@@ -227,6 +231,7 @@ async def test_rule_customer_req_without_content(
     assert len(proposals) == 1
     assert proposals[0].rule == "требование_заказчика"
     assert proposals[0].formulation == "Выполнить требование: Требование заказчика"
+    assert proposals[0].is_llm_todo is False
 
 
 @pytest.mark.asyncio
@@ -268,6 +273,7 @@ async def test_rule_source_data_expired(
     # deadline = valid_until + 30 дней
     expected_deadline = source_data_premise_expired.valid_until + timedelta(days=30)
     assert proposals[0].deadline == expected_deadline
+    assert proposals[0].is_llm_todo is False
 
 
 @pytest.mark.asyncio

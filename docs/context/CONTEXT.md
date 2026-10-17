@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.2 (17.10.2026)
-**Актуально на:** после вехи 1d (DOMAIN.md v1.1)
+**Версия:** 2.3 (17.10.2026)
+**Актуально на:** после сессии 6.4 (DOMAIN.md v1.1)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -99,6 +99,13 @@
 
 ## 4. Что сделано (факт)
 
+**Backend вехи 1 (1a–1d) — ЗАКРЫТА:**
+
+- 3 таблицы: premises, goals, goal_premises.
+- 12 эндпоинтов.
+- 187 тестов.
+- Backend работает.
+
 **Backend (Этап 1 + Уровень 1 + Уровень 1.5):**
 
 - 17 таблиц: projects, tasks, cross_tasks, task_status_history, executors, users, import_logs, entity_types, entities, document_types, documents, document_versions, document_links, alembic_version, **premises, goals, goal_premises**.
@@ -121,15 +128,9 @@
 - 17 тестов роутов (httpx.AsyncClient + ASGITransport).
 - 187 тестов pytest (было 122).
 
-**Веха 1f (октябрь 2026) — ЗАКРЫТО:**
+**Веха 1 (UI) — СБРОШЕНА:**
 
-- Frontend: PremisesPage, GoalsPage, GoalProposalList.
-- API-клиенты: premiseApi, goalApi.
-- Хуки: usePremises, useGoals.
-- Компоненты: PremiseCard, PremiseForm, GoalCard, GoalForm, GoalProposalList.
-- Секции «Вводные» и «Цели» в ProjectPage.
-- Fix: 18 ошибок TypeScript в Уровне 1.5 починены.
-- Fix: lightningcss CSS-минификация заменена на esbuild.
+- UI пересобирается: канвас (React Flow) вместо списков.
 
 **Frontend:**
 
@@ -155,16 +156,16 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 17.10.2026, после вехи 1:**
+**На 17.10.2026, после сессии 6.4:**
 
 - ✅ DOMAIN.md v1.1 создан.
-- ✅ **Веха 1 (1a–1f) закрыта** (premises + goals + 187 тестов + frontend).
-- 🔄 **Спека вехи 2** (Action + Task-адаптация).
-- Затем — **реализация вехи 2**.
+- 🔄 **Загрузка исходников** (drop zone).
+- 🔄 **Канвас** (React Flow).
+- 🔄 **Правила вывода**.
+- Затем — **веха 2** (Action + Task-адаптация).
 
 **Дальше:**
 
-- Веха 1f — UI (PremisesPage, GoalsPage, GoalProposalList, API-клиенты, хуки, карточки).
 - Веха 2 — Action + адаптация Task.
 - Затем: агенты (сроков, RFI).
 - Затем: LLM (Qwen 2.5 7B).
@@ -205,6 +206,7 @@
 10. **Тесты для бизнес-логики обязательны.**
 11. **Не коммитить в main напрямую.**
 12. **Не менять `.env` и секреты.**
+13. **UX — канвас, не списки.** ГИП думает связями. Списки — дремуче.
 
 ---
 
@@ -236,4 +238,4 @@
 
 ---
 
-**Конец CONTEXT.md v2.1.**
+**Конец CONTEXT.md v2.3.**

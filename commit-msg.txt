@@ -1,5 +1,0 @@
-fix(canvas): save edge to DB on connect
-
-- useUpdateGoal: accept projectId, invalidate canvas query on success
-- ProjectCanvasPage: pass projectId to useUpdateGoal
-- Connection now persists: PATCH /goals/{id} → goal_premises → canvas refresh

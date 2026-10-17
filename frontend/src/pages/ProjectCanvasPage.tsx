@@ -32,7 +32,7 @@ export function ProjectCanvasPage() {
   const { id: projectId } = useParams<{ id: string }>()
   const { data, isLoading, refetch } = useCanvas(projectId!)
   const approveProposal = useApproveProposal(projectId!)
-  const updateGoal = useUpdateGoal()
+  const updateGoal = useUpdateGoal(projectId!)
   const deleteGoal = useDeleteGoal(projectId!)
   const deletePremise = useDeletePremise(projectId!)
 

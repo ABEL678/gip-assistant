@@ -27,7 +27,7 @@ export function useCreateGoal(projectId: string) {
   })
 }
 
-export function useUpdateGoal() {
+export function useUpdateGoal(projectId?: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({
@@ -39,6 +39,9 @@ export function useUpdateGoal() {
     }) => goalApi.updateGoal(goalId, payload),
     onSuccess: (_, { goalId }) => {
       queryClient.invalidateQueries({ queryKey: ["goal", goalId] })
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: ["canvas", projectId] })
+      }
     },
   })
 }

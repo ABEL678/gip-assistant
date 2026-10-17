@@ -6,9 +6,10 @@ import { premiseApi } from "@/api/premiseApi"
 import { Button } from "@/components/ui/button"
 
 export function UploadSourcesPage() {
-  const { projectId } = useParams<{ projectId: string }>()
-  const { data: premises, isLoading } = usePremises(projectId!)
-  const upload = useUploadPremise(projectId!)
+  const { id } = useParams<{ id: string }>()
+  const projectId = id!
+  const { data: premises, isLoading } = usePremises(projectId)
+  const upload = useUploadPremise(projectId)
   const [category, setCategory] = useState("source_data")
 
   const onDrop = useCallback(

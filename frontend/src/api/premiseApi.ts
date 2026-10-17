@@ -95,4 +95,30 @@ export const premiseApi = {
   async deletePremise(premiseId: string): Promise<void> {
     await apiClient.delete(`/premises/${premiseId}`)
   },
+
+  async uploadPremiseFile(
+    projectId: string,
+    file: File,
+    category: string = "source_data",
+    name?: string,
+  ): Promise<Premise> {
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("category", category)
+    if (name) formData.append("name", name)
+
+    const response = await apiClient.post(
+      `/projects/${projectId}/premises/upload`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    )
+    return response.data
+  },
+
+  async downloadPremiseFile(premiseId: string): Promise<Blob> {
+    const response = await apiClient.get(`/premises/${premiseId}/file`, {
+      responseType: "blob",
+    })
+    return response.data
+  },
 }

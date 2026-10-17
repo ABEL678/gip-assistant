@@ -1,0 +1,168 @@
+import { useMemo, useCallback } from "react"
+import { useParams, Link } from "react-router-dom"
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  addEdge,
+  type Connection,
+  type Node,
+  type Edge,
+  useNodesState,
+  useEdgesState,
+  MarkerType,
+} from "@xyflow/react"
+import "@xyflow/react/dist/style.css"
+import { useCanvas } from "@/hooks/useCanvas"
+import { useApproveProposal } from "@/hooks/useGoals"
+import { useUpdateGoal } from "@/hooks/useGoals"
+import { PremiseNode } from "@/components/canvas/PremiseNode"
+import { GoalNode } from "@/components/canvas/GoalNode"
+import { Button } from "@/components/ui/button"
+
+const nodeTypes = {
+  premise: PremiseNode,
+  goal: GoalNode,
+}
+
+export function ProjectCanvasPage() {
+  const { id: projectId } = useParams<{ id: string }>()
+  const { data, isLoading } = useCanvas(projectId!)
+  const approveProposal = useApproveProposal(projectId!)
+  const updateGoal = useUpdateGoal()
+
+  const initialNodes: Node[] = useMemo(() => {
+    if (!data) return []
+    const premiseNodes = data.premises.map((p, i) => ({
+      id: `premise-${p.id}`,
+      type: "premise",
+      position: { x: 50, y: 100 + i * 120 },
+      data: { premise: p },
+    }))
+    const goalNodes = data.goals.map((g, i) => ({
+      id: `goal-${g.id}`,
+      type: "goal",
+      position: { x: 500, y: 100 + i * 150 },
+      data: { goal: g },
+    }))
+    return [...premiseNodes, ...goalNodes]
+  }, [data])
+
+  const initialEdges: Edge[] = useMemo(() => {
+    if (!data) return []
+    return data.goals.flatMap((g) =>
+      g.premise_ids.map((pid) => ({
+        id: `edge-${g.id}-${pid}`,
+        source: `premise-${pid}`,
+        target: `goal-${g.id}`,
+        type: "smoothstep",
+        markerEnd: { type: MarkerType.ArrowClosed },
+        style: { stroke: "#9ca3af" },
+      })),
+    )
+  }, [data])
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+
+  useMemo(() => {
+    setNodes(initialNodes)
+    setEdges(initialEdges)
+  }, [initialNodes, initialEdges, setNodes, setEdges])
+
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      const premiseNodeId = connection.source
+      const goalNodeId = connection.target
+      if (!premiseNodeId?.startsWith("premise-") || !goalNodeId?.startsWith("goal-")) {
+        return
+      }
+      const premiseId = premiseNodeId.replace("premise-", "")
+      const goalId = goalNodeId.replace("goal-", "")
+      const goal = data?.goals.find((g) => g.id === goalId)
+      if (!goal) return
+      const newPremiseIds = [...new Set([...goal.premise_ids, premiseId])]
+      updateGoal.mutate({ goalId, payload: { premise_ids: newPremiseIds } })
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...connection,
+            type: "smoothstep",
+            markerEnd: { type: MarkerType.ArrowClosed },
+            style: { stroke: "#9ca3af" },
+          },
+          eds,
+        ),
+      )
+    },
+    [data, updateGoal, setEdges],
+  )
+
+  const handleApprove = async (proposalId: string) => {
+    const proposal = data?.proposals.find((p) => p.id === proposalId)
+    if (!proposal) return
+    await approveProposal.mutateAsync({
+      formulation: proposal.formulation,
+      deadline: proposal.deadline ?? null,
+      priority: proposal.priority ?? 3,
+      premise_ids: proposal.premise_ids,
+    })
+  }
+
+  if (isLoading) {
+    return <div className="p-6">Загрузка канваса...</div>
+  }
+
+  return (
+    <div className="flex h-screen">
+      <div className="w-[320px] border-r bg-gray-50 p-4 overflow-y-auto">
+        <Link to={`/projects/${projectId}`}>
+          <Button variant="ghost" size="sm" className="mb-4">← Назад</Button>
+        </Link>
+        <h2 className="text-lg font-bold mb-4">Предложенные цели</h2>
+        {!data?.proposals.length ? (
+          <p className="text-sm text-muted-foreground">Нет предложений</p>
+        ) : (
+          <div className="space-y-2">
+            {data.proposals.map((p) => (
+              <div key={p.id} className="border rounded-lg p-3 bg-yellow-50">
+                <div className="text-xs font-semibold text-yellow-800 mb-1">
+                  {p.rule}
+                </div>
+                <div className="text-sm font-medium">{p.formulation}</div>
+                {p.deadline && (
+                  <div className="text-xs text-gray-600 mt-1">до {p.deadline}</div>
+                )}
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleApprove(p.id)}
+                  >
+                    Утвердить
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="flex-1">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          fitView
+        >
+          <Background />
+          <Controls />
+          <MiniMap />
+        </ReactFlow>
+      </div>
+    </div>
+  )
+}

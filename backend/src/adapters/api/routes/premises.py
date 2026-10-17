@@ -9,7 +9,8 @@ DELETE /api/premises/{id}                         — удалить вводн�
 
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 
 from backend.src.adapters.api.dependencies import PremiseServiceDep
 from backend.src.application.dto.premise import (
@@ -17,6 +18,12 @@ from backend.src.application.dto.premise import (
     PremiseRead,
     PremiseUpdate,
 )
+from backend.src.domain.value_objects.enums import PremiseCategory
+import os
+import uuid
+from pathlib import Path
+
+UPLOAD_DIR = Path("backend/uploads")
 
 router = APIRouter(prefix="/api", tags=["premises"])
 
@@ -127,3 +134,62 @@ async def delete_premise(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)
         ) from err
+
+
+@router.post(
+    "/projects/{project_id}/premises/upload",
+    response_model=PremiseRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Загрузить файл-исходник",
+)
+async def upload_premise_file(
+    project_id: UUID,
+    file: UploadFile = File(...),
+    category: PremiseCategory = Form(PremiseCategory.SOURCE_DATA),
+    name: str | None = Form(None),
+    service: PremiseServiceDep = None,  # type: ignore[assignment]
+) -> PremiseRead:
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    project_dir = UPLOAD_DIR / str(project_id)
+    project_dir.mkdir(exist_ok=True)
+
+    file_id = uuid.uuid4()
+    safe_name = file.filename or "file"
+    file_path = project_dir / f"{file_id}_{safe_name}"
+
+    content = await file.read()
+    if len(content) > 50 * 1024 * 1024:
+        raise HTTPException(400, "File too large (max 50 MB)")
+
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    premise_name = name or Path(safe_name).stem
+    data = {
+        "file_path": str(file_path),
+        "file_name": safe_name,
+        "file_size": len(content),
+        "mime_type": file.content_type,
+    }
+
+    created = await service.create(
+        project_id=project_id,
+        category=category,
+        name=premise_name,
+        data=data,
+    )
+    return PremiseRead.model_validate(created, from_attributes=True)
+
+
+@router.get("/premises/{premise_id}/file")
+async def download_premise_file(
+    premise_id: UUID,
+    service: PremiseServiceDep = None,  # type: ignore[assignment]
+):
+    premise = await service.get(premise_id)
+    if not premise:
+        raise HTTPException(404, "Premise not found")
+    file_path = premise.data.get("file_path") if premise.data else None
+    if not file_path or not os.path.exists(file_path):
+        raise HTTPException(404, "File not found")
+    return FileResponse(file_path, filename=premise.data.get("file_name"))

@@ -1,6 +1,0 @@
-fix(canvas): restore instant edge on connect
-
-- onConnect: addEdge locally + mutate in background (instant UX)
-- useEffect: useRef for goalIds, don't reset edges on data change
-- Edge appears immediately, persists after unmount
-- 193 tests passed

@@ -147,36 +147,32 @@ export function ProjectCanvasPage() {
   }, [edgeToDelete, data, updateGoal, setEdges])
 
   const onConnect = useCallback(
-    (connection: Connection) => {
-      const premiseNodeId = connection.source
-      const goalNodeId = connection.target
-      if (!premiseNodeId?.startsWith("premise-") || !goalNodeId?.startsWith("goal-")) {
-        return
-      }
-      const premiseId = premiseNodeId.replace("premise-", "")
-      const goalId = goalNodeId.replace("goal-", "")
-      const goal = data?.goals.find((g) => g.id === goalId)
-      if (!goal) return
-      const newPremiseIds = [...new Set([...goal.premise_ids, premiseId])]
-
-      // 1. Сразу добавить edge локально — мгновенный UX
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...connection,
-            type: "smoothstep",
-            markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: "#9ca3af" },
-          },
-          eds,
-        ),
-      )
-
-      // 2. Сохранить в БД — в фоне
-      updateGoal.mutate({ goalId, payload: { premise_ids: newPremiseIds } })
-    },
-    [data, updateGoal, setEdges],
-  )
+  (connection: Connection) => {
+    const premiseNodeId = connection.source
+    const goalNodeId = connection.target
+    if (!premiseNodeId?.startsWith("premise-") || !goalNodeId?.startsWith("goal-")) {
+      return
+    }
+    const premiseId = premiseNodeId.replace("premise-", "")
+    const goalId = goalNodeId.replace("goal-", "")
+    const goal = data?.goals.find((g) => g.id === goalId)
+    if (!goal) return
+    const newPremiseIds = [...new Set([...goal.premise_ids, premiseId])]
+    updateGoal.mutate({ goalId, payload: { premise_ids: newPremiseIds } })
+    setEdges((eds) =>
+      addEdge(
+        {
+          ...connection,
+          type: "smoothstep",
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { stroke: "#9ca3af" },
+        },
+        eds,
+      ),
+    )
+  },
+  [data, updateGoal, setEdges],
+)
 
   const handleApprove = async (proposalId: string) => {
     const proposal = data?.proposals.find((p) => p.id === proposalId)

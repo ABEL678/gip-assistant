@@ -1,10 +1,11 @@
-import { useMemo, useCallback, useState, useEffect } from "react"
+import { useMemo, useCallback, useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
+  addEdge,
   type Connection,
   type Node,
   type Edge,
@@ -81,10 +82,32 @@ export function ProjectCanvasPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
+  const prevGoalIdsRef = useRef<string[] | null>(null)
+
   useEffect(() => {
     setNodes(initialNodes)
-    setEdges(initialEdges)
-  }, [initialNodes, initialEdges, setNodes, setEdges])
+
+    if (!data) {
+      setEdges(initialEdges)
+      prevGoalIdsRef.current = null
+      return
+    }
+
+    const currentGoalIds = data.goals.map((g) => g.id).sort()
+    const prevIds = prevGoalIdsRef.current
+
+    const structureChanged =
+      !prevIds ||
+      prevIds.length !== currentGoalIds.length ||
+      !prevIds.every((id, i) => id === currentGoalIds[i])
+
+    if (structureChanged) {
+      prevGoalIdsRef.current = currentGoalIds
+      setEdges(initialEdges)
+    }
+    // else: structure не изменилась — не сбрасывать edges (пользователь
+    // добавил локально, updateGoal в фоне сохранит)
+  }, [initialNodes, initialEdges, setNodes, setEdges, data])
 
   const confirmPremiseDelete = useCallback(() => {
     if (!premiseToDelete) return
@@ -135,9 +158,24 @@ export function ProjectCanvasPage() {
       const goal = data?.goals.find((g) => g.id === goalId)
       if (!goal) return
       const newPremiseIds = [...new Set([...goal.premise_ids, premiseId])]
+
+      // 1. Сразу добавить edge локально — мгновенный UX
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...connection,
+            type: "smoothstep",
+            markerEnd: { type: MarkerType.ArrowClosed },
+            style: { stroke: "#9ca3af" },
+          },
+          eds,
+        ),
+      )
+
+      // 2. Сохранить в БД — в фоне
       updateGoal.mutate({ goalId, payload: { premise_ids: newPremiseIds } })
     },
-    [data, updateGoal],
+    [data, updateGoal, setEdges],
   )
 
   const handleApprove = async (proposalId: string) => {

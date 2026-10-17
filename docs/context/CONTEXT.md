@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.3 (17.10.2026)
-**Актуально на:** после сессии 6.4 (DOMAIN.md v1.1)
+**Версия:** 2.4 (17.10.2026)
+**Актуально на:** после сессии 6.5 (DOMAIN.md v1.1)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -106,7 +106,14 @@
 - 187 тестов.
 - Backend работает.
 
-**Backend (Этап 1 + Уровень 1 + Уровень 1.5):**
+**Веха 1 (UI) — ЗАКРЫТА (17.10.2026):**
+
+- ✅ Загрузка исходников (drop zone → файл → БД).
+- ✅ Канвас (React Flow): вводные, цели, связи.
+- ✅ Удаление: связей, целей, вводных (с подтверждением).
+- ✅ Правила вывода из вводных (4 правила).
+- ✅ 187 тестов backend (зелёные).
+- ✅ Frontend build успешен.
 
 - 17 таблиц: projects, tasks, cross_tasks, task_status_history, executors, users, import_logs, entity_types, entities, document_types, documents, document_versions, document_links, alembic_version, **premises, goals, goal_premises**.
 - Миграции: f9f9bed0be0f, 272f011cf740, 78ada0d52056, d357e719c8bf, c719d9b4537e, **686491cea3fd (premises + goals)**.
@@ -156,20 +163,21 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 17.10.2026, после сессии 6.4:**
+**На 17.10.2026, после сессии 6.5:**
 
-- ✅ DOMAIN.md v1.1 создан.
-- 🔄 **Загрузка исходников** (drop zone).
-- 🔄 **Канвас** (React Flow).
-- 🔄 **Правила вывода**.
-- Затем — **веха 2** (Action + Task-адаптация).
+- ✅ Веха 1 закрыта (backend + UI).
+- Нет задач в работе.
 
 **Дальше:**
 
+- Merge `feat/canvas` в main.
+- Ось времени (план-график).
+- Просрочки (красным).
+- Критический путь (жирным).
 - Веха 2 — Action + адаптация Task.
-- Затем: агенты (сроков, RFI).
-- Затем: LLM (Qwen 2.5 7B).
-- Затем: MinIO, XML, Auth, деплой.
+- Агенты (сроков, RFI).
+- LLM (Qwen 2.5 7B).
+- MinIO, XML, Auth, деплой.
 
 **Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.
 

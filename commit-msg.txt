@@ -1,7 +1,7 @@
-fix(canvas): persist edge on connect — full fix
+fix(canvas): simplify onConnect — single source of truth (DB)
 
-- onConnect: explicit refetch() after updateGoal.mutate
-- useEffect: track DB edge IDs, merge user-added edges with DB edges
-- useUpdateGoal: no canvas invalidation (prevents race condition)
-- Edge persists: added locally → mutate saves to DB → refetch → useEffect merges
+- onConnect: only updateGoal.mutate (no addEdge, no refetch)
+- useEffect: always setEdges(initialEdges) — no conditions
+- useUpdateGoal: restore invalidateQueries(["canvas"])
+- Removed: useRef, addEdge, MarkerType from imports
 - 193 tests passed

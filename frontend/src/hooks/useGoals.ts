@@ -27,7 +27,7 @@ export function useCreateGoal(projectId: string) {
   })
 }
 
-export function useUpdateGoal(_projectId?: string) {
+export function useUpdateGoal(projectId?: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({
@@ -39,8 +39,9 @@ export function useUpdateGoal(_projectId?: string) {
     }) => goalApi.updateGoal(goalId, payload),
     onSuccess: (_, { goalId }) => {
       queryClient.invalidateQueries({ queryKey: ["goal", goalId] })
-      // Don't invalidate canvas — it causes race condition with onConnect
-      // Edge is added locally in onConnect, useEffect won't reset it
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: ["canvas", projectId] })
+      }
     },
   })
 }

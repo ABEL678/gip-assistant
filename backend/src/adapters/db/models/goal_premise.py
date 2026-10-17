@@ -5,7 +5,7 @@ from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.src.adapters.db.base import Base
 
@@ -29,4 +29,7 @@ class GoalPremiseModel(Base):
         DateTime(timezone=True),
         nullable=False,
         server_default=func.now(),
+    )
+    goal: Mapped["GoalModel"] = relationship(
+        "GoalModel", back_populates="premise_links"
     )

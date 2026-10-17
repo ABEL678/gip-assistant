@@ -4,14 +4,13 @@
 FastAPI 0.143.x + TestClient (middleware не инициализирует AsyncExitStack).
 """
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock
 from uuid import UUID, uuid4
 
 import pytest
-import httpx
-from httpx import ASGITransport, AsyncClient
 from fastapi import FastAPI
+from httpx import ASGITransport, AsyncClient
 
 from backend.src.domain.value_objects.enums import GoalState, PremiseCategory
 
@@ -40,8 +39,8 @@ def _make_goal(
     goal.priority = priority
     goal.state = state
     goal.created_by = created_by
-    goal.created_at = created_at or datetime.now(timezone.utc)
-    goal.updated_at = updated_at or datetime.now(timezone.utc)
+    goal.created_at = created_at or datetime.now(UTC)
+    goal.updated_at = updated_at or datetime.now(UTC)
     return goal
 
 
@@ -75,8 +74,8 @@ def _make_premise(
     premise.valid_until = valid_until
     premise.data = data or {}
     premise.schema = schema or {}
-    premise.created_at = created_at or datetime.now(timezone.utc)
-    premise.updated_at = updated_at or datetime.now(timezone.utc)
+    premise.created_at = created_at or datetime.now(UTC)
+    premise.updated_at = updated_at or datetime.now(UTC)
     return premise
 
 
@@ -99,7 +98,7 @@ def _make_goal_proposal(
     proposal.premise = premise
     proposal.formulation = formulation
     proposal.confidence = confidence
-    proposal.created_at = created_at or datetime.now(timezone.utc)
+    proposal.created_at = created_at or datetime.now(UTC)
     proposal.rule = rule
     proposal.deadline = deadline
     proposal.priority = priority
@@ -131,11 +130,11 @@ class TestGoalsRoutes:
     @pytest.fixture
     async def client(self, mock_goal_service, mock_proposal_service):
         """Создаём AsyncClient с моками зависимостей."""
-        from backend.src.adapters.api.routes.goals import router as goals_router
         from backend.src.adapters.api.dependencies import (
-            get_goal_service,
             get_goal_proposal_service,
+            get_goal_service,
         )
+        from backend.src.adapters.api.routes.goals import router as goals_router
 
         app = FastAPI()
         app.include_router(goals_router)
@@ -147,7 +146,7 @@ class TestGoalsRoutes:
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as ac:
             yield ac
-        
+
         # Очистка
         app.dependency_overrides.clear()
 
@@ -357,3 +356,212 @@ class TestGoalsRoutes:
         data = response.json()
         assert data["formulation"] == "Цель со сроком"
         assert data["deadline"] == "2026-12-31"
+
+
+# ============================================================
+# Интеграционные тесты с реальной БД
+# ============================================================
+
+
+class TestGoalPremiseIdsIntegration:
+    """Интеграционные тесты: реальный FastAPI app + реальная БД."""
+
+    @pytest.fixture
+    async def db_session(self):
+        """Создаём сессию с транзакцией для изоляции."""
+        from backend.src.adapters.db.session import AsyncSessionLocal
+
+        async with AsyncSessionLocal() as session:
+            # Начинаем транзакцию
+            async with session.begin():
+                yield session
+            # После теста — rollback (данные не сохраняются)
+
+    @pytest.fixture
+    async def app(self, db_session):
+        """Создаём FastAPI app с реальными зависимостями."""
+        from fastapi import FastAPI
+
+        from backend.src.adapters.api.dependencies import (
+            get_db_session,
+            get_goal_repo,
+            get_goal_service,
+            get_premise_repo,
+            get_premise_service,
+            get_project_repo,
+        )
+        from backend.src.adapters.api.routes.goals import router as goals_router
+        from backend.src.adapters.api.routes.premises import router as premises_router
+        from backend.src.adapters.api.routes.projects import router as projects_router
+        from backend.src.adapters.db.repositories.goal_repository import (
+            SqlAlchemyGoalRepository,
+        )
+        from backend.src.adapters.db.repositories.premise_repository import (
+            SqlAlchemyPremiseRepository,
+        )
+        from backend.src.adapters.db.repositories.project_repo import (
+            SqlAlchemyProjectRepository,
+        )
+        from backend.src.domain.services.goal_service import GoalService
+        from backend.src.domain.services.premise_service import PremiseService
+
+        app = FastAPI()
+        app.include_router(projects_router)
+        app.include_router(premises_router)
+        app.include_router(goals_router)
+
+        # Переопределяем сессию на нашу тестовую
+        async def _get_db():
+            yield db_session
+
+        app.dependency_overrides[get_db_session] = _get_db
+        app.dependency_overrides[get_project_repo] = lambda: SqlAlchemyProjectRepository(
+            db_session
+        )
+        app.dependency_overrides[get_premise_repo] = lambda: SqlAlchemyPremiseRepository(
+            db_session
+        )
+        app.dependency_overrides[get_goal_repo] = lambda: SqlAlchemyGoalRepository(
+            db_session
+        )
+        app.dependency_overrides[get_premise_service] = lambda: PremiseService(
+            repo=SqlAlchemyPremiseRepository(db_session)
+        )
+        app.dependency_overrides[get_goal_service] = lambda: GoalService(
+            repo=SqlAlchemyGoalRepository(db_session),
+            premise_repo=SqlAlchemyPremiseRepository(db_session),
+        )
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            yield ac
+
+    async def test_goal_premise_ids_persist_end_to_end(
+        self, app: AsyncClient
+    ):
+        """Создать project → premise → goal.
+        PATCH {premise_ids: [id]} → GET → [id].
+        PATCH {premise_ids: []} → GET → [].
+        PATCH {premise_ids: [другой]} → GET → [другой]."""
+        # 1. Создаём проект
+        resp = await app.post(
+            "/api/projects",
+            json={"name": "Test Project", "code": "TEST-001"},
+        )
+        assert resp.status_code == 201
+        project_data = resp.json()
+        project_id = UUID(project_data["id"])
+
+        # 2. Создаём первую вводную
+        premise1_id = uuid4()
+        resp = await app.post(
+            f"/api/projects/{project_id}/premises",
+            json={
+                "category": "contract",
+                "name": "Первая вводная",
+                "source": "test",
+                "date": None,
+                "actual": True,
+                "mandatory": True,
+                "link": None,
+                "valid_until": None,
+                "data": {},
+                "schema": {},
+            },
+        )
+        assert resp.status_code == 201
+        premise1_data = resp.json()
+        premise1_id = UUID(premise1_data["id"])
+
+        # 3. Создаём вторую вводную
+        resp = await app.post(
+            f"/api/projects/{project_id}/premises",
+            json={
+                "category": "contract",
+                "name": "Вторая вводная",
+                "source": "test",
+                "date": None,
+                "actual": True,
+                "mandatory": True,
+                "link": None,
+                "valid_until": None,
+                "data": {},
+                "schema": {},
+            },
+        )
+        assert resp.status_code == 201
+        premise2_data = resp.json()
+        premise2_id = UUID(premise2_data["id"])
+
+        # 4. Создаём цель без связей
+        goal_id = uuid4()
+        resp = await app.post(
+            f"/api/projects/{project_id}/goals",
+            json={
+                "formulation": "Тестовая цель",
+                "premise_ids": [],
+                "deadline": None,
+                "responsible_id": None,
+                "priority": 1,
+                "state": "plan",
+                "created_by": None,
+            },
+        )
+        assert resp.status_code == 201
+        goal_data = resp.json()
+        goal_id = UUID(goal_data["id"])
+        assert goal_data["premise_ids"] == []
+
+        # 5. PATCH: добавляем первую вводную
+        resp = await app.patch(
+            f"/api/goals/{goal_id}",
+            json={"premise_ids": [str(premise1_id)]},
+        )
+        assert resp.status_code == 200
+        goal_data = resp.json()
+        assert sorted(goal_data["premise_ids"]) == [str(premise1_id)]
+
+        # 6. GET /goals/{id} — проверяем premise_ids
+        resp = await app.get(f"/api/goals/{goal_id}")
+        assert resp.status_code == 200
+        goal_data = resp.json()
+        assert sorted(goal_data["premise_ids"]) == [str(premise1_id)]
+
+        # 7. GET /projects/{id}/goals — проверяем premise_ids у цели
+        resp = await app.get(f"/api/projects/{project_id}/goals")
+        assert resp.status_code == 200
+        goals_data = resp.json()
+        goal_from_list = next(
+            g for g in goals_data if UUID(g["id"]) == goal_id
+        )
+        assert sorted(goal_from_list["premise_ids"]) == [str(premise1_id)]
+
+        # 8. PATCH: очищаем premise_ids
+        resp = await app.patch(
+            f"/api/goals/{goal_id}",
+            json={"premise_ids": []},
+        )
+        assert resp.status_code == 200
+        goal_data = resp.json()
+        assert goal_data["premise_ids"] == []
+
+        # 9. GET — убеждаемся, что пусто
+        resp = await app.get(f"/api/goals/{goal_id}")
+        assert resp.status_code == 200
+        goal_data = resp.json()
+        assert goal_data["premise_ids"] == []
+
+        # 10. PATCH: заменяем на вторую вводную
+        resp = await app.patch(
+            f"/api/goals/{goal_id}",
+            json={"premise_ids": [str(premise2_id)]},
+        )
+        assert resp.status_code == 200
+        goal_data = resp.json()
+        assert sorted(goal_data["premise_ids"]) == [str(premise2_id)]
+
+        # 11. GET — убеждаемся, что заменилась
+        resp = await app.get(f"/api/goals/{goal_id}")
+        assert resp.status_code == 200
+        goal_data = resp.json()
+        assert sorted(goal_data["premise_ids"]) == [str(premise2_id)]

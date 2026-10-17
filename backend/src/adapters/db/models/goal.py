@@ -4,7 +4,7 @@ import uuid
 
 from sqlalchemy import Date, Enum, ForeignKey, Index, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.src.adapters.db.base import Base, TimestampMixin
 from backend.src.domain.value_objects.enums import GoalState
@@ -47,4 +47,9 @@ class GoalModel(Base, TimestampMixin):
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
+    )
+    premise_links: Mapped[list["GoalPremiseModel"]] = relationship(
+        "GoalPremiseModel",
+        cascade="all, delete-orphan",
+        back_populates="goal",
     )

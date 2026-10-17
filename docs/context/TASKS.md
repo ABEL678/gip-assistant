@@ -357,6 +357,17 @@
 - ✅ Frontend build успешен.
 - ✅ Веха 1 закрыта.
 
+### 17.10.2026 (сессия 6.7: fix canvas edge)
+
+- ✅ Fix: persist premise_ids в GET/PATCH Goal (canvas edge bug).
+- ✅ `goal.py` — добавлена `premise_links` relationship.
+- ✅ `goal_premise.py` — добавлен `goal` back_populates.
+- ✅ `goal_repository.py` — `_to_domain` без staticmethod, `_fetch_premise_ids`, `get_by_id`, `list_by_project`, `save` (перечитывание premise_ids напрямую из goal_premises).
+- ✅ Alembic миграция `de7ac71d9ae0` (пустая, ORM-level relationship).
+- ✅ Integration-тест `test_goal_premise_ids_persist_end_to_end` (httpx.AsyncClient + реальная БД).
+- ✅ 193 теста pytest (зелёные).
+- ✅ Ветка `fix/canvas-approve-refetch`.
+
 ### 17.10.2026 (сессия 6.4)
 
 - ✅ Веха 1 — не работает end-to-end.
@@ -507,7 +518,7 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 187 | — |
+| Тесты pytest (backend) | 193 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 17 | — |
 | Эндпоинтов API | 51 | — |

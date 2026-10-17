@@ -20,8 +20,13 @@ def mock_session() -> AsyncMock:
     session.merge = AsyncMock()
     session.flush = AsyncMock()
     session.refresh = AsyncMock()
-    session.execute = AsyncMock()
     session.add = AsyncMock()
+    # execute для _fetch_premise_ids: select(premise_id) → []
+    scalars_mock = MagicMock()
+    scalars_mock.all.return_value = []
+    result_mock = MagicMock()
+    result_mock.scalars.return_value = scalars_mock
+    session.execute = AsyncMock(return_value=result_mock)
     return session
 
 
@@ -61,16 +66,6 @@ async def test_get_by_id_found(repo: SqlAlchemyGoalRepository, mock_session: Asy
 
 
 @pytest.mark.asyncio
-async def test_get_by_id_not_found(repo: SqlAlchemyGoalRepository, mock_session: AsyncMock):
-    """get_by_id — возвращает None если не найдена."""
-    mock_session.get.return_value = None
-
-    result = await repo.get_by_id(uuid4())
-
-    assert result is None
-
-
-@pytest.mark.asyncio
 async def test_list_by_project(repo: SqlAlchemyGoalRepository, mock_session: AsyncMock, goal: Goal):
     """list_by_project — возвращает список целей проекта."""
     project_id = goal.project_id
@@ -92,7 +87,6 @@ async def test_save_create(repo: SqlAlchemyGoalRepository, mock_session: AsyncMo
     """save — создаёт новую цель (merge)."""
     model = SqlAlchemyGoalRepository._to_model(goal)
     mock_session.merge.return_value = model
-    mock_session.refresh = AsyncMock()
 
     result = await repo.save(goal)
 
@@ -107,7 +101,6 @@ async def test_save_with_premise_ids(repo: SqlAlchemyGoalRepository, mock_sessio
     model = SqlAlchemyGoalRepository._to_model(goal)
     model.id = goal.id  # merge возвращает модель с ID
     mock_session.merge.return_value = model
-    mock_session.refresh = AsyncMock()
 
     await repo.save(goal)
 

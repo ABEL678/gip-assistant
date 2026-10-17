@@ -166,7 +166,7 @@
 **На 17.10.2026, после сессии 6.5:**
 
 - ✅ Веха 1 закрыта (backend + UI).
-- Нет задач в работе.
+- 🔄 **Fix canvas edge: persist premise_ids** (сессия 6.7) — relationship + direct query к goal_premises, integration-тест.
 
 **Дальше:**
 

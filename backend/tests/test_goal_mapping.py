@@ -10,6 +10,9 @@ from backend.src.adapters.db.repositories.goal_repository import (
 from backend.src.domain.entities.goal import Goal
 from backend.src.domain.value_objects.enums import GoalState
 
+# Создаём мок-репозиторий для вызова _to_domain (больше не staticmethod)
+_mock_repo = SqlAlchemyGoalRepository.__new__(SqlAlchemyGoalRepository)
+
 
 def test_goal_to_model_enum_value():
     """Domain → model: GoalState становится строкой 'plan'."""
@@ -32,7 +35,7 @@ def test_goal_to_domain_enum_value():
         formulation="Цель достигнута",
         state="achieved",
     )
-    goal = SqlAlchemyGoalRepository._to_domain(model)
+    goal = _mock_repo._to_domain(model)
 
     assert isinstance(goal.state, GoalState)
     assert goal.state == GoalState.ACHIEVED
@@ -53,7 +56,7 @@ def test_goal_roundtrip():
         created_by=created_by,
     )
     model = SqlAlchemyGoalRepository._to_model(goal)
-    goal2 = SqlAlchemyGoalRepository._to_domain(model)
+    goal2 = _mock_repo._to_domain(model)
 
     assert goal2.project_id == project_id
     assert goal2.formulation == "Подготовить расчёт ВК"

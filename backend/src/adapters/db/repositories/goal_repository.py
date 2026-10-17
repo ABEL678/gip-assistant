@@ -18,9 +18,21 @@ class SqlAlchemyGoalRepository(GoalRepository):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def _fetch_premise_ids(self, goal_id: UUID) -> list[UUID]:
+        """Прочитать premise_ids для goal_id из goal_premises."""
+        stmt = select(GoalPremiseModel.premise_id).where(
+            GoalPremiseModel.goal_id == goal_id
+        )
+        result = await self._session.execute(stmt)
+        # scalars() возвращает UUID напрямую
+        return list(result.scalars().all())
+
     async def get_by_id(self, goal_id: UUID) -> Goal | None:
         model = await self._session.get(GoalModel, goal_id)
-        return self._to_domain(model) if model else None
+        if model is None:
+            return None
+        premise_ids = await self._fetch_premise_ids(goal_id)
+        return self._to_domain(model, premise_ids=premise_ids)
 
     async def list_by_project(self, project_id: UUID) -> list[Goal]:
         stmt = (
@@ -29,30 +41,36 @@ class SqlAlchemyGoalRepository(GoalRepository):
             .order_by(GoalModel.created_at.desc())
         )
         result = await self._session.execute(stmt)
-        return [self._to_domain(m) for m in result.scalars().all()]
+        models = result.scalars().all()
+        goals = []
+        for m in models:
+            premise_ids = await self._fetch_premise_ids(m.id)
+            goals.append(self._to_domain(m, premise_ids=premise_ids))
+        return goals
 
     async def save(self, goal: Goal) -> Goal:
         model = self._to_model(goal)
         merged = await self._session.merge(model)
         await self._session.flush()
-        await self._session.refresh(merged)
 
-        # Обновляем связи goal_premises
-        if goal.premise_ids:
-            # Удаляем старые связи
-            del_stmt = (
-                delete(GoalPremiseModel)
-                .where(GoalPremiseModel.goal_id == merged.id)
+        # Удаляем старые связи
+        del_stmt = (
+            delete(GoalPremiseModel)
+            .where(GoalPremiseModel.goal_id == merged.id)
+        )
+        await self._session.execute(del_stmt)
+
+        # Добавляем новые
+        for premise_id in (goal.premise_ids or []):
+            self._session.add(
+                GoalPremiseModel(goal_id=merged.id, premise_id=premise_id)
             )
-            await self._session.execute(del_stmt)
-
-            # Добавляем новые
-            for premise_id in goal.premise_ids:
-                link = GoalPremiseModel(goal_id=merged.id, premise_id=premise_id)
-                self._session.add(link)
 
         await self._session.flush()
-        return self._to_domain(merged)
+
+        # Перечитываем premise_ids напрямую
+        premise_ids = await self._fetch_premise_ids(merged.id)
+        return self._to_domain(merged, premise_ids=premise_ids)
 
     async def delete(self, goal_id: UUID) -> None:
         # Удаляем связи goal_premises (CASCADE на уровне БД)
@@ -62,8 +80,9 @@ class SqlAlchemyGoalRepository(GoalRepository):
 
     # ---------- Mapping ----------
 
-    @staticmethod
-    def _to_domain(model: GoalModel) -> Goal:
+    def _to_domain(
+        self, model: GoalModel, premise_ids: list[UUID] | None = None
+    ) -> Goal:
         return Goal(
             id=model.id,
             project_id=model.project_id,
@@ -73,7 +92,7 @@ class SqlAlchemyGoalRepository(GoalRepository):
             priority=model.priority,
             state=GoalState(model.state),
             created_by=model.created_by,
-            premise_ids=[],  # заполняется через separate query в реальном репозитории
+            premise_ids=premise_ids or [],
             created_at=model.created_at,
             updated_at=model.updated_at,
         )

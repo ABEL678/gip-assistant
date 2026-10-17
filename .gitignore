@@ -80,6 +80,7 @@ logs/
 *.xls
 !docs/samples/*.xlsx
 uploads/
+backend/uploads/
 media/
 static/
 

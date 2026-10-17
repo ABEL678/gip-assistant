@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { premiseApi, type PremiseCreate, type PremiseUpdate } from "@/api/premiseApi"
+import {
+  premiseApi,
+  type PremiseCreate,
+  type PremiseUpdate,
+} from "@/api/premiseApi"
 
 export function usePremises(projectId: string) {
   return useQuery({
@@ -52,6 +56,24 @@ export function useDeletePremise(projectId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["premises", projectId] })
       queryClient.invalidateQueries({ queryKey: ["goal-proposals", projectId] })
+    },
+  })
+}
+
+export function useUploadPremise(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      file,
+      category,
+      name,
+    }: {
+      file: File
+      category?: string
+      name?: string
+    }) => premiseApi.uploadPremiseFile(projectId, file, category, name),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["premises", projectId] })
     },
   })
 }

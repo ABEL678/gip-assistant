@@ -6,7 +6,7 @@ import { goalApi } from "@/api/goalApi"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Upload, Grid3x3, Plus } from "lucide-react"
+import { ArrowLeft, Upload, Grid3x3, Plus, FileUp } from "lucide-react"
 import { TaskList } from "@/components/TaskList"
 import { useDocumentsByProject } from "@/hooks/useDocuments"
 
@@ -189,6 +189,32 @@ export function ProjectPage() {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Исходники</h2>
+          <Link to={`/projects/${id}/upload`}>
+            <Button variant="outline">Загрузить</Button>
+          </Link>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Файлы-исходники</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Загрузите договор, ТЗ, требования и другие исходные документы.
+            <div className="mt-4">
+              <Link to={`/projects/${id}/upload`}>
+                <Button>
+                  <FileUp className="h-4 w-4 mr-2" />
+                  Загрузить исходники
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="space-y-4">

@@ -24,7 +24,7 @@
     "radix-ui": "^1.7.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-dropzone": "^20.1.2",
+    "react-dropzone": "^20.1.4",
     "react-hook-form": "^7.89.0",
     "react-router-dom": "^7.18.4",
     "recharts": "^3.10.1",

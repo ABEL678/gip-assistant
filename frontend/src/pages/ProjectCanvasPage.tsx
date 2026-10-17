@@ -5,7 +5,6 @@ import {
   Background,
   Controls,
   MiniMap,
-  addEdge,
   type Connection,
   type Node,
   type Edge,
@@ -137,19 +136,10 @@ export function ProjectCanvasPage() {
       if (!goal) return
       const newPremiseIds = [...new Set([...goal.premise_ids, premiseId])]
       updateGoal.mutate({ goalId, payload: { premise_ids: newPremiseIds } })
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...connection,
-            type: "smoothstep",
-            markerEnd: { type: MarkerType.ArrowClosed },
-            style: { stroke: "#9ca3af" },
-          },
-          eds,
-        ),
-      )
+      // Don't setEdges here — useEffect handles edge updates after refetch
+      // to avoid race condition with the effect resetting edges
     },
-    [data, updateGoal, setEdges],
+    [data, updateGoal],
   )
 
   const handleApprove = async (proposalId: string) => {

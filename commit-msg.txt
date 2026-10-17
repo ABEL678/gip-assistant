@@ -1,0 +1,7 @@
+fix(canvas): persist edges — fix race condition between onConnect and useEffect
+
+- onConnect: removed setEdges (was causing race condition with useEffect)
+- useEffect: always recalculates edges from initialEdges after refetch
+- Edge now persists: mutation → refetch → useEffect sets edges from DB
+- Removed unused useRef and addEdge imports
+- 193 tests passed

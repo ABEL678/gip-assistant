@@ -1,7 +1,0 @@
-fix(canvas): prevent edge loss on connect — fix race condition
-
-- onConnect: add edge locally via addEdge before mutation completes
-- useUpdateGoal: removed invalidateQueries(["canvas"]) — prevents race
-- useEffect: track goal IDs, only reset edges on structural changes
-- Edge persists: added locally → mutation saves to DB → useEffect ignores
-- 193 tests passed

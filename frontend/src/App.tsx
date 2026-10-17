@@ -15,6 +15,7 @@ import { DocumentsPage } from "@/pages/DocumentsPage"
 import { PremisesPage } from "@/pages/PremisesPage"
 import { GoalsPage } from "@/pages/GoalsPage"
 import { UploadSourcesPage } from "@/pages/UploadSourcesPage"
+import { ProjectCanvasPage } from "@/pages/ProjectCanvasPage"
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="projects/:id/documents/:docId/links" element={<DocumentLinksPage />} />
           <Route path="projects/:id/premises" element={<PremisesPage />} />
           <Route path="projects/:id/upload" element={<UploadSourcesPage />} />
+          <Route path="projects/:id/canvas" element={<ProjectCanvasPage />} />
           <Route path="projects/:id/goals" element={<GoalsPage />} />
         </Route>
       </Routes>

@@ -77,14 +77,18 @@ class GoalProposalService:
 
         Если premise.category == TZ:
         - Если premise.data содержит requirement → использовать requirement.
-        - Иначе → использовать name.
+        - Иначе → использовать name + " (LLM TODO)".
         """
         results: list[GoalProposal] = []
         for p in premises:
             if p.category != PremiseCategory.TZ:
                 continue
-            formulation = p.data.get("requirement") or p.name
-            if not formulation:
+            requirement = p.data.get("requirement")
+            if requirement:
+                formulation = requirement
+            elif p.name:
+                formulation = f"{p.name} (LLM TODO)"
+            else:
                 continue
 
             results.append(GoalProposal(

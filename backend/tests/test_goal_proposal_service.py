@@ -131,7 +131,7 @@ async def test_rule_tz_serves(service: GoalProposalService, mock_repo: AsyncMock
 
 @pytest.mark.asyncio
 async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: AsyncMock):
-    """Правило 2 — без requirement использует name как fallback."""
+    """Правило 2 — без requirement использует name + (LLM TODO)."""
     mock_repo.list_by_project.return_value = [
         Premise(
             id=uuid4(),
@@ -146,7 +146,7 @@ async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: A
 
     rule_proposals = [p for p in proposals if p.rule == "тз_требование"]
     assert len(rule_proposals) == 1
-    assert rule_proposals[0].formulation == "ТЗ на разработку"
+    assert rule_proposals[0].formulation == "ТЗ на разработку (LLM TODO)"
 
 
 # ---------- Правило 3: требование Заказчика ----------

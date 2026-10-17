@@ -82,31 +82,49 @@ export function ProjectCanvasPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
-  // Track goal IDs to detect structural changes vs refetch
-  const prevGoalIdsRef = useRef<string[] | null>(null)
+  // Track if we've done initial sync to avoid double-setting on mount
+  const hasInitializedRef = useRef(false)
+  // Track DB edge IDs to detect user-added edges
+  const dbEdgeIdsRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     setNodes(initialNodes)
 
     if (!data) {
       setEdges(initialEdges)
-      prevGoalIdsRef.current = null
+      dbEdgeIdsRef.current = new Set()
       return
     }
 
-    const currentGoalIds = data.goals.map((g) => g.id).sort()
-    const prevIds = prevGoalIdsRef.current
+    const currentDbEdgeIds = new Set(initialEdges.map((e) => e.id))
 
-    const structureChanged =
-      !prevIds ||
-      prevIds.length !== currentGoalIds.length ||
-      !prevIds.every((id, i) => id === currentGoalIds[i])
-
-    if (structureChanged) {
-      prevGoalIdsRef.current = currentGoalIds
+    // On mount — always set edges from initial data
+    if (!hasInitializedRef.current) {
+      hasInitializedRef.current = true
+      dbEdgeIdsRef.current = currentDbEdgeIds
       setEdges(initialEdges)
+      return
     }
-    // else: same goals — don't reset edges (user added connection via onConnect)
+
+    // After refetch — DB edges changed. Merge: keep DB edges + user-added edges
+    const prevIds = dbEdgeIdsRef.current
+    const dbChanged =
+      prevIds.size !== currentDbEdgeIds.size ||
+      ![...prevIds].every((id) => currentDbEdgeIds.has(id))
+
+    if (dbChanged) {
+      // DB edges changed (e.g. new connection saved)
+      // Keep edges that are either in DB or were user-added
+      setEdges((prevEdges) => {
+        const merged = [
+          ...initialEdges,
+          ...prevEdges.filter((e) => !currentDbEdgeIds.has(e.id)),
+        ]
+        dbEdgeIdsRef.current = currentDbEdgeIds
+        return merged
+      })
+    }
+    // else: DB edges unchanged — don't touch edges
   }, [initialNodes, initialEdges, setNodes, setEdges, data])
 
   const confirmPremiseDelete = useCallback(() => {
@@ -159,7 +177,7 @@ export function ProjectCanvasPage() {
       if (!goal) return
       const newPremiseIds = [...new Set([...goal.premise_ids, premiseId])]
       updateGoal.mutate({ goalId, payload: { premise_ids: newPremiseIds } })
-      // Add edge locally — useEffect won't reset it if goal structure hasn't changed
+      // Add edge locally for instant feedback
       setEdges((eds) =>
         addEdge(
           {
@@ -171,8 +189,11 @@ export function ProjectCanvasPage() {
           eds,
         ),
       )
+      // Refetch canvas to persist edge in initialEdges
+      // This ensures the edge survives unmount/remount
+      refetch()
     },
-    [data, updateGoal, setEdges],
+    [data, updateGoal, setEdges, refetch],
   )
 
   const handleApprove = async (proposalId: string) => {

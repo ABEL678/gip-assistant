@@ -1,0 +1,7 @@
+fix(canvas): persist edge on connect — full fix
+
+- onConnect: explicit refetch() after updateGoal.mutate
+- useEffect: track DB edge IDs, merge user-added edges with DB edges
+- useUpdateGoal: no canvas invalidation (prevents race condition)
+- Edge persists: added locally → mutate saves to DB → refetch → useEffect merges
+- 193 tests passed

@@ -65,6 +65,7 @@ class GoalProposal(BaseModel):
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
+    id: uuid.UUID
     formulation: str
     deadline: Optional[date] = None
     priority: Optional[int] = None

@@ -284,6 +284,28 @@ async def test_rule_contract_confidence(service: GoalProposalService, mock_repo:
 
 
 @pytest.mark.asyncio
+async def test_proposal_has_id(service: GoalProposalService, mock_repo: AsyncMock, tz_premise: Premise):
+    """Предложение имеет id (для React key)."""
+    mock_repo.list_by_project.return_value = [tz_premise]
+
+    proposals = await service.propose_goals(uuid4())
+
+    assert len(proposals) == 1
+    assert proposals[0].id is not None
+
+
+@pytest.mark.asyncio
+async def test_proposal_id_deterministic(service: GoalProposalService, mock_repo: AsyncMock, tz_premise: Premise):
+    """Id детерминирован — одинаковая формулировка → одинаковый id."""
+    mock_repo.list_by_project.return_value = [tz_premise]
+
+    proposals1 = await service.propose_goals(uuid4())
+    proposals2 = await service.propose_goals(uuid4())
+
+    assert proposals1[0].id == proposals2[0].id
+
+
+@pytest.mark.asyncio
 async def test_empty_premises(service: GoalProposalService, mock_repo: AsyncMock):
     """Пустой список Premise → пустой список предложений."""
     mock_repo.list_by_project.return_value = []

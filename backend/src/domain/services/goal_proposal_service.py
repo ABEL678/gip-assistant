@@ -2,7 +2,8 @@
 
 import logging
 from datetime import date, timedelta
-from uuid import UUID
+from hashlib import sha256
+from uuid import UUID, uuid5, NAMESPACE_DNS
 
 from backend.src.domain.entities.goal_proposal import GoalProposal
 from backend.src.domain.entities.premise import Premise
@@ -56,9 +57,15 @@ class GoalProposalService:
 
         logger.info("Proposals before dedup: %d", len(proposals))
         result = self._deduplicate(proposals)
+        # Генерируем id для каждого предложения (нужен для React key)
+        for p in result:
+            if p.id is None:
+                ns = uuid5(NAMESPACE_DNS, "gip-assistant-proposals")
+                seed = f"{p.rule}:{p.formulation}"
+                p.id = uuid5(ns, seed)
         logger.info("Proposals after dedup: %d", len(result))
         for r in result:
-            logger.info("  Proposal: rule=%s formulation=%r", r.rule, r.formulation)
+            logger.info("  Proposal: id=%s rule=%s formulation=%r", r.id, r.rule, r.formulation)
 
         return result
 

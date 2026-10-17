@@ -1,0 +1,8 @@
+fix(canvas): add id to GoalProposal — fix React key warning
+
+- GoalProposal entity: add Optional[UUID] id field
+- GoalProposal DTO: add required id field
+- GoalProposalService: generate deterministic id (uuid5 from rule:formulation)
+- Tests: proposal_has_id, proposal_id_deterministic
+- Fixes "Each child in a list should have a unique key" warning
+- 193 tests passed

@@ -31,3 +31,4 @@ class GoalProposal:
     priority: Optional[int] = None
     premise_ids: list[UUID] = field(default_factory=list)
     confidence: float = 1.0
+    id: Optional[UUID] = None  # генерируется в сервисе для UI key

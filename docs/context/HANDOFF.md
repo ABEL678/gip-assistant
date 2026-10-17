@@ -1,52 +1,58 @@
 **Дата:** 17.10.2026
-**Сессия:** 6.6 (закрыта) — переход на Claude Code
+**Сессия:** 6.6 (закрыта) — канвас: связь (WIP)
 **Статус:** закрыта
 
 ## §1. Что было в сессии 6.6
 
-- Канвас работает: вводные, цели, связи, предложения, утверждение, удаление.
-- **Проблема:** связь (edge) создаётся, но исчезает при уходе/возврате.
-- GigaCode не может починить — путается в React Flow + TanStack Query + БД.
-- **Решение:** перейти на Claude Code (через gpt2giga → GigaChat).
+- Claude Code установлен (через gpt2giga → GigaChat). Работает в `-p` режиме.
+- Пытались починить сохранение связи (edge) на канвасе.
+- Backend работает: `PATCH /goals/{id}` — 200, `premise_ids` сохраняются в БД (проверено через Swagger).
+- Frontend: `onConnect` добавляет edge, `PATCH` вызывается, но после ухода/возврата edge исчезает.
+- `useEffect` с `prevGoalIdsRef` — есть. `useUpdateGoal` — `invalidateQueries(["canvas"])` — нет (или не работает).
+- **Статус:** WIP. Связь не сохраняется.
 
 ## §2. Что делаем сейчас
 
-Ничего. GigaCode больше не используется для сложных задач.
+Ничего. Ветка `fix/canvas-approve-refetch` — WIP.
 
 ## §3. Что дальше
 
-1. Установить Claude Code + плагин PyCharm.
-2. Подключить Claude Code к GigaChat через gpt2giga.
-3. Починить сохранение связи.
-4. Ось времени (план-график).
-5. Просрочки, критический путь, агенты, LLM.
+1. **Починить связь (edge)** — в новом чате.
+2. Ось времени (план-график).
+3. Просрочки, критический путь, агенты, LLM.
 
 ## §4. Что в контексте
 
-- DOMAIN.md v1.1 — онтология.
+- DOMAIN.md v1.1.
 - Дорожная карта 7.0.
-- AGENTS.md v1.2 — правила.
+- AGENTS.md v1.2.
 - Backend — работает. 193 теста.
 - Канвас — работает, кроме сохранения связи.
+- Claude Code — установлен, работает через gpt2giga.
 
 ## §5. Открытые вопросы
 
 - Как починить связь (React Flow + TanStack Query + БД)?
 - Как отображать ось времени?
 - Как показывать просрочки?
-- Как LLM будет извлекать суть из файлов?
 
 ## §6. Ключи / пути / команды
 
-Оставить.
+- **Проект:** `C:\Users\abelo\GIP-Assistant\gip-assistant`
+- **Backend:** `uvicorn backend.src.main:app --reload`
+- **Frontend:** `cd frontend && npm run dev`
+- **gpt2giga:** `gpt2giga` (localhost:8090)
+- **Claude Code:** `claude -p --model GigaChat-2-Max --permission-mode bypassPermissions "..."`
+- **Тесты:** `pytest backend/tests/ -v`
 
-## §7. Как продолжить в новом чате с Claude Code
+## §7. Как продолжить в новом чате
 
 «Привет. Проект ГИП-Ассистент. Прочитай:
 1. docs/context/DOMAIN.md — онтология.
-2. docs/context/HANDOFF.md — эстафета.
+2. docs/context/HANDOFF.md — эстафета (сессия 6.6).
 3. docs/context/CONTEXT.md — резюме.
 4. docs/context/TASKS.md — статус.
 5. AGENTS.md — правила.
 
-Канвас работает. Связь не сохраняется. Починить. Не спрашивать — просто сделать.»
+Канвас работает. Связь (edge) — WIP. Нужно починить.
+Claude Code установлен, работает через gpt2giga.»

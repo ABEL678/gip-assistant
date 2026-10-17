@@ -1,10 +1,11 @@
-import { useMemo, useCallback, useState, useEffect } from "react"
+import { useMemo, useCallback, useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
+  addEdge,
   type Connection,
   type Node,
   type Edge,
@@ -81,10 +82,32 @@ export function ProjectCanvasPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
+  // Track goal IDs to detect structural changes vs refetch
+  const prevGoalIdsRef = useRef<string[] | null>(null)
+
   useEffect(() => {
     setNodes(initialNodes)
-    setEdges(initialEdges)
-  }, [initialNodes, initialEdges, setNodes, setEdges])
+
+    if (!data) {
+      setEdges(initialEdges)
+      prevGoalIdsRef.current = null
+      return
+    }
+
+    const currentGoalIds = data.goals.map((g) => g.id).sort()
+    const prevIds = prevGoalIdsRef.current
+
+    const structureChanged =
+      !prevIds ||
+      prevIds.length !== currentGoalIds.length ||
+      !prevIds.every((id, i) => id === currentGoalIds[i])
+
+    if (structureChanged) {
+      prevGoalIdsRef.current = currentGoalIds
+      setEdges(initialEdges)
+    }
+    // else: same goals — don't reset edges (user added connection via onConnect)
+  }, [initialNodes, initialEdges, setNodes, setEdges, data])
 
   const confirmPremiseDelete = useCallback(() => {
     if (!premiseToDelete) return
@@ -136,10 +159,20 @@ export function ProjectCanvasPage() {
       if (!goal) return
       const newPremiseIds = [...new Set([...goal.premise_ids, premiseId])]
       updateGoal.mutate({ goalId, payload: { premise_ids: newPremiseIds } })
-      // Don't setEdges here — useEffect handles edge updates after refetch
-      // to avoid race condition with the effect resetting edges
+      // Add edge locally — useEffect won't reset it if goal structure hasn't changed
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...connection,
+            type: "smoothstep",
+            markerEnd: { type: MarkerType.ArrowClosed },
+            style: { stroke: "#9ca3af" },
+          },
+          eds,
+        ),
+      )
     },
-    [data, updateGoal],
+    [data, updateGoal, setEdges],
   )
 
   const handleApprove = async (proposalId: string) => {

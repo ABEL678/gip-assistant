@@ -6,8 +6,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** TASKS.md — статус.
 > Если противоречие между TASKS.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.2
-**Обновлено:** 16.10.2026
+**Версия:** 2.3
+**Обновлено:** 17.10.2026
 **Автор:** ГИП, руководитель разработки
 
 ---
@@ -250,28 +250,31 @@
 
 **На 17.10.2026:**
 
-- ✅ **Веха 1a–1d закрыты** (premises + goals + 187 тестов).
-- 🔄 **Веха 1f — UI**: PremisesPage, GoalsPage, GoalProposalList (fix edit forms).
-- ❌ **Пересборка ТЗ 4.4** — отменена в пользу спек по вехам.
+- 🔄 **Загрузка исходников** (drop zone + backend).
+- 🔄 **Канвас** (React Flow) на реальном backend.
 
-### Веха 1a–1d (закрыта)
+### Веха 1 (закрыта — backend, сброшен — UI)
+
+**Backend (1a–1d):**
 
 - ✅ Домен, модели, миграция.
 - ✅ DTO, порты, репозитории.
 - ✅ Сервисы + 4 правила вывода.
-- ✅ DI + эндпоинты + тесты роутов.
+- ✅ DI + 12 эндпоинтов + 17 тестов роутов.
+- ✅ 187 тестов pytest.
+
+**UI (1f):**
+
+- ❌ СБРОШЕН. Причина: не работает end-to-end.
+- Пересборка: канвас (React Flow) вместо списков.
 
 ---
 
 ## 3. Дальше (Next)
 
-### Веха 1f — UI (следующий шаг)
+### Правила вывода (правило 1 и т.д.)
 
-- ⏳ PremisesPage.tsx, GoalsPage.tsx.
-- ⏳ GoalProposalList.tsx.
-- ⏳ premiseApi.ts, goalApi.ts.
-- ⏳ usePremises, useGoals.
-- ⏳ PremiseCard, PremiseForm, GoalCard, GoalForm.
+- ⏳ Правила вывода через UI.
 
 ### Веха 2 — Action + Task-адаптация
 
@@ -337,42 +340,13 @@
 - ✅ `AGENTS.md` обновлён: правила для тестов роутов и «не удалять тесты».
 - ✅ Ветка `feat/week-1d-di-routes` запушена.
 
-### 17.10.2026 (веха 1f — ЗАКРЫТО)
+### 17.10.2026 (сессия 6.4)
 
-- ✅ Frontend: PremisesPage, GoalsPage, GoalProposalList.
-- ✅ API-клиенты: premiseApi, goalApi.
-- ✅ Хуки: usePremises, useGoals.
-- ✅ Компоненты: PremiseCard, PremiseForm, GoalCard, GoalForm, GoalProposalList.
-- ✅ Секции «Вводные» и «Цели» в ProjectPage.
-- ✅ Роутинг в App.tsx.
-
-### 17.10.2026 (Fix: 18 ошибок TypeScript — ЗАКРЫТО)
-
-- ✅ DocumentCard.tsx — STATUS_COLORS типа Record<..., string>.
-- ✅ documentLinksApi.ts — добавлен export DocumentLinkType.
-- ✅ useDocumentLinks.ts — убран неиспользуемый DocumentLink.
-- ✅ useDocuments.ts — LifecycleStatus из documentEnums.
-- ✅ useDocumentVersions.ts — убран неиспользуемый DocumentVersion.
-- ✅ DocumentConstructorPage.tsx — убраны неиспользуемые импорты.
-- ✅ DocumentLinksPage.tsx — добавлен импорт useDocumentsByProject.
-- ✅ vite.config.ts — CSS-минификация заменена на esbuild.
-- ✅ `npm run build` — 0 ошибок TypeScript, сборка успешна.
-
-### 17.10.2026 (Fix: редактирование Premise/Goal — формы не заполняются — ЗАКРЫТО)
-
-- ✅ PremiseCard/GoalCard — `onEdit` теперь передаёт весь объект, а не только `id`.
-- ✅ PremisesPage/GoalsPage — добавлен `editingId`, `initialData` в форму, заголовок модалки переключается.
-- ✅ PremiseForm/GoalForm — добавлен `useEffect` для синхронизации `initialData` → `useState`.
-- ✅ GoalsPage — `premiseNameMap` строится из реальных данных (`usePremises`), а не заглушек.
-- ✅ Dialog `onOpenChange` — сбрасывает `editingId` при закрытии.
-- ✅ `npm run build` — 0 ошибок.
-- ✅ Ветка `fix/edit-forms`, коммит `fix(frontend): populate forms on edit`.
-
-### 17.10.2026 (Sync context — ЗАКРЫТО)
-
-- ✅ CONTEXT.md — §4, §5 обновлены.
-- ✅ TASKS.md — 1f + fix + sync.
-- ✅ HANDOFF.md — обновлён.
+- ✅ Веха 1 — не работает end-to-end.
+- Решение: не чинить — пересобрать UI.
+- 19 веток — смержены, удалены.
+- AGENTS.md — правило «мержить после подсессии».
+- Новый UX: канвас.
 
 ### 16.10.2026 (сессия 6.1)
 
@@ -515,9 +489,10 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest | 187 | — |
-| Таблиц в БД | 14 | — |
-| Эндпоинтов API | 39 | — |
+| Тесты pytest (backend) | 187 | — |
+| Тесты (frontend) | 0 | — (UI сброшен) |
+| Таблиц в БД | 17 | — |
+| Эндпоинтов API | 51 | — |
 | Клиентов | 0 | 1 пилот |
 | MRR | 0 ₽ | 5 000 ₽ |
 | `docs/context/` готовность | 8/8 файлов | 8/8 |
@@ -558,4 +533,4 @@
 
 ---
 
-**Конец TASKS.md v2.1.**
+**Конец TASKS.md v2.3.**

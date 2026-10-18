@@ -3,42 +3,18 @@ import { ReactFlow, Background, Controls, Position, MarkerType } from "@xyflow/r
 import "@xyflow/react/dist/style.css"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { FileText, Plus, RefreshCw } from "lucide-react"
+import { FileText, Plus, RefreshCw, ClipboardPaste } from "lucide-react"
 
 // ====================================================================
-// Мок-договор (константа)
+// Мок-договор (чистый текст, без инструкций)
 // ====================================================================
 
 const MOCK_CONTRACT = `Договор №1. Разработка проектной и рабочей документации.
-Состав: ПД, РД.
+Заказчик: ООО «СтройПроект». Исполнитель: АО «Гипропроект».
+Предмет договора: разработка проектной документации (ПД) и рабочей документации (РД) для объекта капитального строительства.
+Состав документации: ПД, РД.
 Разделы: АР, КР, ВК, ЭОМ.
-Логика парсинга (простая, regex)
-Если в тексте есть «ПД» → добавить узел «Сдать ПД».
-
-Если есть «РД» → добавить «Сдать РД».
-
-Если есть «Разделы: …» → для каждого раздела добавить:
-
-«X (ПД)» (если ПД есть).
-
-«X (РД)» (если РД есть).
-
-Связи:
-
-«Сдать ПД» → «X (ПД)».
-
-«Сдать РД» → «X (РД)».
-
-«X (ПД)» → «X (РД)» (красный пунктир).
-
-UI
-Сверху: кнопка «Загрузить договор» (открывает textarea с мок-текстом).
-
-После нажатии «Построить» — граф строится из текста.
-
-Кнопка «Сброс» — очищает.
-
-Цвета: ПД — синий бейдж, РД — оранжевый.`
+Сроки: ПД — до 01.03.2027, РД — до 01.09.2027.`
 
 // ====================================================================
 // Парсер договора
@@ -51,18 +27,18 @@ interface ParsedContract {
 }
 
 function parseContract(text: string): ParsedContract {
-  const hasPd = /ПД|проектная документации/.test(text)
-  const hasRd = /РД|рабочая документация/.test(text)
+  const hasPd = /ПД|проектн(ая|ой|ого|ую|ой)/i.test(text)
+  const hasRd = /РД|рабоч(ая|ая|ую|ую)/i.test(text)
 
   // Ищем разделы после "Разделы:"
-  const sectionsMatch = text.match(/Разделы[：:]\s*([^\n]+)/)
+  const sectionsMatch = text.match(/Разделы[：:\s]+([^\n]+)/i)
   const sections: string[] = []
   if (sectionsMatch) {
     sections.push(
       ...sectionsMatch[1]
         .split(/[,\s]+/)
         .map((s) => s.trim())
-        .filter((s) => s.length > 0 && s.length < 20),
+        .filter((s) => /^[А-ЯA-Z]{2,6}$/.test(s)),
     )
   }
 
@@ -118,7 +94,6 @@ function buildGraph(parsed: ParsedContract): GraphData {
   }
 
   // Правая колонка: разделы
-  const rightNodes: { id: string; label: string; type: "section-pd" | "section-rd" }[] = []
   let rightY = 50
 
   if (parsed.hasPd && parsed.sections.length > 0) {
@@ -132,7 +107,6 @@ function buildGraph(parsed: ParsedContract): GraphData {
         sourcePosition: Position.Right,
         targetPosition: Position.Left,
       })
-      rightNodes.push({ id, label, type: "section-pd" })
       rightY += 90
     }
   }
@@ -149,7 +123,6 @@ function buildGraph(parsed: ParsedContract): GraphData {
         sourcePosition: Position.Right,
         targetPosition: Position.Left,
       })
-      rightNodes.push({ id, label, type: "section-rd" })
       rightY += 90
     }
   }
@@ -268,6 +241,10 @@ export function GoalGraph() {
   const [contractText, setContractText] = useState("")
   const [graphData, setGraphData] = useState<GraphData | null>(null)
 
+  const handleUseMock = () => {
+    setContractText(MOCK_CONTRACT)
+  }
+
   const handleBuild = () => {
     const text = contractText || MOCK_CONTRACT
     const parsed = parseContract(text)
@@ -308,6 +285,10 @@ export function GoalGraph() {
           )}
           {showEditor && (
             <>
+              <Button size="sm" variant="outline" onClick={handleUseMock}>
+                <ClipboardPaste className="h-3 w-3 mr-1" />
+                Мок-договор
+              </Button>
               <Button size="sm" variant="outline" onClick={() => setShowEditor(false)}>
                 Отмена
               </Button>
@@ -329,15 +310,19 @@ export function GoalGraph() {
       {showEditor && (
         <div className="border-b bg-gray-50 p-4">
           <div className="max-w-3xl mx-auto space-y-3">
-            <div className="text-sm font-medium text-gray-700">Текст договора (мок):</div>
+            <div className="text-sm font-medium text-gray-700">Текст договора:</div>
             <Textarea
               value={contractText}
               onChange={(e) => setContractText(e.target.value)}
-              placeholder="Вставьте текст договора или используйте мок по умолчанию..."
+              onPaste={() => {}}
+              data-gramm="false"
+              data-gramm_editor="false"
+              data-enable-grammarly="false"
+              placeholder="Вставьте текст договора или нажмите «Мок-договор»..."
               className="min-h-[200px] font-mono text-sm"
             />
             <div className="text-xs text-gray-400">
-              Или нажмите «Построить» без текста — будет использован мок-договор.
+              Поддерживается вставка (Ctrl+V), перетаскивание текста. Граммари — игнорируется.
             </div>
           </div>
         </div>

@@ -45,7 +45,12 @@ class GoalModel(Base, TimestampMixin):
         default=GoalState.PLAN,
     )
     verification_status: Mapped[str] = mapped_column(
-        Enum(VerificationStatus, name="verification_status", create_type=False),
+        Enum(
+            VerificationStatus,
+            name="verification_status",
+            create_type=False,
+            values_callable=lambda e: [x.value for x in e],
+        ),
         nullable=False,
         default=VerificationStatus.REQUIRES_CHECK,
     )

@@ -1,73 +1,95 @@
 # HANDOFF.md — эстафета между сессиями
 
+> **Назначение:** файл-эстафета. Пишется по запросу человека — перед
+> завершением сессии в чате с ИИ-ассистентом (DeepSeek, ChatGPT, Claude),
+> или при приближении к лимиту контекста.
+> Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
+
 **Дата:** 18.10.2026
-**Сессия:** 6.7 → 6.8 (переход)
-**Статус:** онтология обновлена, спека вехи 1 готова, код не начат
+**Сессия:** 6.8a
+**Статус:** закрыта
 
 ---
 
-## §1. Что было в сессии 6.7
+## 1. Что было в прошлой сессии
 
-- Edge-фикс (сохранение связей) — закрыт (коммит `cc8bf58`).
-- Онтология обновлена (8 вставок в DOMAIN.md, 8 в Дорожную карту 7.0).
-- Создан `docs/specs/spec_week_1.md` — финальная (15 подразделов).
-- Добавлены: `verification_status`, `owner`, агент-валидатор, матрица смежников, протокол 2–3 прогонов, 3 эндпоинта.
+- ✅ `VerificationStatus(StrEnum)` — CONFIRMED, NOT_CONFIRMED, REQUIRES_CHECK, NO_DATA
+- ✅ Goal entity: поле `verification_status` (после state, default REQUIRES_CHECK)
+- ✅ GoalModel: колонка + индекс `idx_goals_verification_status`
+- ✅ GoalRepository: mapping `_to_domain` / `_to_model` (с защитой от None)
+- ✅ DTO: `GoalSchema` + `GoalProposal` с verification_status; `GoalUpdate` — не трогать
+- ✅ `PremiseDataField` — типизированное поле data с owner/source + field_validator (coerce plain values)
+- ✅ Миграция `cd056578f798` (upgrade + downgrade)
+- ✅ Тесты: 193 passed (все, включая интеграционный)
+- ✅ Исправление: `values_callable=lambda e: [x.value for x in e]` — lowercase enum в БД
 
-## §2. Что делаем сейчас
+## 2. Что делаем сейчас
 
-**Ничего.** Спека готова. Код не начат. Ждём **6.8a**.
+**Сессия 6.8b — сервисы (CRUD + валидатор + матрица + протокол).**
 
-## §3. Что дальше (порядок — строгий)
+- **Прогресс:** 0% — не начато
+- **Промпт для GigaCode:** `docs/tasks/6.8b_prompt.md` (создать из шаблона)
+- **Источник истины:** `docs/specs/spec_week_1.md` §4, §4.1, §5
+- **Критерии готовности:** сервисы CRUD + агент-валидатор + матрица смежников + протокол 2–3 прогонов
 
-1. **6.8a** — модель БД (миграция) + DTO + порты/репозитории. **Без** валидатора.
-2. **6.8b** — сервисы (CRUD + валидатор + матрица + протокол).
-3. **6.8c** — эндпоинты (CRUD + 3 эндпоинта) + тесты.
-4. **6.8d** — UI (страницы, карточки, статус, владелец).
+## 3. Что дальше
 
-**Каждая подсессия** — 1 коммит, зелёные тесты, diff.
+1. Создать промпт `docs/tasks/6.8b_prompt.md` из шаблона
+2. 6.8b — сервисы: GoalService (CRUD + verification_status валидатор), PremiseService (обновление)
+3. 6.8c — эндпоинты (CRUD + 3 эндпоинта) + тесты
+4. 6.8d — UI (страницы, карточки, статус, владелец)
+5. Мержить в main, удалять ветку
 
-## §4. Что уже в контексте (не пересказывать)
+## 4. Что уже в контексте (не надо пересказывать)
 
-- `docs/context/DOMAIN.md` v1.1 — онтология (обновлённая).
-- `docs/Дорожная_карта_7.0.md` — стратегия (обновлённая).
-- `docs/specs/spec_week_1.md` — спека вехи 1 (финальная).
+- `docs/Дорожная_карта_7.0.md` — стратегия.
 - `docs/context/CONTEXT.md` — резюме.
 - `docs/context/TASKS.md` — статус.
-- `AGENTS.md` — правила GigaCode.
+- `docs/context/ARCHITECTURE.md` — структура.
+- `docs/context/DATABASE.md` — схема БД.
+- `docs/context/API.md` — эндпоинты.
+- `docs/context/RULES.md` — правила.
+- `docs/context/DOMAIN.md` — онтология.
+- `docs/specs/spec_week_1.md` — финальная спека Вехи 1.
+- `AGENTS.md` — правила для GigaCode.
 
-## §5. Открытые вопросы (для стратегии)
+## 5. Открытые вопросы / блокеры
 
-- Вопрос 6 (UI) — **решено** (карточки со статусом и владельцем).
-- Вопрос 13 (механизм вывода) — **решено** (правила + валидатор + матрица + протокол).
-- Вопрос 14 (утверждение) — **решено** (с учётом статуса проверки).
-- Вопрос 15 (границы автоматизации) — **решено** (только явное из вводных).
-- **Не решено** — что **дальше** после 6.8d (6.9 — скелет из договора + регламента).
+- [ ] БД PostgreSQL не запущена локально — миграция `cd056578f798` не проверена на `upgrade/downgrade/upgrade` (pytest прошёл, но миграция на живом PostgreSQL не тестируется)
+- [ ] Нужно ли обновлять `docs/context/DATABASE.md` — добавлена колонка `verification_status` и индекс в таблицу `goals`
 
-## §6. Ключи / пути / команды
+## 6. Ключи / пути / команды
 
 - **Проект:** `C:\Users\abelo\GIP-Assistant\gip-assistant`
-- **Backend:** `uvicorn backend.src.main:app --reload` (из корня).
-- **Тесты:** `pytest backend/tests/ -v` (из корня).
-- **Alembic:** `cd backend && ..\.venv\Scripts\activate && alembic upgrade head`.
-- **Frontend:** `cd frontend && npm run dev`.
+- **Backend:** `cd backend && ..\.venv\Scripts\activate`
+- **Backend (запуск):** `uvicorn backend.src.main:app --reload` (из корня)
+- **Frontend:** `cd frontend && npm run dev`
+- **Тесты:** `pytest backend/tests/ -v` (из корня)
+- **Alembic:** `cd backend && ..\.venv\Scripts\activate && alembic current`
+- **Ruff:** `.venv\Scripts\activate && ruff check backend/`
+- **БД:** Docker `gip_db` на 5555
+- **GitHub:** https://github.com/ABEL678/gip-assistant
 
-## §7. Как продолжить в новом чате
+## 7. Как продолжить в новом чате
 
-**Первое сообщение (для рутинного чата):**
+**Первое сообщение:**
 
-    Привет. Продолжаем проект «ГИП-Ассистент». Прочитай:
+    Привет. Продолжаем проект «ГИП-Ассистент».
+
+    Прочитай (по порядку):
     1. docs/context/HANDOFF.md
-    2. docs/context/DOMAIN.md (v1.1)
-    3. docs/Дорожная_карта_7.0.md
-    4. docs/specs/spec_week_1.md
-    5. docs/context/CONTEXT.md
-    6. docs/context/TASKS.md
-    7. AGENTS.md
+    2. docs/context/CONTEXT.md
+    3. docs/context/TASKS.md
+    4. docs/context/ARCHITECTURE.md
+    5. AGENTS.md
 
-    Мы на 6.8a. Задача: модель БД + миграция + DTO + порты/репозитории.
-    Полная спека — в docs/specs/spec_week_1.md (§3, §3.1, §4, §4.1, §5).
-    Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
-    Стратегия и онтология — в другом чате.
+    Дальше:
+    - Мы на сессии 6.8b.
+    - Задача: сервисы (CRUD + валидатор + матрица + протокол).
+    - Полный промпт для GigaCode — в docs/tasks/6.8b_prompt.md.
+    - Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
+
+    Продолжай.
 
 ---
 

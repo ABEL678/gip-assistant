@@ -6,7 +6,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from backend.src.domain.value_objects.enums import GoalState
+from backend.src.domain.value_objects.enums import GoalState, VerificationStatus
 
 
 class GoalSchema(BaseModel):
@@ -19,6 +19,7 @@ class GoalSchema(BaseModel):
     responsible_id: Optional[uuid.UUID] = None
     priority: Optional[int] = None
     state: GoalState = GoalState.PLAN
+    verification_status: VerificationStatus = VerificationStatus.REQUIRES_CHECK
     created_by: Optional[uuid.UUID] = None
     premise_ids: list[uuid.UUID] = Field(default_factory=list)
 
@@ -70,6 +71,7 @@ class GoalProposal(BaseModel):
     deadline: Optional[date] = None
     priority: Optional[int] = None
     premise_ids: list[uuid.UUID] = Field(default_factory=list)
+    verification_status: VerificationStatus = VerificationStatus.REQUIRES_CHECK
     rule: str  # название правила: "договор_срок", "тз_требование", ...
     confidence: float = 1.0  # 1.0 = явное правило, < 1.0 = нужен LLM
 

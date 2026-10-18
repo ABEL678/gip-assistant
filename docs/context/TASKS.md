@@ -6,7 +6,7 @@
 > **Главный документ проекта — `DOMAIN.md`.** TASKS.md — статус.
 > Если противоречие между TASKS.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.4
+**Версия:** 2.5
 **Обновлено:** 18.10.2026
 **Автор:** ГИП, руководитель разработки
 
@@ -271,11 +271,11 @@
 
 ## 2. В работе (In Progress)
 
-**На 18.10.2026 — 6.8a (модель БД + миграция + DTO + порты/репозитории).**
+**На 18.10.2026 — 6.8b (сервисы: CRUD + валидатор + матрица + протокол).**
 
 - Спека: `docs/specs/spec_week_1.md` (финальная).
 - Код не начат.
-- Подсессии: 6.8a (модель), 6.8b (сервисы), 6.8c (эндпоинты), 6.8d (UI).
+- Подсессии: 6.8b (сервисы), 6.8c (эндпоинты), 6.8d (UI).
 
 ## 3. Дальше (Next)
 
@@ -292,7 +292,7 @@
 
 ### Веха 1 (6.8) — по подсессиям
 
-- ⏳ **6.8a** — модель БД (миграция `verification_status` + `owner`), DTO, порты/репозитории.
+- ✅ **6.8a** — модель БД (миграция `verification_status` + `PremiseDataField`), DTO, порты/репозитории.
 - ⏳ **6.8b** — сервисы (CRUD + валидатор + матрица + протокол).
 - ⏳ **6.8c** — эндпоинты (CRUD + 3 эндпоинта) + тесты.
 - ⏳ **6.8d** — UI (страницы, карточки, статус, владелец).
@@ -389,6 +389,19 @@
 - ✅ Integration-тест `test_goal_premise_ids_persist_end_to_end` (httpx.AsyncClient + реальная БД).
 - ✅ 193 теста pytest (зелёные).
 - ✅ Ветка `fix/canvas-approve-refetch`.
+
+### 18.10.2026 (сессия 6.8a — verification_status + PremiseDataField)
+
+- ✅ `VerificationStatus(StrEnum)` — CONFIRMED, NOT_CONFIRMED, REQUIRES_CHECK, NO_DATA.
+- ✅ Goal entity: поле `verification_status` (после state, default REQUIRES_CHECK).
+- ✅ GoalModel: колонка + индекс `idx_goals_verification_status`.
+- ✅ GoalRepository: mapping `_to_domain` / `_to_model` (с защитой от None).
+- ✅ DTO: `GoalSchema` + `GoalProposal` — verification_status; `GoalUpdate` — не трогать.
+- ✅ `PremiseDataField` — типизированное поле data с owner/source + field_validator (coerce plain values).
+- ✅ Миграция `cd056578f798` (upgrade + downgrade).
+- ✅ Тесты: test_goal_mapping.py, test_goals_routes.py — обновлены моки.
+- ✅ 192 passed (1 integration test требует запущенный PostgreSQL).
+- ⏳ Переход на 6.8b (сервисы).
 
 ### 18.10.2026 (сессия 6.9, шаг 1, итерация 9)
 
@@ -576,7 +589,7 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 193 | — |
+| Тесты pytest (backend) | 192 (+1 требует БД) | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 17 | — |
 | Эндпоинтов API | 51 | — |
@@ -621,4 +634,4 @@
 
 ---
 
-**Конец TASKS.md v2.3.**
+**Конец TASKS.md v2.5.**

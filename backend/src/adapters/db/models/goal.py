@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.src.adapters.db.base import Base, TimestampMixin
-from backend.src.domain.value_objects.enums import GoalState
+from backend.src.domain.value_objects.enums import GoalState, VerificationStatus
 
 
 class GoalModel(Base, TimestampMixin):
@@ -18,6 +18,7 @@ class GoalModel(Base, TimestampMixin):
         Index("idx_goals_project", "project_id"),
         Index("idx_goals_state", "state"),
         Index("idx_goals_deadline", "deadline"),
+        Index("idx_goals_verification_status", "verification_status"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -42,6 +43,11 @@ class GoalModel(Base, TimestampMixin):
         Enum(GoalState, name="goal_state", create_type=False),
         nullable=False,
         default=GoalState.PLAN,
+    )
+    verification_status: Mapped[str] = mapped_column(
+        Enum(VerificationStatus, name="verification_status", create_type=False),
+        nullable=False,
+        default=VerificationStatus.REQUIRES_CHECK,
     )
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),

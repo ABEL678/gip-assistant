@@ -4,10 +4,23 @@ import uuid
 from datetime import date as _date, datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic import AliasChoices
 
 from backend.src.domain.value_objects.enums import PremiseCategory
+
+
+class PremiseDataField(BaseModel):
+    """Поле data вводной с владельцем (DOMAIN.md §3.4.1).
+
+    Если owner не указан — это «нет данных» (нельзя проверить).
+    """
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    value: Any
+    owner: Optional[str] = None
+    source: Optional[str] = None
 
 
 class PremiseSchema(BaseModel):
@@ -23,12 +36,23 @@ class PremiseSchema(BaseModel):
     mandatory: bool = True
     link: Optional[str] = Field(None, max_length=1000)
     valid_until: Optional[_date] = None
-    data: dict[str, Any] = Field(default_factory=dict)
+    data: dict[str, PremiseDataField] = Field(default_factory=dict)
     schema_: dict[str, Any] = Field(
         default_factory=dict,
         validation_alias=AliasChoices("schema", "field_schema"),
         serialization_alias="schema",
     )
+
+    @field_validator("data", mode="before")
+    @classmethod
+    def _coerce_plain_values(cls, v: Any) -> Any:
+        if not isinstance(v, dict):
+            return v
+        return {
+            k: val if isinstance(val, dict) and "value" in val
+            else {"value": val, "owner": None, "source": None}
+            for k, val in v.items()
+        }
 
 
 class PremiseCreate(PremiseSchema):

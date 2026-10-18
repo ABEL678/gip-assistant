@@ -9,7 +9,7 @@ from backend.src.adapters.db.models.goal import GoalModel
 from backend.src.adapters.db.models.goal_premise import GoalPremiseModel
 from backend.src.domain.entities.goal import Goal
 from backend.src.domain.ports.repositories import GoalRepository
-from backend.src.domain.value_objects.enums import GoalState
+from backend.src.domain.value_objects.enums import GoalState, VerificationStatus
 
 
 class SqlAlchemyGoalRepository(GoalRepository):
@@ -91,6 +91,7 @@ class SqlAlchemyGoalRepository(GoalRepository):
             responsible_id=model.responsible_id,
             priority=model.priority,
             state=GoalState(model.state),
+            verification_status=VerificationStatus(model.verification_status),
             created_by=model.created_by,
             premise_ids=premise_ids or [],
             created_at=model.created_at,
@@ -107,5 +108,10 @@ class SqlAlchemyGoalRepository(GoalRepository):
             responsible_id=domain.responsible_id,
             priority=domain.priority,
             state=domain.state.value,
+            verification_status=(
+                domain.verification_status.value
+                if domain.verification_status
+                else VerificationStatus.REQUIRES_CHECK.value
+            ),
             created_by=domain.created_by,
         )

@@ -76,3 +76,12 @@ class GoalState(StrEnum):
     IN_PROGRESS = "in_progress"  # В работе
     ACHIEVED = "achieved"        # Достигнута
     CANCELLED = "cancelled"      # Отменена
+
+
+class VerificationStatus(StrEnum):
+    """Статус проверки (verification_status). DOMAIN.md §4.4.1."""
+
+    CONFIRMED = "confirmed"              # Подтверждено (есть доказательство)
+    NOT_CONFIRMED = "not_confirmed"      # Не соответствует (есть доказательство обратного)
+    REQUIRES_CHECK = "requires_check"    # Требует проверки (данных достаточно, вывод не авто)
+    NO_DATA = "no_data"                  # Нет данных (сигнал к RFI, не ошибка)

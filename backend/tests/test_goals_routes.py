@@ -12,7 +12,7 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from backend.src.domain.value_objects.enums import GoalState, PremiseCategory
+from backend.src.domain.value_objects.enums import GoalState, PremiseCategory, VerificationStatus
 
 
 def _make_goal(
@@ -24,6 +24,7 @@ def _make_goal(
     responsible_id: UUID = None,
     priority: int = 1,
     state: GoalState = GoalState.PLAN,
+    verification_status: VerificationStatus = VerificationStatus.REQUIRES_CHECK,
     created_by: UUID = None,
     created_at: datetime = None,
     updated_at: datetime = None,
@@ -38,6 +39,7 @@ def _make_goal(
     goal.responsible_id = responsible_id
     goal.priority = priority
     goal.state = state
+    goal.verification_status = verification_status
     goal.created_by = created_by
     goal.created_at = created_at or datetime.now(UTC)
     goal.updated_at = updated_at or datetime.now(UTC)
@@ -103,6 +105,7 @@ def _make_goal_proposal(
     proposal.deadline = deadline
     proposal.priority = priority
     proposal.premise_ids = premise_ids or []
+    proposal.verification_status = VerificationStatus.REQUIRES_CHECK
     return proposal
 
 
@@ -187,6 +190,7 @@ class TestGoalsRoutes:
                 "responsible_id": None,
                 "priority": 1,
                 "state": "plan",
+                "verification_status": "requires_check",
                 "created_by": None,
             },
         )
@@ -348,6 +352,7 @@ class TestGoalsRoutes:
                 "responsible_id": None,
                 "priority": 2,
                 "state": "plan",
+                "verification_status": "requires_check",
                 "created_by": None,
             },
         )
@@ -504,6 +509,7 @@ class TestGoalPremiseIdsIntegration:
                 "responsible_id": None,
                 "priority": 1,
                 "state": "plan",
+                "verification_status": "requires_check",
                 "created_by": None,
             },
         )

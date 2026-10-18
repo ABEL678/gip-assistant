@@ -6,180 +6,144 @@ import { Textarea } from "@/components/ui/textarea"
 import { FileText, Plus, RefreshCw, ClipboardPaste } from "lucide-react"
 
 // ====================================================================
-// Мок-договор (чистый текст, без инструкций)
+// Мок-договор
 // ====================================================================
 
 const MOCK_CONTRACT = `Договор №1. Разработка проектной и рабочей документации.
-Заказчик: ООО «СтройПроект». Исполнитель: АО «Гипропроект».
-Предмет договора: разработка проектной документации (ПД) и рабочей документации (РД) для объекта капитального строительства.
-Состав документации: ПД, РД.
+Состав: ПД, РД.
 Разделы: АР, КР, ВК, ЭОМ.
 Сроки: ПД — до 01.03.2027, РД — до 01.09.2027.`
 
 // ====================================================================
-// Парсер договора
+// Парсер: извлекает разделы из текста
 // ====================================================================
 
-interface ParsedContract {
-  hasPd: boolean
-  hasRd: boolean
-  sections: string[]
-}
+function parseSections(text: string): string[] {
+  const match = text.match(/Разделы[：:\s]+([^\n]+)/i)
+  if (!match) return ["АР", "КР", "ВК", "ЭОМ"] // fallback
 
-function parseContract(text: string): ParsedContract {
-  const hasPd = /ПД|проектн(ая|ой|ого|ую|ой)/i.test(text)
-  const hasRd = /РД|рабоч(ая|ая|ую|ую)/i.test(text)
-
-  // Ищем разделы после "Разделы:"
-  const sectionsMatch = text.match(/Разделы[：:\s]+([^\n]+)/i)
-  const sections: string[] = []
-  if (sectionsMatch) {
-    sections.push(
-      ...sectionsMatch[1]
-        .split(/[,\s]+/)
-        .map((s) => s.trim())
-        .filter((s) => /^[А-ЯA-Z]{2,6}$/.test(s)),
-    )
-  }
-
-  return { hasPd, hasRd, sections }
+  return match[1]
+    .split(/[,\s]+/)
+    .map((s) => s.trim())
+    .filter((s) => /^[А-ЯA-Z]{2,6}$/.test(s))
 }
 
 // ====================================================================
-// Генерация графа из парсенных данных
+// Генерация графа: жёсткая структура
+//
+// Всегда:
+//   - 2 корня: goal-pd ("Сдать ПД"), goal-rd ("Сдать РД")
+//   - Для каждого раздела X: x-pd, x-rd
+//
+// Связи:
+//   goal-pd → x-pd
+//   goal-rd → x-rd
+//   x-pd → x-rd (красный пунктир)
 // ====================================================================
 
-interface GraphData {
-  nodes: Array<{
+function buildGraph(sections: string[]) {
+  const nodes: Array<{
     id: string
     position: { x: number; y: number }
     data: { label: string; type: "submit" | "section-pd" | "section-rd" }
     sourcePosition: Position
     targetPosition: Position
-  }>
-  edges: Array<{
+  }> = [
+    // === Корни (левая колонка) ===
+    {
+      id: "goal-pd",
+      position: { x: 100, y: 100 },
+      data: { label: "Сдать ПД", type: "submit" as const },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    },
+    {
+      id: "goal-rd",
+      position: { x: 100, y: 450 },
+      data: { label: "Сдать РД", type: "submit" as const },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    },
+  ]
+
+  const edges: Array<{
     id: string
     source: string
     target: string
     type: "smoothstep"
     style?: React.CSSProperties
     markerEnd?: { type: MarkerType; color?: string }
-  }>
-}
+  }> = []
 
-function buildGraph(parsed: ParsedContract): GraphData {
-  const nodes: GraphData["nodes"] = []
-  const edges: GraphData["edges"] = []
-
-  // Левая колонка: "Сдать ПД" / "Сдать РД"
-  let leftY = 80
-  if (parsed.hasPd) {
-    nodes.push({
-      id: "submit-pd",
-      position: { x: 100, y: leftY },
-      data: { label: "Сдать ПД", type: "submit" },
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
-    })
-    leftY += 120
-  }
-  if (parsed.hasRd) {
-    nodes.push({
-      id: "submit-rd",
-      position: { x: 100, y: leftY },
-      data: { label: "Сдать РД", type: "submit" },
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
-    })
-  }
-
-  // Правая колонка: разделы
   let rightY = 50
+  const sectionIds: { pd: string; rd: string }[] = []
 
-  if (parsed.hasPd && parsed.sections.length > 0) {
-    for (const section of parsed.sections) {
-      const id = `sec-pd-${section.toLowerCase()}`
-      const label = `${section} (ПД)`
-      nodes.push({
-        id,
-        position: { x: 500, y: rightY },
-        data: { label, type: "section-pd" },
-        sourcePosition: Position.Right,
-        targetPosition: Position.Left,
-      })
-      rightY += 90
-    }
+  // === Узлы разделов ПД (правая колонка, верх) ===
+  for (const section of sections) {
+    const id = `${section.toLowerCase()}-pd`
+    nodes.push({
+      id,
+      position: { x: 500, y: rightY },
+      data: { label: `${section} (ПД)`, type: "section-pd" as const },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    })
+    sectionIds.push({ pd: id, rd: "" }) // rd заполним ниже
+    rightY += 90
   }
 
   rightY = 50
-  if (parsed.hasRd && parsed.sections.length > 0) {
-    for (const section of parsed.sections) {
-      const id = `sec-rd-${section.toLowerCase()}`
-      const label = `${section} (РД)`
-      nodes.push({
-        id,
-        position: { x: 500, y: rightY },
-        data: { label, type: "section-rd" },
-        sourcePosition: Position.Right,
-        targetPosition: Position.Left,
+  // === Узлы разделов РД (правая колонка, низ) ===
+  for (const section of sections) {
+    const id = `${section.toLowerCase()}-rd`
+    nodes.push({
+      id,
+      position: { x: 500, y: rightY },
+      data: { label: `${section} (РД)`, type: "section-rd" as const },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    })
+    // Связываем pd ↔ rd
+    const pdIndex = sections.indexOf(section)
+    if (pdIndex >= 0) sectionIds[pdIndex].rd = id
+    rightY += 90
+  }
+
+  // === Связи: goal-pd → x-pd ===
+  for (const section of sections) {
+    const pdId = `${section.toLowerCase()}-pd`
+    edges.push({
+      id: `e-goal-pd-${pdId}`,
+      source: "goal-pd",
+      target: pdId,
+      type: "smoothstep",
+      markerEnd: { type: MarkerType.ArrowClosed },
+    })
+  }
+
+  // === Связи: goal-rd → x-rd ===
+  for (const section of sections) {
+    const rdId = `${section.toLowerCase()}-rd`
+    edges.push({
+      id: `e-goal-rd-${rdId}`,
+      source: "goal-rd",
+      target: rdId,
+      type: "smoothstep",
+      markerEnd: { type: MarkerType.ArrowClosed },
+    })
+  }
+
+  // === Связи: x-pd → x-rd (красный пунктир) ===
+  for (const { pd, rd } of sectionIds) {
+    if (pd && rd) {
+      edges.push({
+        id: `e-${pd}-${rd}`,
+        source: pd,
+        target: rd,
+        type: "smoothstep",
+        style: { stroke: "#ef4444", strokeDasharray: "5,5" },
+        markerEnd: { type: MarkerType.ArrowClosed, color: "#ef4444" },
       })
-      rightY += 90
-    }
-  }
-
-  // Связи: Сдать ПД → X (ПД)
-  if (parsed.hasPd) {
-    const submitPd = nodes.find((n) => n.id === "submit-pd")
-    if (submitPd) {
-      for (const section of parsed.sections) {
-        const target = nodes.find((n) => n.id === `sec-pd-${section.toLowerCase()}`)
-        if (target) {
-          edges.push({
-            id: `e-${submitPd.id}-${target.id}`,
-            source: submitPd.id,
-            target: target.id,
-            type: "smoothstep",
-            markerEnd: { type: MarkerType.ArrowClosed },
-          })
-        }
-      }
-    }
-  }
-
-  // Связи: Сдать РД → X (РД)
-  if (parsed.hasRd) {
-    const submitRd = nodes.find((n) => n.id === "submit-rd")
-    if (submitRd) {
-      for (const section of parsed.sections) {
-        const target = nodes.find((n) => n.id === `sec-rd-${section.toLowerCase()}`)
-        if (target) {
-          edges.push({
-            id: `e-${submitRd.id}-${target.id}`,
-            source: submitRd.id,
-            target: target.id,
-            type: "smoothstep",
-            markerEnd: { type: MarkerType.ArrowClosed },
-          })
-        }
-      }
-    }
-  }
-
-  // Связи: X (ПД) → X (РД) — красные пунктирные
-  if (parsed.hasPd && parsed.hasRd) {
-    for (const section of parsed.sections) {
-      const pdNode = nodes.find((n) => n.id === `sec-pd-${section.toLowerCase()}`)
-      const rdNode = nodes.find((n) => n.id === `sec-rd-${section.toLowerCase()}`)
-      if (pdNode && rdNode) {
-        edges.push({
-          id: `e-${pdNode.id}-${rdNode.id}`,
-          source: pdNode.id,
-          target: rdNode.id,
-          type: "smoothstep",
-          style: { stroke: "#ef4444", strokeDasharray: "5,5" },
-          markerEnd: { type: MarkerType.ArrowClosed, color: "#ef4444" },
-        })
-      }
     }
   }
 
@@ -239,7 +203,23 @@ function GraphNodeComponent(props: {
 export function GoalGraph() {
   const [showEditor, setShowEditor] = useState(false)
   const [contractText, setContractText] = useState("")
-  const [graphData, setGraphData] = useState<GraphData | null>(null)
+  const [graphData, setGraphData] = useState<{
+    nodes: Array<{
+      id: string
+      position: { x: number; y: number }
+      data: { label: string; type: "submit" | "section-pd" | "section-rd" }
+      sourcePosition: Position
+      targetPosition: Position
+    }>
+    edges: Array<{
+      id: string
+      source: string
+      target: string
+      type: "smoothstep"
+      style?: React.CSSProperties
+      markerEnd?: { type: MarkerType; color?: string }
+    }>
+  } | null>(null)
 
   const handleUseMock = () => {
     setContractText(MOCK_CONTRACT)
@@ -247,8 +227,8 @@ export function GoalGraph() {
 
   const handleBuild = () => {
     const text = contractText || MOCK_CONTRACT
-    const parsed = parseContract(text)
-    const graph = buildGraph(parsed)
+    const sections = parseSections(text)
+    const graph = buildGraph(sections)
     setGraphData(graph)
     setShowEditor(false)
   }
@@ -322,7 +302,7 @@ export function GoalGraph() {
               className="min-h-[200px] font-mono text-sm"
             />
             <div className="text-xs text-gray-400">
-              Поддерживается вставка (Ctrl+V), перетаскивание текста. Граммари — игнорируется.
+              Поддерживается вставка (Ctrl+V). Граммари — игнорируется.
             </div>
           </div>
         </div>

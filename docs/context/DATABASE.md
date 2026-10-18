@@ -14,18 +14,20 @@
 
 ## 1. Обзор
 
-**Всего таблиц:** 14.
+**Всего таблиц:** 17.
 
 | Группа | Таблицы |
 |--------|---------|
 | Проекты и задачи | projects, tasks, cross_tasks, task_status_history |
+| Вводные и цели | premises, goals, goal_premises |
 | Пользователи | users, executors |
 | Импорт | import_logs |
 | Универсальные сущности | entity_types, entities |
 | Служебные | alembic_version |
 
-**Всего индексов:** 38 (14 PK + 2 UNIQUE + 22 дополнительных).
+**Всего индексов:** 43 (17 PK + 2 UNIQUE + 24 дополнительных).
 Пересчитано после Сессии 5.1 (+17 индексов).
+После 6.8a (+2 индекса: premises, goals, goal_premises + idx_goals_verification_status).
 
 **ГОСТ-документы (MVP-1.5, сессия 5.1):**
 
@@ -246,7 +248,82 @@
 - `entities_project_id_fkey` → projects.id (CASCADE)
 - `entities_entity_type_id_fkey` → entity_types.id (CASCADE)
 
-### 2.10. alembic_version
+### 2.10. premises
+
+**Назначение:** вводные проекта (договор, ТЗ, требования, ИД, нормы, НПА, бюрократия, внутренние).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| project_id | UUID | FK → projects.id (CASCADE), NOT NULL | Проект |
+| category | ENUM(premise_category) | NOT NULL | Категория |
+| name | VARCHAR(500) | NOT NULL | Название |
+| source | VARCHAR(500) | nullable | Откуда пришла |
+| date | DATE | nullable | Вступила в силу |
+| actual | BOOLEAN | NOT NULL, default=true | Актуальна |
+| mandatory | BOOLEAN | NOT NULL, default=true | Обязательна |
+| link | VARCHAR(1000) | nullable | Ссылка на источник |
+| valid_until | DATE | nullable | Срок действия |
+| data | JSONB | NOT NULL, default='{}' | Типизированные поля |
+| schema | JSONB | NOT NULL, default='{}' | Схема полей |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+| updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
+
+**Индексы:**
+
+- `premises_pkey` (PK)
+- `idx_premises_project` (project_id)
+- `idx_premises_category` (category)
+- `idx_premises_actual` (actual)
+
+**FK:** `premises_project_id_fkey` → projects.id (CASCADE).
+
+### 2.11. goals
+
+**Назначение:** цели управления проектом (выводятся из вводных).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| project_id | UUID | FK → projects.id (CASCADE), NOT NULL | Проект |
+| formulation | VARCHAR(1000) | NOT NULL | Формулировка |
+| deadline | DATE | nullable | Срок |
+| responsible_id | UUID | FK → users.id (SET NULL), nullable | Ответственный |
+| priority | INT | nullable | Приоритет (1–5) |
+| state | ENUM(goal_state) | NOT NULL, default='plan' | Состояние |
+| verification_status | ENUM(verification_status) | NOT NULL, default='requires_check' | Статус проверки |
+| created_by | UUID | FK → users.id (SET NULL), nullable | Кто создал |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+| updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
+
+**Индексы:**
+
+- `goals_pkey` (PK)
+- `idx_goals_project` (project_id)
+- `idx_goals_state` (state)
+- `idx_goals_deadline` (deadline)
+- `idx_goals_verification_status` (verification_status)
+
+**FK:** projects (CASCADE), users (SET NULL).
+
+### 2.12. goal_premises
+
+**Назначение:** связь Goal ↔ Premise (M:N).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| goal_id | UUID | PK, FK → goals.id (CASCADE) | Цель |
+| premise_id | UUID | PK, FK → premises.id (CASCADE) | Вводная |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+
+**Индексы:** `goal_premises_pkey` (PK, composite: goal_id, premise_id).
+
+**FK:**
+
+- `goal_premises_goal_id_fkey` → goals.id (CASCADE)
+- `goal_premises_premise_id_fkey` → premises.id (CASCADE)
+
+### 2.13. alembic_version
 
 **Назначение:** служебная таблица Alembic.
 
@@ -256,7 +333,7 @@
 
 **Текущая версия:** `c719d9b4537e` (add gost document model).
 
-### 2.11. document_types
+### 2.14. document_types
 
 **Назначение:** справочник типов ГОСТ-документов.
 
@@ -271,7 +348,7 @@
 
 **Индексы:** `document_types_pkey` (PK), `uq_document_types_code` (UNIQUE).
 
-### 2.12. documents
+### 2.15. documents
 
 **Назначение:** карточка ГОСТ-документа (ГОСТ Р 21.101-2026).
 
@@ -307,7 +384,7 @@
 
 **FK:** projects, entities (SET NULL), tasks (SET NULL), document_types, documents (само-рекурсия), users.
 
-### 2.13. document_versions
+### 2.16. document_versions
 
 **Назначение:** версия файла ГОСТ-документа.
 
@@ -331,7 +408,7 @@
 
 **Индексы:** `document_versions_pkey` (PK), `idx_document_versions_document`, `idx_document_versions_current` (partial: WHERE is_current = TRUE).
 
-### 2.14. document_links
+### 2.17. document_links
 
 **Назначение:** связь между ГОСТ-документами.
 
@@ -359,7 +436,9 @@
 | ExecutorType | STAFF, CONTRACTOR | executors.type |
 | UserRole | GIP, DESIGNER, OBSERVER | users.role |
 | ImportStatus | SUCCESS, PARTIAL, FAILED | import_logs.status |
-| DocumentStatus | UPLOADING, READY, FAILED | documents (план) |
+| PremiseCategory | contract, tz, customer_requirement, source_data, norm, npa, bureaucracy, internal | premises.category |
+| GoalState | plan, in_progress, achieved, cancelled | goals.state |
+| VerificationStatus | confirmed, not_confirmed, requires_check, no_data | goals.verification_status |
 | XMLDocumentStatus | DRAFT, GENERATED, VALIDATED, INVALID, EXPORTED | xml_documents (план) |
 | DocumentKind | ПД, РД | домен (value_objects/document.py) |
 | DocPartType | ТЧ, ГЧ | домен (value_objects/document.py) |
@@ -379,6 +458,9 @@
 | `78ada0d52056` | add entity_types and entities tables | 2026-10-10 |
 | `d357e719c8bf` | add indexes and xml_schema_code | 2026-10-11 |
 | `c719d9b4537e` | add gost document model | 2026-10-13 |
+| `de7ac71d9ae0` | goal_premise_links_relationship | 2026-10-17 |
+| `686491cea3fd` | add_premises_and_goals | 2026-10-16 |
+| `cd056578f798` | add verification_status to goals | 2026-10-18 |
 
 **Команды:**
 

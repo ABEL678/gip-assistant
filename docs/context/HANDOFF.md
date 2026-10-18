@@ -55,8 +55,7 @@
 
 ## 5. Открытые вопросы / блокеры
 
-- [ ] БД PostgreSQL не запущена локально — миграция `cd056578f798` не проверена на `upgrade/downgrade/upgrade` (pytest прошёл, но миграция на живом PostgreSQL не тестируется)
-- [ ] Нужно ли обновлять `docs/context/DATABASE.md` — добавлена колонка `verification_status` и индекс в таблицу `goals`
+- [x] DATABASE.md обновлён: goals.verification_status + idx_goals_verification_status (коммит docs: ...).
 
 ## 6. Ключи / пути / команды
 

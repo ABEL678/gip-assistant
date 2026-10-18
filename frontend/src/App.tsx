@@ -17,7 +17,7 @@ import { GoalsPage } from "@/pages/GoalsPage"
 import { UploadSourcesPage } from "@/pages/UploadSourcesPage"
 import { ProjectCanvasPage } from "@/pages/ProjectCanvasPage"
 import { TimelineDemoPage } from "@/pages/TimelineDemoPage"
-import { CanvasDemoPage } from "@/pages/CanvasDemoPage"
+import { GoalGraph } from "@/pages/CanvasDemoPage"
 import { SkeletonDemoPage } from "@/pages/SkeletonDemoPage"
 
 function App() {
@@ -43,7 +43,7 @@ function App() {
           <Route path="projects/:id/upload" element={<UploadSourcesPage />} />
           <Route path="projects/:id/canvas" element={<ProjectCanvasPage />} />
           <Route path="projects/:id/timeline-demo" element={<TimelineDemoPage />} />
-          <Route path="projects/:id/canvas-demo" element={<CanvasDemoPage />} />
+          <Route path="projects/:id/canvas-demo" element={<GoalGraph />} />
           <Route path="projects/:id/skeleton-demo" element={<SkeletonDemoPage />} />
           <Route path="projects/:id/goals" element={<GoalsPage />} />
         </Route>

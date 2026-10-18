@@ -96,6 +96,8 @@ docs/*
 !docs/tasks/**
 !docs/templates/
 !docs/templates/**
+!docs/specs/
+!docs/specs/**
 docs/*.docx
 docs/*.doc
 docs/archive/

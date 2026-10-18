@@ -217,6 +217,43 @@ async def test_validate_deadline_later_than_contract(
     assert any(
         "deadline later than contract" in c for c in result.contradictions
     )
+    # При противоречии — нет ложного "no source for deadline" в missing
+    assert "no source for deadline" not in result.missing
+
+
+@pytest.mark.asyncio
+async def test_validate_deadline_later_than_contract_no_missing_no_source(
+    service: GoalValidatorService,
+    mock_goal_repo: AsyncMock,
+    mock_premise_repo: AsyncMock,
+):
+    """Rule 4+5: goal.deadline > contract.deadline — нет ложного no_data в missing."""
+    goal_deadline = date(2026, 12, 1)
+    premise = _make_premise(
+        category=PremiseCategory.CONTRACT,
+        data={
+            "deadline": {
+                "value": "2026-06-01",
+                "owner": "contract",
+                "source": None,
+            },
+        },
+        name="Договор",
+    )
+    goal = _make_goal(
+        premise_ids=[premise.id],
+        deadline=goal_deadline,
+    )
+    mock_goal_repo.get_by_id.return_value = goal
+    mock_premise_repo.get_by_id.return_value = premise
+
+    result = await service.validate(goal.id)
+
+    assert result.verification_status == VerificationStatus.NOT_CONFIRMED
+    assert any(
+        "deadline later than contract" in c for c in result.contradictions
+    )
+    assert "no source for deadline" not in result.missing
 
 
 @pytest.mark.asyncio

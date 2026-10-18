@@ -101,6 +101,22 @@ class GoalValidatorService:
                             )
                         )
 
+            # Rule 5: противоречие deadline с договором → NOT_CONFIRMED
+            if goal.deadline is not None:
+                for premise in premises:
+                    if premise.category.value == "contract":
+                        df = premise.data_field("deadline")
+                        if df is not None and df.owner is not None:
+                            try:
+                                pd = _parse_date(df.value)
+                                if goal.deadline > pd:
+                                    has_contradiction = True
+                                    contradictions.append(
+                                        "deadline later than contract"
+                                    )
+                            except (ValueError, TypeError):
+                                pass
+
             # Rule 4: проверить источник для deadline → NO_DATA
             if goal.deadline is not None:
                 deadline_found = False
@@ -114,7 +130,7 @@ class GoalValidatorService:
                                 break
                         except (ValueError, TypeError):
                             continue
-                if not deadline_found:
+                if not deadline_found and not has_contradiction:
                     has_no_data = True
                     missing.append("no source for deadline")
 
@@ -134,22 +150,6 @@ class GoalValidatorService:
                             break
                     if not found:
                         missing.append(f"no source for {num_str}")
-
-            # Rule 5: противоречие deadline с договором → NOT_CONFIRMED
-            if goal.deadline is not None:
-                for premise in premises:
-                    if premise.category.value == "contract":
-                        df = premise.data_field("deadline")
-                        if df is not None and df.owner is not None:
-                            try:
-                                pd = _parse_date(df.value)
-                                if goal.deadline > pd:
-                                    has_contradiction = True
-                                    contradictions.append(
-                                        "deadline later than contract"
-                                    )
-                            except (ValueError, TypeError):
-                                pass
 
         # Rule 6: итоговый статус
         # Приоритет: NOT_CONFIRMED > NO_DATA > REQUIRES_CHECK

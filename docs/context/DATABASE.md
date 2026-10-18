@@ -5,10 +5,10 @@
 > `sqlacodegen` + GitHub Actions. Пока — вручную.
 
 **Версия:** 1.2
-**Обновлено:** 13.10.2026
+**Обновлено:** 18.10.2026
 **СУБД:** PostgreSQL 15+
 **ORM:** SQLAlchemy 2.0 async
-**Текущая миграция:** `d357e719c8bf`
+**Текущая миграция:** `cd056578f798`
 
 ---
 
@@ -27,7 +27,7 @@
 
 **Всего индексов:** 43 (17 PK + 2 UNIQUE + 24 дополнительных).
 Пересчитано после Сессии 5.1 (+17 индексов).
-После 6.8a (+2 индекса: premises, goals, goal_premises + idx_goals_verification_status).
+После 6.8a: +3 таблицы (premises, goals, goal_premises) и +1 индекс (idx_goals_verification_status).
 
 **ГОСТ-документы (MVP-1.5, сессия 5.1):**
 
@@ -331,7 +331,7 @@
 |------|-----|-------------|
 | version_num | VARCHAR(32) | PK |
 
-**Текущая версия:** `c719d9b4537e` (add gost document model).
+**Текущая версия:** `cd056578f798` (add verification_status to goals).
 
 ### 2.14. document_types
 

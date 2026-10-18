@@ -269,13 +269,42 @@
 
 ---
 
+### 6.8b — ЗАКРЫТ (18.10.2026)
+
+**6.8b-1 (GoalValidatorService):**
+- ✅ `GoalValidatorService` — правила 1–6 (§6.1.1).
+- ✅ `ValidationResult` / `ValidationEvidence` DTO.
+- ✅ `Premise.data_field(name)` хелпер.
+- ✅ `PremiseDataField` перенесён в `domain/value_objects/premise_data.py`.
+- ✅ 8 тестов. Фикс Rule 4/5 (порядок) + 1 тест.
+- ✅ Коммиты: `130c334`, `fe894d0`.
+
+**6.8b-2 (SimilarityMatrixService):**
+- ✅ 10 связей (§6.2.1).
+- ✅ Поиск разделов: (B) `data["sections"]`, (C) строковые значения `data`.
+- ✅ 10 тестов.
+- ✅ Коммит: `21880b7`.
+
+**6.8b-3 (ProposalProtocolService + рефактор валидатора):**
+- ✅ `GoalValidatorService` → ABC-порт (`domain/ports/goal_validator.py`).
+- ✅ `RuleBasedGoalValidator` — реализация.
+- ✅ Спека §6.3.1: unanimous / majority / split.
+- ✅ `ProposalProtocolService` — свод (§6.3.1).
+- ✅ `ProtocolSummary` DTO.
+- ✅ 7 тестов.
+- ✅ Коммиты: `964579d`, `411932f`.
+
+**Итог:** 219 passed, ruff чисто.
+
+---
+
 ## 2. В работе (In Progress)
 
-**На 18.10.2026 — 6.8b (сервисы: CRUD + валидатор + матрица + протокол).**
+**На 18.10.2026 — 6.8c (DI + эндпоинты + тесты роутов).**
 
-- Спека: `docs/specs/spec_week_1.md` (финальная).
+- Спека: `docs/specs/spec_week_1.md` §7.1.
 - Код не начат.
-- Подсессии: 6.8b (сервисы), 6.8c (эндпоинты), 6.8d (UI).
+- Подсессии: 6.8c (эндпоинты), 6.8d (UI).
 
 ## 3. Дальше (Next)
 
@@ -293,8 +322,8 @@
 ### Веха 1 (6.8) — по подсессиям
 
 - ✅ **6.8a** — модель БД (миграция `verification_status` + `PremiseDataField`), DTO, порты/репозитории.
-- ⏳ **6.8b** — сервисы (CRUD + валидатор + матрица + протокол).
-- ⏳ **6.8c** — эндпоинты (CRUD + 3 эндпоинта) + тесты.
+- ✅ **6.8b** — сервисы (валидатор + матрица + протокол). Коммиты `130c334`, `fe894d0`, `21880b7`, `964579d`, `411932f`.
+- ⏳ **6.8c** — DI + эндпоинты + тесты роутов.
 - ⏳ **6.8d** — UI (страницы, карточки, статус, владелец).
 
 ### Веха 2 — Action + Task-адаптация
@@ -350,6 +379,14 @@
 ---
 
 ## 5. Журнал (Changelog)
+
+### 18.10.2026 (6.8b — сервисы)
+
+- ✅ 6.8b-1: `GoalValidatorService` (правила 1–6) + `ValidationResult` + `PremiseDataField` в домене + фикс Rule 4/5. Коммиты `130c334`, `fe894d0`.
+- ✅ 6.8b-2: `SimilarityMatrixService` — 10 связей. Коммит `21880b7`.
+- ✅ 6.8b-3: рефактор `GoalValidatorService` → ABC + `RuleBasedGoalValidator`; `ProposalProtocolService` (unanimous/majority/split). Коммиты `964579d`, `411932f`.
+- ✅ 219 passed, ruff чисто. 6.8b закрыт.
+- 🔄 Переход на 6.8c (эндпоинты).
 
 ### 18.10.2026 (сессия 6.7 — онтология + спека)
 
@@ -589,7 +626,7 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 192 (+1 требует БД) | — |
+| Тесты pytest (backend) | 219 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 17 | — |
 | Эндпоинтов API | 51 | — |
@@ -598,9 +635,9 @@
 | `docs/context/` готовность | 8/8 файлов | 8/8 |
 | UI Уровня 1 | 100% | — |
 | UI Уровня 1.5 | 100% | — |
-| Портов репозиториев | 11 | — |
+| Портов репозиториев | 11 + 1 (GoalValidatorService) = 12 | — |
 | Репозиториев SQLAlchemy | 11 | — |
-| Сервисов | 8 | — |
+| Сервисов | 11 | — |
 | API-клиентов | 5 | — |
 | Хуков TanStack Query | 22 | — |
 | **DOMAIN.md** | **v1.1** | — |

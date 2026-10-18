@@ -6,56 +6,49 @@
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
 **Дата:** 18.10.2026
-**Сессия:** 6.8a
-**Статус:** закрыта
+**Сессия:** 6.8b → 6.8c (переход)
+**Статус:** 6.8b закрыт (три подсессии), 6.8c не начат
 
 ---
 
-## 1. Что было в прошлой сессии
+## 1. Что было в сессии 6.8b
 
-- ✅ `VerificationStatus(StrEnum)` — CONFIRMED, NOT_CONFIRMED, REQUIRES_CHECK, NO_DATA
-- ✅ Goal entity: поле `verification_status` (после state, default REQUIRES_CHECK)
-- ✅ GoalModel: колонка + индекс `idx_goals_verification_status`
-- ✅ GoalRepository: mapping `_to_domain` / `_to_model` (с защитой от None)
-- ✅ DTO: `GoalSchema` + `GoalProposal` с verification_status; `GoalUpdate` — не трогать
-- ✅ `PremiseDataField` — типизированное поле data с owner/source + field_validator (coerce plain values)
-- ✅ Миграция `cd056578f798` (upgrade + downgrade)
-- ✅ Тесты: 193 passed (все, включая интеграционный)
-- ✅ Исправление: `values_callable=lambda e: [x.value for x in e]` — lowercase enum в БД
+Три подсессии, 5 коммитов:
+
+| Подсессия | Коммит | Что | passed |
+|-----------|--------|-----|--------|
+| 6.8b-1 | `130c334` | GoalValidatorService — правила 1–6 (§6.1.1) + ValidationResult / ValidationEvidence DTO + Premise.data_field(name) хелпер + PremiseDataField перенесён в domain/value_objects/premise_data.py | 201 |
+| 6.8b-1 fix | `fe894d0` | Rule 5 перед Rule 4 — убрать ложный no source for deadline при противоречии | 202 |
+| 6.8b-2 | `21880b7` | SimilarityMatrixService — 10 связей (§6.2.1), поиск разделов (B): data["sections"], (C): строковые значения data | 212 |
+| 6.8b-3 refactor | `964579d` | GoalValidatorService → ABC-порт в domain/ports/goal_validator.py; реализация → RuleBasedGoalValidator в domain/services/rule_based_goal_validator.py; спека §6.3.1 обновлена (unanimous/majority/split) | 212 |
+| 6.8b-3 feat | `411932f` | ProposalProtocolService — unanimous / majority / split свод (§6.3.1) + ProtocolSummary DTO + 7 тестов | 219 |
+
+**Итог 6.8b:** три сервиса готовы — RuleBasedGoalValidator (правила 1–6), SimilarityMatrixService (10 связей), ProposalProtocolService (протокол). 219 passed. ruff чисто.
 
 ## 2. Что делаем сейчас
 
-**Сессия 6.8b — сервисы (CRUD + валидатор + матрица + протокол).**
+Ничего. 6.8b закрыт. Ждём старта 6.8c.
 
-- **Прогресс:** 0% — не начато
-- **Промпт для GigaCode:** `docs/tasks/6.8b_prompt.md` (создать из шаблона)
-- **Источник истины:** `docs/specs/spec_week_1.md` §4, §4.1, §5
-- **Критерии готовности:** сервисы CRUD + агент-валидатор + матрица смежников + протокол 2–3 прогонов
+## 3. Что дальше (порядок — строгий)
 
-## 3. Что дальше
+1. **6.8c** — DI (dependencies.py +3) + эндпоинты в routes/goals.py (+3) + тесты роутов (+3–6). По спеке §7.1.
+2. **6.8d** — UI (страницы, карточки, бейдж verification_status, owner в PremiseCard, GoalProposalList).
+3. Мерж в main — после 6.8d. Удалить feature-ветку.
 
-1. Создать промпт `docs/tasks/6.8b_prompt.md` из шаблона
-2. 6.8b — сервисы: GoalService (CRUD + verification_status валидатор), PremiseService (обновление)
-3. 6.8c — эндпоинты (CRUD + 3 эндпоинта) + тесты
-4. 6.8d — UI (страницы, карточки, статус, владелец)
-5. Мержить в main, удалять ветку
+## 4. Что уже в контексте (не пересказывать)
 
-## 4. Что уже в контексте (не надо пересказывать)
-
+- `docs/context/DOMAIN.md` v1.1 — онтология.
 - `docs/Дорожная_карта_7.0.md` — стратегия.
-- `docs/context/CONTEXT.md` — резюме.
-- `docs/context/TASKS.md` — статус.
-- `docs/context/ARCHITECTURE.md` — структура.
-- `docs/context/DATABASE.md` — схема БД.
-- `docs/context/API.md` — эндпоинты.
-- `docs/context/RULES.md` — правила.
-- `docs/context/DOMAIN.md` — онтология.
-- `docs/specs/spec_week_1.md` — финальная спека Вехи 1.
-- `AGENTS.md` — правила для GigaCode.
+- `docs/specs/spec_week_1.md` — финальная спека Вехи 1 (обновлена §6.3.1: unanimous/majority/split + абстракция GoalValidatorService).
+- `docs/context/CONTEXT.md`, `TASKS.md`, `DATABASE.md` — обновлены.
+- `AGENTS.md` — правила GigaCode.
 
-## 5. Открытые вопросы / блокеры
+## 5. Открытые вопросы (для 6.8c)
 
-- [x] DATABASE.md обновлён: goals.verification_status + idx_goals_verification_status (коммит docs: ...).
+1. **Формат ответа similarity-matrix** — `{"links": [...]}` (как в примере §6.2.1) или голый список `[...]` (как в §7.1)? Решить в 6.8c. Рекомендация: `{"links": [...]}` — единообразно с другими эндпоинтами (список + метаданные).
+2. **ValueError из validate → 404** — через HTTPException(status_code=404) в роуте (или через глобальный exception handler, если он уже есть в main.py). Проверить в 6.8c.
+3. **run-3-times в проде** — один валидатор (RuleBasedGoalValidator). В тестах — mock. Сервис уже принимает `list[GoalValidatorService]` — DI передаст `[rule_based]`.
+4. **Техдолг:** в проекте два паттерна enum — UPPERCASE (`goal_state`, `premise_category`) и lowercase (`verification_status`). Унификация — веха 6 (или отдельный refactor).
 
 ## 6. Ключи / пути / команды
 
@@ -66,29 +59,26 @@
 - **Тесты:** `pytest backend/tests/ -v` (из корня)
 - **Alembic:** `cd backend && ..\.venv\Scripts\activate && alembic current`
 - **Ruff:** `.venv\Scripts\activate && ruff check backend/`
-- **БД:** Docker `gip_db` на 5555
+- **Docker:** `cd docker && docker compose up -d` (поднимает gip_db на 5555)
+- **БД-инспекция:** `docker exec -it gip_db psql -U gip -d gip_assistant -c "..."` (юзер gip, БД gip_assistant)
 - **GitHub:** https://github.com/ABEL678/gip-assistant
 
 ## 7. Как продолжить в новом чате
 
-**Первое сообщение:**
+**Первое сообщение (для рутинного чата):**
 
-    Привет. Продолжаем проект «ГИП-Ассистент».
-
-    Прочитай (по порядку):
+    Привет. Продолжаем проект «ГИП-Ассистент». Прочитай:
     1. docs/context/HANDOFF.md
-    2. docs/context/CONTEXT.md
-    3. docs/context/TASKS.md
-    4. docs/context/ARCHITECTURE.md
-    5. AGENTS.md
+    2. docs/context/DOMAIN.md (v1.1)
+    3. docs/Дорожная_карта_7.0.md
+    4. docs/specs/spec_week_1.md
+    5. docs/context/CONTEXT.md
+    6. docs/context/TASKS.md
+    7. AGENTS.md
 
-    Дальше:
-    - Мы на сессии 6.8b.
-    - Задача: сервисы (CRUD + валидатор + матрица + протокол).
-    - Полный промпт для GigaCode — в docs/tasks/6.8b_prompt.md.
-    - Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
-
-    Продолжай.
+    Мы на 6.8c. Задача: DI + эндпоинты + тесты роутов (§7.1 спеки).
+    6.8b закрыт (219 passed). Два вопроса в §5 HANDOFF: формат similarity-matrix, ValueError→404.
+    Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
 
 ---
 

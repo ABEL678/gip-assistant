@@ -1,26 +1,16 @@
 """DTO для вводных (Premise)."""
 
 import uuid
-from datetime import date as _date, datetime
+from datetime import date as _date
+from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-from pydantic import AliasChoices
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
 from backend.src.domain.value_objects.enums import PremiseCategory
-
-
-class PremiseDataField(BaseModel):
-    """Поле data вводной с владельцем (DOMAIN.md §3.4.1).
-
-    Если owner не указан — это «нет данных» (нельзя проверить).
-    """
-
-    model_config = ConfigDict(populate_by_name=True)
-
-    value: Any
-    owner: Optional[str] = None
-    source: Optional[str] = None
+from backend.src.domain.value_objects.premise_data import (
+    PremiseDataField,  # noqa: F401 — re-export для обратной совместимости
+)
 
 
 class PremiseSchema(BaseModel):

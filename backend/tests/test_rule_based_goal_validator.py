@@ -1,4 +1,4 @@
-"""Тесты GoalValidatorService."""
+"""Тесты RuleBasedGoalValidator."""
 
 from datetime import date
 from unittest.mock import AsyncMock
@@ -12,8 +12,8 @@ from backend.src.application.dto.validation_result import (
 )
 from backend.src.domain.entities.goal import Goal
 from backend.src.domain.entities.premise import Premise
-from backend.src.domain.services.goal_validator_service import (
-    GoalValidatorService,
+from backend.src.domain.services.rule_based_goal_validator import (
+    RuleBasedGoalValidator,
 )
 from backend.src.domain.value_objects.enums import (
     PremiseCategory,
@@ -42,8 +42,8 @@ def mock_premise_repo() -> AsyncMock:
 @pytest.fixture
 def service(
     mock_goal_repo: AsyncMock, mock_premise_repo: AsyncMock
-) -> GoalValidatorService:
-    return GoalValidatorService(mock_goal_repo, mock_premise_repo)
+) -> RuleBasedGoalValidator:
+    return RuleBasedGoalValidator(mock_goal_repo, mock_premise_repo)
 
 
 # --- Helpers ---
@@ -82,7 +82,7 @@ def _make_goal(
 
 @pytest.mark.asyncio
 async def test_validate_no_premise_ids(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
 ):
     """Rule 1: пустые premise_ids → NO_DATA."""
@@ -99,7 +99,7 @@ async def test_validate_no_premise_ids(
 
 @pytest.mark.asyncio
 async def test_validate_premise_without_owner(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
     mock_premise_repo: AsyncMock,
 ):
@@ -121,7 +121,7 @@ async def test_validate_premise_without_owner(
 
 @pytest.mark.asyncio
 async def test_validate_less_than_two_sources(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
     mock_premise_repo: AsyncMock,
 ):
@@ -143,7 +143,7 @@ async def test_validate_less_than_two_sources(
 
 @pytest.mark.asyncio
 async def test_validate_confirmed_happy_path(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
     mock_premise_repo: AsyncMock,
 ):
@@ -186,7 +186,7 @@ async def test_validate_confirmed_happy_path(
 
 @pytest.mark.asyncio
 async def test_validate_deadline_later_than_contract(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
     mock_premise_repo: AsyncMock,
 ):
@@ -223,7 +223,7 @@ async def test_validate_deadline_later_than_contract(
 
 @pytest.mark.asyncio
 async def test_validate_deadline_later_than_contract_no_missing_no_source(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
     mock_premise_repo: AsyncMock,
 ):
@@ -258,7 +258,7 @@ async def test_validate_deadline_later_than_contract_no_missing_no_source(
 
 @pytest.mark.asyncio
 async def test_validate_no_source_for_deadline(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
     mock_premise_repo: AsyncMock,
 ):
@@ -290,7 +290,7 @@ async def test_validate_no_source_for_deadline(
 
 @pytest.mark.asyncio
 async def test_validate_goal_not_found(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
 ):
     """Goal не найден → ValueError."""
@@ -305,7 +305,7 @@ async def test_validate_goal_not_found(
 
 @pytest.mark.asyncio
 async def test_validate_saves_status(
-    service: GoalValidatorService,
+    service: RuleBasedGoalValidator,
     mock_goal_repo: AsyncMock,
     mock_premise_repo: AsyncMock,
 ):

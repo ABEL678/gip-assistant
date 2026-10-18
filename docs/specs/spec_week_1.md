@@ -197,6 +197,13 @@ class PremiseDataField(BaseModel):
 - `goal_service.py` — `GoalService`: CRUD, связи с Premise.
 - `goal_proposal_service.py` — `GoalProposalService`: механизм вывода на правилах.
 
+**Абстракция GoalValidatorService:**
+
+- **Порт (ABC):** `backend/src/domain/ports/goal_validator.py` — `GoalValidatorService` (интерфейс).
+- **Веха 1–5:** `backend/src/domain/services/rule_based_goal_validator.py` — `RuleBasedGoalValidator(GoalValidatorService)`: детерминированные правила 1–6.
+- **Веха 6:** `LLMGoalValidator(GoalValidatorService)` — недетерминированный, на LLM.
+- **Зависимость:** сервисы зависят от порта (ABC), а не от конкретной реализации.
+
 **4 правила вывода в GoalProposalService:**
 
 Правило 1 — договор со сроком → Goal:
@@ -343,7 +350,7 @@ class PremiseDataField(BaseModel):
 
 ### 6.3. Протокол 2–3 прогонов (часть Вехи 1)
 
-Агент-валидатор работает по протоколу: 2–3 прогона, сведение (3/3 — приоритет, 2/3 — в работу, 1/3 — на ручную проверку). Итог собирает человек.
+Агент-валидатор работает по протоколу: 2–3 прогона, сведение (unanimous = приоритет, majority = в работу, split = на ручную проверку). Итог собирает человек.
 
 См. DOMAIN.md §4.4.2, Дорожная карта §5.1.10.
 
@@ -355,9 +362,9 @@ class PremiseDataField(BaseModel):
 
 1. **Для каждого Goal** запустить валидатор **3 раза** (с разными seed / temperature).
 2. **Свести** результаты:
-   - **3/3** (во всех трёх) — приоритет.
-   - **2/3** — в работу.
-   - **1/3** — на ручную проверку.
+   - **unanimous** (3/3 — во всех трёх) — приоритет.
+   - **majority** (2/3 — в двух из трёх) — в работу.
+   - **split** (1/3 — в одном из трёх) — на ручную проверку.
 3. **Вернуть** свод.
 
 **Выход** `POST /goals/proposals/run-3-times`:
@@ -365,9 +372,9 @@ class PremiseDataField(BaseModel):
 ```json
 {
   "summary": {
-    "3/3": [{"goal_id": "...", "formulation": "Сдать том 7", "verification_status": "confirmed"}],
-    "2/3": [{"goal_id": "...", "formulation": "Обновить ИД", "verification_status": "requires_check"}],
-    "1/3": [{"goal_id": "...", "formulation": "Согласовать планировку", "verification_status": "no_data"}]
+    "unanimous": [{"goal_id": "...", "formulation": "Сдать том 7", "verification_status": "confirmed"}],
+    "majority": [{"goal_id": "...", "formulation": "Обновить ИД", "verification_status": "requires_check"}],
+    "split": [{"goal_id": "...", "formulation": "Согласовать планировку", "verification_status": "no_data"}]
   }
 }
 ```
@@ -413,8 +420,8 @@ DI в `backend/src/adapters/api/dependencies.py`:
   АР↔ЭО, АР↔ПБ, АР↔ПЗУ, ОВ↔КЖ, ОВ↔ЭО, ОВ↔ТХ, ОВ↔ПБ). Возвращает список
   связей с формулировками «что согласовать».
 - `POST /api/projects/{project_id}/goals/proposals/run-3-times` — протокол
-  2–3 прогонов. Возвращает свод: 3/3 (приоритет), 2/3 (в работу),
-  1/3 (на ручную проверку).
+  2–3 прогонов. Возвращает свод: unanimous (3/3, приоритет), majority (2/3,
+  в работу), split (1/3, на ручную проверку).
 
 **Граница:** эти эндпоинты **не** заменяют CRUD. Они **дополняют** его.
 Валидатор работает **до** утверждения Goal. Матрица — **при** предложении

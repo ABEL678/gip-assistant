@@ -1,4 +1,4 @@
-"""Агент-валидатор Goal (spec_week_1.md §6.1.1).
+"""Rule-based Goal validator (spec_week_1.md §6.1.1).
 
 Работает на правилах (веха 1–5), без LLM.
 Проверяет Goal на доказанность: два места в вводных, owner у каждой цифры,
@@ -13,6 +13,7 @@ from backend.src.application.dto.validation_result import (
     ValidationEvidence,
     ValidationResult,
 )
+from backend.src.domain.ports.goal_validator import GoalValidatorService
 from backend.src.domain.ports.repositories import (
     GoalRepository,
     PremiseRepository,
@@ -27,7 +28,7 @@ def _parse_date(value: object) -> object:
     return value
 
 
-class GoalValidatorService:
+class RuleBasedGoalValidator(GoalValidatorService):
     """Проверяет Goal на доказанность (правила 1–6 спеки §6.1.1)."""
 
     def __init__(

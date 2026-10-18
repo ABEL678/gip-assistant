@@ -271,9 +271,9 @@
 
 ## 2. В работе (In Progress)
 
-**На 17.10.2026 — нет задач в работе.**
+**На 18.10.2026:**
 
----
+- 🔄 Сессия 6.9: минимальный граф целей (React Flow, 8 узлов, 9 связей).
 
 ## 3. Дальше (Next)
 
@@ -367,6 +367,16 @@
 - ✅ Integration-тест `test_goal_premise_ids_persist_end_to_end` (httpx.AsyncClient + реальная БД).
 - ✅ 193 теста pytest (зелёные).
 - ✅ Ветка `fix/canvas-approve-refetch`.
+
+### 18.10.2026 (сессия 6.9, шаг 1, итерация 6)
+
+- ✅ CanvasDemoPage.tsx — минимальный граф с React Flow.
+- ✅ 8 узлов: «Сдать ПД», «Сдать РД», АР/КР/ВК × ПД/РД.
+- ✅ 9 связей: 6 чёрных (Сдать → АР/КР/ВК) + 3 красных пунктирных (ПД → РД).
+- ✅ `GoalGraph` — чистый компонент без Layout.
+- ✅ `markerEnd: MarkerType.ArrowClosed` — стрелки видны.
+- ✅ `fitView` + контейнер 600px.
+- ✅ Frontend build успешен.
 
 ### 17.10.2026 (сессия 6.4)
 
@@ -533,6 +543,7 @@
 | API-клиентов | 5 | — |
 | Хуков TanStack Query | 22 | — |
 | **DOMAIN.md** | **v1.1** | — |
+| **React Flow страницы** | **3** (canvas-demo, timeline-demo, skeleton-demo) | — |
 | **Новых сущностей (Goal/Decision/Action/Norm/RFI)** | **0** | **5** |
 | **Агентов** | **0** | **5** |
 

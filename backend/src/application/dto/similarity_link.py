@@ -12,3 +12,11 @@ class SimilarityLink(BaseModel):
     to_section: str  # "ОВ"
     what: str  # что согласовать
     risk: str  # сигнал риска
+
+
+class SimilarityMatrixResponse(BaseModel):
+    """Ответ GET /goals/similarity-matrix."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    links: list[SimilarityLink]

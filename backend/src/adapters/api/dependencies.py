@@ -29,6 +29,7 @@ from backend.src.adapters.db.repositories import (
     SqlAlchemyTaskRepository,
 )
 from backend.src.adapters.db.session import AsyncSessionLocal
+from backend.src.domain.ports.goal_validator import GoalValidatorService
 from backend.src.domain.ports.repositories import (
     CrossTaskRepository,
     DocumentLinkRepository,
@@ -55,6 +56,9 @@ from backend.src.domain.services import (
     ImportService,
     MatrixService,
     PremiseService,
+    ProposalProtocolService,
+    RuleBasedGoalValidator,
+    SimilarityMatrixService,
 )
 
 # ---------- Session ----------
@@ -239,6 +243,32 @@ def get_goal_proposal_service(
     return GoalProposalService(premise_repo=premise_repo)
 
 
+def get_goal_validator_service(
+    goal_repo: GoalRepoDep,
+    premise_repo: PremiseRepoDep,
+) -> RuleBasedGoalValidator:
+    return RuleBasedGoalValidator(goal_repo=goal_repo, premise_repo=premise_repo)
+
+
+def get_similarity_matrix_service(
+    premise_repo: PremiseRepoDep,
+) -> SimilarityMatrixService:
+    return SimilarityMatrixService(premise_repo=premise_repo)
+
+
+def get_proposal_protocol_service(
+    goal_repo: GoalRepoDep,
+) -> ProposalProtocolService:
+    return ProposalProtocolService(goal_repo=goal_repo)
+
+
+def get_goal_validators(
+    validator: "GoalValidatorServiceDep",
+) -> list[GoalValidatorService]:
+    """Список валидаторов для протокола. Сейчас — один, веха 6 — +LLM."""
+    return [validator]
+
+
 ImportServiceDep = Annotated[ImportService, Depends(get_import_service)]
 MatrixServiceDep = Annotated[MatrixService, Depends(get_matrix_service)]
 EntityTypeServiceDep = Annotated[EntityTypeService, Depends(get_entity_type_service)]
@@ -251,3 +281,14 @@ DocumentLinkServiceDep = Annotated[DocumentLinkService, Depends(get_document_lin
 PremiseServiceDep = Annotated[PremiseService, Depends(get_premise_service)]
 GoalServiceDep = Annotated[GoalService, Depends(get_goal_service)]
 GoalProposalServiceDep = Annotated[GoalProposalService, Depends(get_goal_proposal_service)]
+GoalValidatorServiceDep = Annotated[RuleBasedGoalValidator, Depends(get_goal_validator_service)]
+SimilarityMatrixServiceDep = Annotated[
+    SimilarityMatrixService, Depends(get_similarity_matrix_service)
+]
+ProposalProtocolServiceDep = Annotated[
+    ProposalProtocolService, Depends(get_proposal_protocol_service)
+]
+GoalValidatorsDep = Annotated[
+    list[GoalValidatorService],
+    Depends(get_goal_validators),
+]

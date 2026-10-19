@@ -16,6 +16,10 @@ from fastapi import APIRouter, HTTPException, status
 from backend.src.adapters.api.dependencies import (
     GoalProposalServiceDep,
     GoalServiceDep,
+    GoalValidatorsDep,
+    GoalValidatorServiceDep,
+    ProposalProtocolServiceDep,
+    SimilarityMatrixServiceDep,
 )
 from backend.src.application.dto.goal import (
     GoalCreate,
@@ -24,6 +28,9 @@ from backend.src.application.dto.goal import (
     GoalRead,
     GoalUpdate,
 )
+from backend.src.application.dto.protocol_summary import ProtocolSummary
+from backend.src.application.dto.similarity_link import SimilarityMatrixResponse
+from backend.src.application.dto.validation_result import ValidationResult
 
 router = APIRouter(prefix="/api", tags=["goals"])
 
@@ -54,9 +61,7 @@ async def create_goal(
             created_by=payload.created_by,
         )
     except ValueError as err:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)
-        ) from err
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)) from err
     return GoalRead.model_validate(created, from_attributes=True)
 
 
@@ -86,10 +91,7 @@ async def get_goal_proposals(
     service: GoalProposalServiceDep,
 ) -> list[GoalProposalRead]:
     proposals = await service.propose_goals(project_id)
-    return [
-        GoalProposalRead.model_validate(p, from_attributes=True)
-        for p in proposals
-    ]
+    return [GoalProposalRead.model_validate(p, from_attributes=True) for p in proposals]
 
 
 @router.post(
@@ -112,9 +114,7 @@ async def approve_goal_proposal(
             priority=payload.priority,
         )
     except ValueError as err:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)
-        ) from err
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)) from err
     return GoalRead.model_validate(created, from_attributes=True)
 
 
@@ -153,9 +153,7 @@ async def update_goal(
     try:
         updated = await service.update(goal_id, **data)
     except ValueError as err:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)
-        ) from err
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)) from err
     if updated is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -176,6 +174,51 @@ async def delete_goal(
     try:
         await service.delete(goal_id)
     except ValueError as err:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)) from err
+
+
+# ---------- Validation & similarity ----------
+
+
+@router.post(
+    "/goals/{goal_id}/validate",
+    response_model=ValidationResult,
+    summary="Валидация цели по правилам",
+)
+async def validate_goal(
+    goal_id: UUID,
+    service: GoalValidatorServiceDep,
+) -> ValidationResult:
+    try:
+        return await service.validate(goal_id)
+    except ValueError as err:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(err),
         ) from err
+
+
+@router.get(
+    "/projects/{project_id}/goals/similarity-matrix",
+    response_model=SimilarityMatrixResponse,
+    summary="Матрица смежников разделов",
+)
+async def get_similarity_matrix(
+    project_id: UUID,
+    service: SimilarityMatrixServiceDep,
+) -> SimilarityMatrixResponse:
+    links = await service.find_links(project_id)
+    return SimilarityMatrixResponse(links=links)
+
+
+@router.post(
+    "/projects/{project_id}/goals/proposals/run-3-times",
+    response_model=ProtocolSummary,
+    summary="Протокол 3 прогонов валидации",
+)
+async def run_3_times(
+    project_id: UUID,
+    service: ProposalProtocolServiceDep,
+    validators: GoalValidatorsDep,
+) -> ProtocolSummary:
+    return await service.run(project_id=project_id, validators=validators)

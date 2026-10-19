@@ -12,6 +12,11 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
+from backend.src.application.dto.protocol_summary import ProtocolSummary
+from backend.src.application.dto.similarity_link import SimilarityLink
+from backend.src.application.dto.validation_result import (
+    ValidationResult,
+)
 from backend.src.domain.value_objects.enums import GoalState, PremiseCategory, VerificationStatus
 
 
@@ -124,18 +129,50 @@ class TestGoalsRoutes:
         return service
 
     @pytest.fixture
-    async def mock_proposal_service(self):
+    async def mock_goal_proposal_service(self):
         """Мокированный GoalProposalService."""
         service = AsyncMock()
         service.propose_goals = AsyncMock()
         return service
 
     @pytest.fixture
-    async def client(self, mock_goal_service, mock_proposal_service):
+    async def mock_protocol_service(self):
+        """Мокированный ProposalProtocolService."""
+        service = AsyncMock()
+        service.run = AsyncMock()
+        return service
+
+    @pytest.fixture
+    async def mock_validator_service(self):
+        """Мокированный RuleBasedGoalValidator."""
+        service = AsyncMock()
+        service.validate = AsyncMock()
+        return service
+
+    @pytest.fixture
+    async def mock_similarity_service(self):
+        """Мокированный SimilarityMatrixService."""
+        service = AsyncMock()
+        service.find_links = AsyncMock()
+        return service
+
+    @pytest.fixture
+    async def client(
+        self,
+        mock_goal_service,
+        mock_goal_proposal_service,
+        mock_validator_service,
+        mock_similarity_service,
+        mock_protocol_service,
+    ):
         """Создаём AsyncClient с моками зависимостей."""
         from backend.src.adapters.api.dependencies import (
             get_goal_proposal_service,
             get_goal_service,
+            get_goal_validator_service,
+            get_goal_validators,
+            get_proposal_protocol_service,
+            get_similarity_matrix_service,
         )
         from backend.src.adapters.api.routes.goals import router as goals_router
 
@@ -144,7 +181,11 @@ class TestGoalsRoutes:
 
         # Мокируем зависимости
         app.dependency_overrides[get_goal_service] = lambda: mock_goal_service
-        app.dependency_overrides[get_goal_proposal_service] = lambda: mock_proposal_service
+        app.dependency_overrides[get_goal_proposal_service] = lambda: mock_goal_proposal_service
+        app.dependency_overrides[get_goal_validator_service] = lambda: mock_validator_service
+        app.dependency_overrides[get_similarity_matrix_service] = lambda: mock_similarity_service
+        app.dependency_overrides[get_proposal_protocol_service] = lambda: mock_protocol_service
+        app.dependency_overrides[get_goal_validators] = lambda: [mock_validator_service]
 
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as ac:
@@ -212,7 +253,7 @@ class TestGoalsRoutes:
         data = response.json()
         assert data["id"] == str(goal_id)
 
-    async def test_get_goal_proposals(self, client, mock_proposal_service):
+    async def test_get_goal_proposals(self, client, mock_goal_proposal_service):
         """GET /api/projects/{id}/goals/proposals — список предложений."""
         project_id = uuid4()
         proposal_obj = _make_goal_proposal(
@@ -220,7 +261,7 @@ class TestGoalsRoutes:
             formulation="Предложенная цель",
             confidence=0.85,
         )
-        mock_proposal_service.propose_goals.return_value = [proposal_obj]
+        mock_goal_proposal_service.propose_goals.return_value = [proposal_obj]
 
         response = await client.get(f"/api/projects/{project_id}/goals/proposals")
 
@@ -362,6 +403,87 @@ class TestGoalsRoutes:
         assert data["formulation"] == "Цель со сроком"
         assert data["deadline"] == "2026-12-31"
 
+    # ============================================================
+    # Новые эндпоинты: validate, similarity-matrix, run-3-times
+    # ============================================================
+
+    async def test_validate_goal(self, client, mock_validator_service):
+        """POST /api/goals/{id}/validate — 200, verification_status в ответе."""
+        goal_id = uuid4()
+        result = ValidationResult(
+            goal_id=goal_id,
+            verification_status=VerificationStatus.CONFIRMED,
+        )
+        mock_validator_service.validate.return_value = result
+
+        response = await client.post(f"/api/goals/{goal_id}/validate")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["goal_id"] == str(goal_id)
+        assert data["verification_status"] == "confirmed"
+
+    async def test_validate_goal_not_found(self, client, mock_validator_service):
+        """POST /api/goals/{nonexistent}/validate — 404."""
+        goal_id = uuid4()
+        mock_validator_service.validate.side_effect = ValueError("Goal not found")
+
+        response = await client.post(f"/api/goals/{goal_id}/validate")
+
+        assert response.status_code == 404
+
+    async def test_similarity_matrix_empty(self, client, mock_similarity_service):
+        """GET similarity-matrix — {"links": []}."""
+        project_id = uuid4()
+        mock_similarity_service.find_links.return_value = []
+
+        response = await client.get(f"/api/projects/{project_id}/goals/similarity-matrix")
+
+        assert response.status_code == 200
+        assert response.json() == {"links": []}
+
+    async def test_similarity_matrix_with_links(self, client, mock_similarity_service):
+        """GET similarity-matrix — 1 связь."""
+        project_id = uuid4()
+        link = SimilarityLink(
+            from_section="АР",
+            to_section="ОВ",
+            what="Отверстия под воздуховоды",
+            risk="Пробивка по факту",
+        )
+        mock_similarity_service.find_links.return_value = [link]
+
+        response = await client.get(f"/api/projects/{project_id}/goals/similarity-matrix")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["links"]) == 1
+        assert data["links"][0]["from_section"] == "АР"
+        assert data["links"][0]["to_section"] == "ОВ"
+
+    async def test_run_3_times(self, client, mock_protocol_service):
+        """POST run-3-times — ProtocolSummary с total > 0."""
+        project_id = uuid4()
+        summary = ProtocolSummary(total=3, unanimous={})
+        mock_protocol_service.run.return_value = summary
+
+        response = await client.post(f"/api/projects/{project_id}/goals/proposals/run-3-times")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] == 3
+
+    async def test_run_3_times_no_goals(self, client, mock_protocol_service):
+        """POST run-3-times no goals — total=0."""
+        project_id = uuid4()
+        summary = ProtocolSummary(total=0)
+        mock_protocol_service.run.return_value = summary
+
+        response = await client.post(f"/api/projects/{project_id}/goals/proposals/run-3-times")
+
+        assert response.status_code == 200
+        assert response.json()["total"] == 0
+
 
 # ============================================================
 # Интеграционные тесты с реальной БД
@@ -420,15 +542,9 @@ class TestGoalPremiseIdsIntegration:
             yield db_session
 
         app.dependency_overrides[get_db_session] = _get_db
-        app.dependency_overrides[get_project_repo] = lambda: SqlAlchemyProjectRepository(
-            db_session
-        )
-        app.dependency_overrides[get_premise_repo] = lambda: SqlAlchemyPremiseRepository(
-            db_session
-        )
-        app.dependency_overrides[get_goal_repo] = lambda: SqlAlchemyGoalRepository(
-            db_session
-        )
+        app.dependency_overrides[get_project_repo] = lambda: SqlAlchemyProjectRepository(db_session)
+        app.dependency_overrides[get_premise_repo] = lambda: SqlAlchemyPremiseRepository(db_session)
+        app.dependency_overrides[get_goal_repo] = lambda: SqlAlchemyGoalRepository(db_session)
         app.dependency_overrides[get_premise_service] = lambda: PremiseService(
             repo=SqlAlchemyPremiseRepository(db_session)
         )
@@ -441,9 +557,7 @@ class TestGoalPremiseIdsIntegration:
         async with AsyncClient(transport=transport, base_url="http://test") as ac:
             yield ac
 
-    async def test_goal_premise_ids_persist_end_to_end(
-        self, app: AsyncClient
-    ):
+    async def test_goal_premise_ids_persist_end_to_end(self, app: AsyncClient):
         """Создать project → premise → goal.
         PATCH {premise_ids: [id]} → GET → [id].
         PATCH {premise_ids: []} → GET → [].
@@ -537,9 +651,7 @@ class TestGoalPremiseIdsIntegration:
         resp = await app.get(f"/api/projects/{project_id}/goals")
         assert resp.status_code == 200
         goals_data = resp.json()
-        goal_from_list = next(
-            g for g in goals_data if UUID(g["id"]) == goal_id
-        )
+        goal_from_list = next(g for g in goals_data if UUID(g["id"]) == goal_id)
         assert sorted(goal_from_list["premise_ids"]) == [str(premise1_id)]
 
         # 8. PATCH: очищаем premise_ids

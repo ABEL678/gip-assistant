@@ -17,6 +17,7 @@ import {
   useCreateGoal,
   useDeleteGoal,
   useApproveProposal,
+  useValidateGoal,
 } from "@/hooks/useGoals"
 import { usePremises } from "@/hooks/usePremises"
 import { GoalCard } from "@/components/GoalCard"
@@ -46,6 +47,7 @@ export function GoalsPage() {
   const createMutation = useCreateGoal(projectId!)
   const deleteMutation = useDeleteGoal(projectId!)
   const approveMutation = useApproveProposal(projectId!)
+  const validateMutation = useValidateGoal()
 
   // Build premise name map from all project premises
   const premiseNameMap = new Map<string, string>()
@@ -87,6 +89,12 @@ export function GoalsPage() {
   const handleEditProposal = (proposal: GoalProposal) => {
     setEditingId(proposal.premise.id)
     setShowForm(true)
+  }
+
+  const handleValidate = (goalId: string) => {
+    validateMutation.mutate(goalId, {
+      onError: (err: Error) => setError(err.message),
+    })
   }
 
   if (goalsLoading || proposalsLoading) {
@@ -169,6 +177,7 @@ export function GoalsPage() {
                 setShowForm(true)
               }}
               onDelete={handleDelete}
+              onValidate={handleValidate}
             />
           ))}
         </div>

@@ -30,7 +30,7 @@ def upgrade() -> None:
     op.create_index('idx_tasks_project', 'tasks', ['project_id'], unique=False)
     op.create_index('idx_tasks_section', 'tasks', ['section_code'], unique=False)
     op.create_index('idx_tasks_status', 'tasks', ['status'], unique=False)
-    op.create_index('idx_tasks_to_section', 'tasks', ['to_section_code'], unique=False)
+    # idx_tasks_to_section already created by 272f011cf740
     # ### end Alembic commands ###
 
 

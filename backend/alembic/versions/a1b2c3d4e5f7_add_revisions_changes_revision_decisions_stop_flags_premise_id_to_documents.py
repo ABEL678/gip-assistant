@@ -18,9 +18,34 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
+def _create_enums_sync(connection) -> None:
+    """Create enums in sync context — avoids async/pg_prepare issues."""
+    connection.execute(
+        sa.text(
+            "DO $$ BEGIN "
+            "  CREATE TYPE change_status AS ENUM ('added', 'removed', "
+            "'changed', 'unchanged'); "
+            "EXCEPTION WHEN duplicate_object THEN NULL; "
+            "END $$"
+        )
+    )
+    connection.execute(
+        sa.text(
+            "DO $$ BEGIN "
+            "  CREATE TYPE revision_decision_type AS ENUM "
+            "('accepted', 'accepted_with_frame', 'remark', 'rejected', "
+            "'moved', 'deadline'); "
+            "EXCEPTION WHEN duplicate_object THEN NULL; "
+            "END $$"
+        )
+    )
+
+
 def upgrade() -> None:
-    # Enums are created implicitly via sa.Enum in column definitions
-    # (checkfirst=True prevents duplicates)
+    # Create enums explicitly (safe on both clean and dirty DB)
+    # Using DO $$ BEGIN ... END $$ — PostgreSQL 9.1+ idempotent enum creation
+    # (CREATE TYPE IF NOT EXISTS not available until PG 14)
+    _create_enums_sync(op.get_bind())
 
     # 1. Create tables (in dependency order)
     op.create_table(
@@ -49,7 +74,7 @@ def upgrade() -> None:
         sa.Column("field", sa.String(200), nullable=False),
         sa.Column("old_value", sa.String(1000), nullable=True),
         sa.Column("new_value", sa.String(1000), nullable=True),
-        sa.Column("status", sa.Enum("added", "removed", "changed", "unchanged", name="change_status"), nullable=False),
+        sa.Column("status", sa.Enum("added", "removed", "changed", "unchanged", name="change_status", create_type=False), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True),
                   server_default=sa.func.now(), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True),
@@ -63,7 +88,7 @@ def upgrade() -> None:
         sa.Column("id", sa.UUID(as_uuid=True), primary_key=True, default=sa.func.uuid_generate_v4()),
         sa.Column("change_id", sa.UUID(as_uuid=True),
                   sa.ForeignKey("changes.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("decision", sa.Enum("accepted", "accepted_with_frame", "remark", "rejected", "moved", "deadline", name="revision_decision_type"), nullable=False),
+        sa.Column("decision", sa.Enum("accepted", "accepted_with_frame", "remark", "rejected", "moved", "deadline", name="revision_decision_type", create_type=False), nullable=False),
         sa.Column("decided_by", sa.UUID(as_uuid=True),
                   sa.ForeignKey("users.id", ondelete="SET NULL"), nullable=True),
         sa.Column("deadline", sa.Date, nullable=True),
@@ -118,6 +143,6 @@ def downgrade() -> None:
     op.drop_table("changes")
     op.drop_table("revisions")
 
-    # Drop enums
+    # Drop enums (DROP TYPE IF EXISTS — safe, idempotent)
     op.execute("DROP TYPE IF EXISTS revision_decision_type")
     op.execute("DROP TYPE IF EXISTS change_status")

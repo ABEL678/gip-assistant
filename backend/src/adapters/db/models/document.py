@@ -20,6 +20,7 @@ class DocumentModel(Base, TimestampMixin):
         Index("idx_documents_task", "task_id"),
         Index("idx_documents_type", "document_type_id"),
         Index("idx_documents_status", "lifecycle_status"),
+        Index("idx_documents_premise", "premise_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -47,18 +48,19 @@ class DocumentModel(Base, TimestampMixin):
         ForeignKey("tasks.id", ondelete="SET NULL"),
         nullable=True,
     )
+    premise_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("premises.id", ondelete="SET NULL"),
+        nullable=True,
+    )
 
     # Обозначение (ГОСТ Р 21.101-2026, 4.1, 4.2)
     cipher: Mapped[str] = mapped_column(String(500), nullable=False)
     base_designation: Mapped[str | None] = mapped_column(String(200), nullable=True)
     section_code: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    document_kind: Mapped[str] = mapped_column(
-        String(10), nullable=False, default="ПД"
-    )
+    document_kind: Mapped[str] = mapped_column(String(10), nullable=False, default="ПД")
     mark: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    doc_part_type: Mapped[str | None] = mapped_column(
-        String(10), nullable=True
-    )
+    doc_part_type: Mapped[str | None] = mapped_column(String(10), nullable=True)
 
     # Наименование
     document_name: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -69,9 +71,7 @@ class DocumentModel(Base, TimestampMixin):
     )
 
     # Версионность (current_version_id — НЕ FK, избегаем циклической зависимости)
-    current_version_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), nullable=True
-    )
+    current_version_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     version_parent_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("documents.id"),
@@ -89,9 +89,7 @@ class DocumentModel(Base, TimestampMixin):
     )
 
     # Жизненный цикл
-    lifecycle_status: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="DRAFT"
-    )
+    lifecycle_status: Mapped[str] = mapped_column(String(20), nullable=False, default="DRAFT")
 
     # Подпись (метаданные)
     signed_by: Mapped[uuid.UUID | None] = mapped_column(

@@ -28,6 +28,7 @@ class Document:
     base_designation: str | None = None
     entity_id: UUID | None = None
     task_id: UUID | None = None
+    premise_id: UUID | None = None
     current_version_id: UUID | None = None  # НЕ FK
     version_parent_id: UUID | None = None
     replaces_id: UUID | None = None

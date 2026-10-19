@@ -1,5 +1,8 @@
 """Реализации репозиториев через SQLAlchemy."""
 
+from backend.src.adapters.db.repositories.change_repository import (
+    SqlAlchemyChangeRepository,
+)
 from backend.src.adapters.db.repositories.cross_task_repo import (
     SqlAlchemyCrossTaskRepository,
 )
@@ -33,6 +36,15 @@ from backend.src.adapters.db.repositories.premise_repository import (
 from backend.src.adapters.db.repositories.project_repo import (
     SqlAlchemyProjectRepository,
 )
+from backend.src.adapters.db.repositories.revision_decision_repository import (
+    SqlAlchemyRevisionDecisionRepository,
+)
+from backend.src.adapters.db.repositories.revision_repository import (
+    SqlAlchemyRevisionRepository,
+)
+from backend.src.adapters.db.repositories.stop_flag_repository import (
+    SqlAlchemyStopFlagRepository,
+)
 from backend.src.adapters.db.repositories.task_repo import (
     SqlAlchemyTaskRepository,
 )
@@ -41,6 +53,7 @@ from backend.src.adapters.db.repositories.user_repo import (
 )
 
 __all__ = [
+    "SqlAlchemyChangeRepository",
     "SqlAlchemyCrossTaskRepository",
     "SqlAlchemyDocumentLinkRepository",
     "SqlAlchemyDocumentRepository",
@@ -52,6 +65,9 @@ __all__ = [
     "SqlAlchemyImportLogRepository",
     "SqlAlchemyPremiseRepository",
     "SqlAlchemyProjectRepository",
+    "SqlAlchemyRevisionDecisionRepository",
+    "SqlAlchemyRevisionRepository",
+    "SqlAlchemyStopFlagRepository",
     "SqlAlchemyTaskRepository",
     "SqlAlchemyUserRepository",
 ]

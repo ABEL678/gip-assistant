@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from datetime import date
 from uuid import UUID
 
+from backend.src.domain.entities.change import Change
 from backend.src.domain.entities.cross_task import CrossTask
 from backend.src.domain.entities.document import Document
 from backend.src.domain.entities.document_link import DocumentLink
@@ -19,6 +20,9 @@ from backend.src.domain.entities.goal import Goal
 from backend.src.domain.entities.import_log import ImportLog
 from backend.src.domain.entities.premise import Premise
 from backend.src.domain.entities.project import Project
+from backend.src.domain.entities.revision import Revision
+from backend.src.domain.entities.revision_decision import RevisionDecision
+from backend.src.domain.entities.stop_flag import StopFlag
 from backend.src.domain.entities.task import Task
 from backend.src.domain.entities.user import User
 from backend.src.domain.value_objects.document import LifecycleStatus
@@ -28,54 +32,43 @@ class ProjectRepository(ABC):
     """Репозиторий проектов."""
 
     @abstractmethod
-    async def get_by_id(self, project_id: UUID) -> Project | None:
-        ...
+    async def get_by_id(self, project_id: UUID) -> Project | None: ...
 
     @abstractmethod
-    async def get_all(self, limit: int = 100, offset: int = 0) -> list[Project]:
-        ...
+    async def get_all(self, limit: int = 100, offset: int = 0) -> list[Project]: ...
 
     @abstractmethod
-    async def save(self, project: Project) -> Project:
-        ...
+    async def save(self, project: Project) -> Project: ...
 
     @abstractmethod
-    async def delete(self, project_id: UUID) -> None:
-        ...
+    async def delete(self, project_id: UUID) -> None: ...
 
 
 class TaskRepository(ABC):
     """Репозиторий задач."""
 
     @abstractmethod
-    async def get_by_id(self, task_id: UUID) -> Task | None:
-        ...
+    async def get_by_id(self, task_id: UUID) -> Task | None: ...
 
     @abstractmethod
     async def get_by_project(
         self, project_id: UUID, limit: int = 500, offset: int = 0
-    ) -> list[Task]:
-        ...
+    ) -> list[Task]: ...
 
     @abstractmethod
-    async def get_overdue(self, as_of: date | None = None) -> list[Task]:
-        ...
+    async def get_overdue(self, as_of: date | None = None) -> list[Task]: ...
 
     @abstractmethod
-    async def get_upcoming(self, days: int = 3) -> list[Task]:
-        ...
+    async def get_upcoming(self, days: int = 3) -> list[Task]: ...
 
     @abstractmethod
-    async def save(self, task: Task) -> Task:
-        ...
+    async def save(self, task: Task) -> Task: ...
 
     @abstractmethod
-    async def bulk_save(self, tasks: list[Task]) -> list[Task]:
-        ...
+    async def bulk_save(self, tasks: list[Task]) -> list[Task]: ...
 
     @abstractmethod
-    async def delete(self, task_id: UUID) -> None:
-        ...
+    async def delete(self, task_id: UUID) -> None: ...
 
     async def get_by_pair(
         self,
@@ -86,16 +79,15 @@ class TaskRepository(ABC):
         """Задачи конкретной пары разделов."""
         ...
 
+
 class CrossTaskRepository(ABC):
     """Репозиторий заданий смежникам (ячейки матрицы)."""
 
     @abstractmethod
-    async def get_by_id(self, cross_task_id: UUID) -> CrossTask | None:
-        ...
+    async def get_by_id(self, cross_task_id: UUID) -> CrossTask | None: ...
 
     @abstractmethod
-    async def get_by_project(self, project_id: UUID) -> list[CrossTask]:
-        ...
+    async def get_by_project(self, project_id: UUID) -> list[CrossTask]: ...
 
     @abstractmethod
     async def find(
@@ -103,24 +95,20 @@ class CrossTaskRepository(ABC):
         project_id: UUID,
         from_section_code: str,
         to_section_code: str,
-    ) -> CrossTask | None:
-        ...
+    ) -> CrossTask | None: ...
 
     @abstractmethod
-    async def save(self, cross_task: CrossTask) -> CrossTask:
-        ...
+    async def save(self, cross_task: CrossTask) -> CrossTask: ...
 
 
 class ImportLogRepository(ABC):
     """Репозиторий логов импорта Excel."""
 
     @abstractmethod
-    async def get_by_id(self, log_id: UUID) -> ImportLog | None:
-        ...
+    async def get_by_id(self, log_id: UUID) -> ImportLog | None: ...
 
     @abstractmethod
-    async def get_by_project(self, project_id: UUID) -> list[ImportLog]:
-        ...
+    async def get_by_project(self, project_id: UUID) -> list[ImportLog]: ...
 
     @abstractmethod
     async def get_pending(self) -> ImportLog | None:
@@ -128,24 +116,20 @@ class ImportLogRepository(ABC):
         ...
 
     @abstractmethod
-    async def save(self, log: ImportLog) -> ImportLog:
-        ...
+    async def save(self, log: ImportLog) -> ImportLog: ...
 
 
 class UserRepository(ABC):
     """Репозиторий пользователей."""
 
     @abstractmethod
-    async def get_by_id(self, user_id: UUID) -> User | None:
-        ...
+    async def get_by_id(self, user_id: UUID) -> User | None: ...
 
     @abstractmethod
-    async def get_by_telegram_id(self, telegram_id: int) -> User | None:
-        ...
+    async def get_by_telegram_id(self, telegram_id: int) -> User | None: ...
 
     @abstractmethod
-    async def get_by_email(self, email: str) -> User | None:
-        ...
+    async def get_by_email(self, email: str) -> User | None: ...
 
     @abstractmethod
     async def get_all_with_telegram(self) -> list[User]:
@@ -153,48 +137,39 @@ class UserRepository(ABC):
         ...
 
     @abstractmethod
-    async def save(self, user: User) -> User:
-        ...
+    async def save(self, user: User) -> User: ...
 
 
 class EntityTypeRepository(ABC):
     """Репозиторий типов пользовательских сущностей."""
 
     @abstractmethod
-    async def get_by_id(self, entity_type_id: UUID) -> EntityType | None:
-        ...
+    async def get_by_id(self, entity_type_id: UUID) -> EntityType | None: ...
 
     @abstractmethod
-    async def list_by_project(self, project_id: UUID) -> list[EntityType]:
-        ...
+    async def list_by_project(self, project_id: UUID) -> list[EntityType]: ...
 
     @abstractmethod
-    async def save(self, entity_type: EntityType) -> EntityType:
-        ...
+    async def save(self, entity_type: EntityType) -> EntityType: ...
 
     @abstractmethod
-    async def delete(self, entity_type_id: UUID) -> None:
-        ...
+    async def delete(self, entity_type_id: UUID) -> None: ...
 
 
 class EntityRepository(ABC):
     """Репозиторий экземпляров пользовательских сущностей."""
 
     @abstractmethod
-    async def get_by_id(self, entity_id: UUID) -> Entity | None:
-        ...
+    async def get_by_id(self, entity_id: UUID) -> Entity | None: ...
 
     @abstractmethod
-    async def list_by_type(self, entity_type_id: UUID) -> list[Entity]:
-        ...
+    async def list_by_type(self, entity_type_id: UUID) -> list[Entity]: ...
 
     @abstractmethod
-    async def save(self, entity: Entity) -> Entity:
-        ...
+    async def save(self, entity: Entity) -> Entity: ...
 
     @abstractmethod
-    async def delete(self, entity_id: UUID) -> None:
-        ...
+    async def delete(self, entity_id: UUID) -> None: ...
 
 
 class DocumentTypeRepository(ABC):
@@ -329,3 +304,89 @@ class GoalRepository(ABC):
     @abstractmethod
     async def delete(self, goal_id: UUID) -> None:
         """Удалить цель по ID."""
+
+
+class RevisionRepository(ABC):
+    """Порт репозитория Revision."""
+
+    @abstractmethod
+    async def get_by_id(self, revision_id: UUID) -> Revision | None:
+        """Найти ревизию по ID."""
+
+    @abstractmethod
+    async def list_by_document(
+        self,
+        document_id: UUID,
+    ) -> list[Revision]:
+        """Ревизии документа, сортировка по version DESC."""
+
+    @abstractmethod
+    async def save(self, revision: Revision) -> Revision:
+        """Создать или обновить ревизию (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, revision_id: UUID) -> None:
+        """Удалить ревизию по ID."""
+
+
+class ChangeRepository(ABC):
+    """Порт репозитория Change."""
+
+    @abstractmethod
+    async def get_by_id(self, change_id: UUID) -> Change | None:
+        """Найти изменение по ID."""
+
+    @abstractmethod
+    async def list_by_revision(self, revision_id: UUID) -> list[Change]:
+        """Изменения ревизии, сортировка по field."""
+
+    @abstractmethod
+    async def save(self, change: Change) -> Change:
+        """Создать или обновить изменение (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, change_id: UUID) -> None:
+        """Удалить изменение по ID."""
+
+
+class RevisionDecisionRepository(ABC):
+    """Порт репозитория RevisionDecision."""
+
+    @abstractmethod
+    async def get_by_id(self, decision_id: UUID) -> RevisionDecision | None:
+        """Найти решение по ID."""
+
+    @abstractmethod
+    async def list_by_change(
+        self,
+        change_id: UUID,
+    ) -> list[RevisionDecision]:
+        """Решения по изменению, сортировка по created_at."""
+
+    @abstractmethod
+    async def save(self, decision: RevisionDecision) -> RevisionDecision:
+        """Создать или обновить решение (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, decision_id: UUID) -> None:
+        """Удалить решение по ID."""
+
+
+class StopFlagRepository(ABC):
+    """Порт репозитория StopFlag."""
+
+    @abstractmethod
+    async def get_by_id(self, stop_flag_id: UUID) -> StopFlag | None:
+        """Найти стоп-сигнал по ID."""
+
+    @abstractmethod
+    async def list_by_revision(self, revision_id: UUID) -> list[StopFlag]:
+        """Стоп-сигналы ревизии, сортировка по created_at."""
+
+    @abstractmethod
+    async def save(self, stop_flag: StopFlag) -> StopFlag:
+        """Создать или обновить стоп-сигнал (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, stop_flag_id: UUID) -> None:
+        """Удалить стоп-сигнал по ID."""

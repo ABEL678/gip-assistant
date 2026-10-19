@@ -1,5 +1,6 @@
 """Все ORM-модели (см. ТЗ 3.0, раздел 4.3)."""
 
+from backend.src.adapters.db.models.change import ChangeModel
 from backend.src.adapters.db.models.cross_task import CrossTask
 from backend.src.adapters.db.models.document import DocumentModel
 from backend.src.adapters.db.models.document_link import DocumentLinkModel
@@ -13,11 +14,15 @@ from backend.src.adapters.db.models.goal_premise import GoalPremiseModel
 from backend.src.adapters.db.models.import_log import ImportLog
 from backend.src.adapters.db.models.premise import PremiseModel
 from backend.src.adapters.db.models.project import Project
+from backend.src.adapters.db.models.revision import RevisionModel
+from backend.src.adapters.db.models.revision_decision import RevisionDecisionModel
+from backend.src.adapters.db.models.stop_flag import StopFlagModel
 from backend.src.adapters.db.models.task import Task
 from backend.src.adapters.db.models.task_status_history import TaskStatusHistory
 from backend.src.adapters.db.models.user import User
 
 __all__ = [
+    "ChangeModel",
     "CrossTask",
     "DocumentLinkModel",
     "DocumentModel",
@@ -31,6 +36,9 @@ __all__ = [
     "ImportLog",
     "PremiseModel",
     "Project",
+    "RevisionDecisionModel",
+    "RevisionModel",
+    "StopFlagModel",
     "Task",
     "TaskStatusHistory",
     "User",

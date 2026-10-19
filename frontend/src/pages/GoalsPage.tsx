@@ -22,6 +22,8 @@ import { usePremises } from "@/hooks/usePremises"
 import { GoalCard } from "@/components/GoalCard"
 import { GoalForm } from "@/components/GoalForm"
 import { GoalProposalList } from "@/components/GoalProposalList"
+import { SimilarityMatrixPanel } from "@/components/SimilarityMatrixPanel"
+import { ProtocolSummaryPanel } from "@/components/ProtocolSummaryPanel"
 import { type GoalProposalApprove, type GoalProposal } from "@/api/goalApi"
 import { type GoalCreate, type GoalUpdate } from "@/api/goalApi"
 import { goalApi } from "@/api/goalApi"
@@ -138,6 +140,14 @@ export function GoalsPage() {
           onRefresh={() => refetch()}
         />
       </div>
+
+      {/* Similarity Matrix */}
+      <div className="border rounded-lg p-4">
+        <SimilarityMatrixPanel projectId={projectId!} />
+      </div>
+
+      {/* Protocol 3 runs */}
+      <ProtocolSummaryPanel projectId={projectId!} />
 
       {/* Empty state */}
       {!goalsLoading && !goalsError && goals && goals.length === 0 && (

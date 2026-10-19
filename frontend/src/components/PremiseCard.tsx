@@ -70,6 +70,33 @@ export function PremiseCard({ premise, onEdit, onDelete }: PremiseCardProps) {
         </div>
       </CardContent>
 
+      {Object.keys(premise.data || {}).length > 0 && (
+        <div className="px-6 pb-2 space-y-1">
+          <p className="text-xs font-semibold text-muted-foreground">Данные:</p>
+          {Object.entries(premise.data).map(([key, value]) => {
+            const owner =
+              typeof value === "object" && value !== null && "owner" in value
+                ? (value as Record<string, unknown>).owner as string
+                : null
+            return (
+              <div key={key} className="flex items-center gap-2 text-xs">
+                <span className="font-medium">{key}:</span>
+                <span className="text-muted-foreground">{String(value)}</span>
+                {owner ? (
+                  <Badge variant="secondary" className="text-[10px]">
+                    владелец: {owner}
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="text-[10px]">
+                    нет данных
+                  </Badge>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
       <CardFooter className="gap-2">
         <Button
           variant="outline"

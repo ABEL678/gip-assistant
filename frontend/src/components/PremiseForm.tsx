@@ -55,9 +55,13 @@ export function PremiseForm({
       ? (initialData?.data as Record<string, unknown>).deadline as string
       : null,
   )
-  const [data, setData] = useState<Record<string, unknown>>(
-    initialData?.data ?? {},
+  const [dataJson, setDataJson] = useState(() =>
+    initialData?.data ? JSON.stringify(initialData.data, null, 2) : "",
   )
+  const [schemaJson, setSchemaJson] = useState(() =>
+    initialData?.field_schema ? JSON.stringify(initialData.field_schema, null, 2) : "",
+  )
+  const [dataError, setDataError] = useState<string | null>(null)
 
   // Sync state when initialData changes (edit mode)
   useEffect(() => {
@@ -70,7 +74,10 @@ export function PremiseForm({
       setMandatory(initialData.mandatory ?? true)
       setLink(initialData.link ?? "")
       setValidUntil(initialData.valid_until ?? "")
-      setData(initialData.data ?? {})
+      setDataJson(initialData.data ? JSON.stringify(initialData.data, null, 2) : "")
+      setSchemaJson(
+        initialData.field_schema ? JSON.stringify(initialData.field_schema, null, 2) : "",
+      )
       const d = (initialData.data as Record<string, unknown>)?.deadline
       setDeadline(typeof d === "string" ? d : null)
     }
@@ -79,6 +86,18 @@ export function PremiseForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
+    setDataError(null)
+
+    // Parse data JSON
+    let parsedData: Record<string, unknown> = {}
+    if (dataJson.trim()) {
+      try {
+        parsedData = JSON.parse(dataJson)
+      } catch {
+        setDataError("Невалидный JSON в поле «Данные»")
+        return
+      }
+    }
 
     // Convert date strings to ISO format (YYYY-MM-DD)
     const toISODate = (v: string): string | null => {
@@ -95,7 +114,7 @@ export function PremiseForm({
     }
 
     // Build data payload for category-specific fields
-    const dataPayload: Record<string, unknown> = { ...data }
+    const dataPayload: Record<string, unknown> = { ...parsedData }
     if (category === "contract" && deadline) {
       dataPayload.deadline = toISODate(deadline)
     } else if (category !== "contract") {
@@ -112,6 +131,7 @@ export function PremiseForm({
       link: link || null,
       valid_until: toISODate(validUntil),
       data: dataPayload,
+      field_schema: schemaJson.trim() ? JSON.parse(schemaJson) : undefined,
     })
   }
 
@@ -218,6 +238,32 @@ export function PremiseForm({
             placeholder="2026-12-31"
           />
         </div>
+      )}
+
+      <div className="space-y-2">
+        <Label htmlFor="data">Данные (JSON)</Label>
+        <textarea
+          id="data"
+          value={dataJson}
+          onChange={(e) => setDataJson(e.target.value)}
+          placeholder='{"deadline": {"value": "2026-12-01", "owner": "contract", "source": "Договор №1"}}'
+          className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm font-mono"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="schema">Schema (JSON, опционально)</Label>
+        <textarea
+          id="schema"
+          value={schemaJson}
+          onChange={(e) => setSchemaJson(e.target.value)}
+          placeholder='{"deadline": "date"}'
+          className="w-full min-h-[60px] rounded-md border border-input bg-background px-3 py-2 text-sm font-mono"
+        />
+      </div>
+
+      {dataError && (
+        <p className="text-sm text-destructive">{dataError}</p>
       )}
 
       <div className="flex gap-2 justify-end pt-2">

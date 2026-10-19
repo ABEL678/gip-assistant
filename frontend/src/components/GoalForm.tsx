@@ -3,6 +3,7 @@ import {
   type GoalCreate,
   type GoalUpdate,
   type GoalState,
+  type VerificationStatus,
 } from "@/api/goalApi"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,6 +24,13 @@ const STATES: { value: GoalState; label: string }[] = [
 ]
 
 const PRIORITIES = [1, 2, 3, 4, 5]
+
+const VERIFICATION_LABELS: Record<VerificationStatus, string> = {
+  confirmed: "Подтверждена",
+  requires_check: "Требуется проверка",
+  no_data: "Нет данных",
+  not_confirmed: "Не подтверждена",
+}
 
 interface GoalFormProps {
   initialData?: GoalCreate | GoalUpdate
@@ -46,6 +54,12 @@ export function GoalForm({
   const [selectedPremises, setSelectedPremises] = useState<string[]>(
     initialData?.premise_ids ?? [],
   )
+  const [schemaJson, setSchemaJson] = useState(() => {
+    const fd = initialData as Record<string, unknown> | undefined
+    const fs = fd?.field_schema as Record<string, unknown> | undefined
+    return fs ? JSON.stringify(fs, null, 2) : ""
+  })
+  const verificationStatus = (initialData as Record<string, unknown>).verification_status as VerificationStatus | undefined
 
   // Sync state when initialData changes (edit mode)
   useEffect(() => {
@@ -55,6 +69,9 @@ export function GoalForm({
       setPriority(initialData.priority?.toString() ?? "1")
       setState(initialData.state ?? "plan")
       setSelectedPremises(initialData.premise_ids ?? [])
+      setSchemaJson(
+        initialData.field_schema ? JSON.stringify(initialData.field_schema, null, 2) : "",
+      )
     }
   }, [initialData])
 
@@ -88,7 +105,8 @@ export function GoalForm({
       priority: priority ? Number(priority) : null,
       state,
       premise_ids: selectedPremises,
-    })
+      field_schema: schemaJson.trim() ? JSON.parse(schemaJson) : undefined,
+    } as GoalCreate | GoalUpdate)
   }
 
   return (
@@ -169,6 +187,26 @@ export function GoalForm({
             <span className="text-sm text-muted-foreground">Нет вводных</span>
           )}
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Статус проверки</Label>
+        <div className="text-sm text-muted-foreground bg-muted p-2 rounded">
+          {verificationStatus
+            ? VERIFICATION_LABELS[verificationStatus]
+            : "Не проверена"}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="schema">Schema (JSON, опционально)</Label>
+        <textarea
+          id="schema"
+          value={schemaJson}
+          onChange={(e) => setSchemaJson(e.target.value)}
+          placeholder='{"deadline": "date"}'
+          className="w-full min-h-[60px] rounded-md border border-input bg-background px-3 py-2 text-sm font-mono"
+        />
       </div>
 
       <div className="flex gap-2 justify-end pt-2">

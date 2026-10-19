@@ -12,6 +12,7 @@ export interface Goal {
   responsible_id: string | null
   priority: number | null
   state: GoalState
+  verification_status: VerificationStatus
   created_by: string | null
   premise_ids: string[]
   created_at: string
@@ -26,6 +27,7 @@ export interface GoalCreate {
   state?: GoalState
   created_by?: string | null
   premise_ids?: string[]
+  field_schema?: Record<string, unknown>
 }
 
 export interface GoalUpdate {
@@ -36,6 +38,7 @@ export interface GoalUpdate {
   state?: GoalState
   created_by?: string | null
   premise_ids?: string[]
+  field_schema?: Record<string, unknown>
 }
 
 export interface GoalProposal {
@@ -70,6 +73,41 @@ export interface GoalProposalApprove {
   deadline?: string | null
   priority?: number | null
   premise_ids: string[]
+}
+
+export type VerificationStatus = "confirmed" | "requires_check" | "no_data" | "not_confirmed"
+
+export interface ValidationEvidence {
+  premise_id: string
+  field: string
+  value: unknown
+  owner: string
+}
+
+export interface ValidationResult {
+  goal_id: string
+  verification_status: VerificationStatus
+  evidence: ValidationEvidence[]
+  missing: string[]
+  contradictions: string[]
+}
+
+export interface SimilarityLink {
+  from_section: string
+  to_section: string
+  what: string
+  risk: string
+}
+
+export interface SimilarityMatrixResponse {
+  links: SimilarityLink[]
+}
+
+export interface ProtocolSummary {
+  total: number
+  unanimous: Record<string, VerificationStatus>
+  majority: Record<string, VerificationStatus>
+  split: string[]
 }
 
 // ====== API-клиент ======
@@ -121,6 +159,29 @@ export const goalApi = {
     const { data } = await apiClient.post<Goal>(
       `/projects/${projectId}/goals/from-proposal`,
       payload,
+    )
+    return data
+  },
+
+  async validateGoal(goalId: string): Promise<ValidationResult> {
+    const { data } = await apiClient.post<ValidationResult>(
+      `/goals/${goalId}/validate`,
+    )
+    return data
+  },
+
+  async getSimilarityMatrix(
+    projectId: string,
+  ): Promise<SimilarityMatrixResponse> {
+    const { data } = await apiClient.get<SimilarityMatrixResponse>(
+      `/projects/${projectId}/goals/similarity-matrix`,
+    )
+    return data
+  },
+
+  async run3Times(projectId: string): Promise<ProtocolSummary> {
+    const { data } = await apiClient.post<ProtocolSummary>(
+      `/projects/${projectId}/goals/proposals/run-3-times`,
     )
     return data
   },

@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.5 (18.10.2026)
-**Актуально на:** после сессии 6.7 (DOMAIN.md v1.1)
+**Версия:** 2.6 (19.10.2026)
+**Актуально на:** после сессии 6.8d (UI вехи 1 восстановлен)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -143,9 +143,18 @@
 - 17 тестов роутов (httpx.AsyncClient + ASGITransport).
 - 187 тестов pytest (было 122).
 
-**Веха 1 (UI) — СБРОШЕНА:**
+**Веха 1 (UI) — ВОССТАНОВЛЕНА (19.10.2026):**
 
-- UI пересобирается: канвас (React Flow) вместо списков.
+- ✅ Списки + формы: PremisesPage, GoalsPage.
+- ✅ PremiseCard — owner-бейджи в data.
+- ✅ PremiseForm — data + schema_ textarea (JSON).
+- ✅ GoalCard — verification_status бейдж + кнопка «Проверить» + evidence popup.
+- ✅ GoalForm — schema_ textarea + readonly status.
+- ✅ GoalProposalList — утвердить/отклонить/править.
+- ✅ SimilarityMatrixPanel — список связей from_section ↔ to_section.
+- ✅ ProtocolSummaryPanel — кнопка запуска + unanimous/majority/split.
+- ✅ TypeScript — без ошибок.
+- ✅ Frontend build успешен.
 
 **Frontend:**
 

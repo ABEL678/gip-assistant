@@ -300,11 +300,19 @@
 
 ## 2. В работе (In Progress)
 
-**На 18.10.2026 — 6.8c (DI + эндпоинты + тесты роутов).**
+**На 19.10.2026 — 6.8d (UI вехи 1) ЗАКРЫТ.**
 
-- Спека: `docs/specs/spec_week_1.md` §7.1.
-- Код не начат.
-- Подсессии: 6.8c (эндпоинты), 6.8d (UI).
+- ✅ API-клиенты расширены (validateGoal, similarity-matrix, run-3-times).
+- ✅ Хуки: useValidateGoal, useSimilarityMatrix, useRun3Times.
+- ✅ PremiseCard — owner в data.
+- ✅ PremiseForm — data + schema_ textarea.
+- ✅ GoalCard — verification_status + кнопка «Проверить» + evidence popup.
+- ✅ GoalForm — schema_ + readonly status.
+- ✅ SimilarityMatrixPanel — новый компонент.
+- ✅ ProtocolSummaryPanel — новый компонент.
+- ✅ GoalsPage — блоки матрицы и протокола.
+- ✅ TypeScript — без ошибок.
+- ✅ Frontend build успешен.
 
 ## 3. Дальше (Next)
 
@@ -323,8 +331,8 @@
 
 - ✅ **6.8a** — модель БД (миграция `verification_status` + `PremiseDataField`), DTO, порты/репозитории.
 - ✅ **6.8b** — сервисы (валидатор + матрица + протокол). Коммиты `130c334`, `fe894d0`, `21880b7`, `964579d`, `411932f`.
-- ⏳ **6.8c** — DI + эндпоинты + тесты роутов.
-- ⏳ **6.8d** — UI (страницы, карточки, статус, владелец).
+- ✅ **6.8c** — DI + эндпоинты + тесты роутов.
+- ✅ **6.8d** — UI (страницы, карточки, статус, владелец, матрица, протокол).
 
 ### Веха 2 — Action + Task-адаптация
 
@@ -380,7 +388,19 @@
 
 ## 5. Журнал (Changelog)
 
-### 18.10.2026 (6.8b — сервисы)
+### 19.10.2026 (сессия 6.8d — UI вехи 1)
+
+- ✅ 6.8d закрыт (UI вехи 1 восстановлен).
+- ✅ goalApi.ts — +3 типа DTO, +3 метода (validateGoal, getSimilarityMatrix, run3Times).
+- ✅ useGoals.ts — +3 хука (useValidateGoal, useSimilarityMatrix, useRun3Times).
+- ✅ PremiseCard.tsx — owner-бейджи в data.
+- ✅ PremiseForm.tsx — data + schema_ textarea (JSON parsing с валидацией).
+- ✅ GoalCard.tsx — verification_status бейдж + кнопка «Проверить» + evidence popup.
+- ✅ GoalForm.tsx — schema_ textarea + readonly verification_status.
+- ✅ SimilarityMatrixPanel.tsx — новый компонент (список связей from_section ↔ to_section).
+- ✅ ProtocolSummaryPanel.tsx — новый компонент (кнопка запуска + unanimous/majority/split).
+- ✅ GoalsPage.tsx — встроены блоки матрицы и протокола.
+- ✅ Frontend build успешен, TypeScript — без ошибок.
 
 - ✅ 6.8b-1: `GoalValidatorService` (правила 1–6) + `ValidationResult` + `PremiseDataField` в домене + фикс Rule 4/5. Коммиты `130c334`, `fe894d0`.
 - ✅ 6.8b-2: `SimilarityMatrixService` — 10 связей. Коммит `21880b7`.

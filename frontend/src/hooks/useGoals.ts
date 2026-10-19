@@ -76,3 +76,33 @@ export function useApproveProposal(projectId: string) {
     },
   })
 }
+
+export function useValidateGoal() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (goalId: string) => goalApi.validateGoal(goalId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["goals"] })
+    },
+  })
+}
+
+export function useSimilarityMatrix(projectId: string) {
+  return useQuery({
+    queryKey: ["similarity-matrix", projectId],
+    queryFn: () => goalApi.getSimilarityMatrix(projectId),
+    enabled: !!projectId,
+  })
+}
+
+export function useRun3Times(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => goalApi.run3Times(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["goals", projectId] })
+      queryClient.invalidateQueries({ queryKey: ["goal-proposals", projectId] })
+      queryClient.invalidateQueries({ queryKey: ["similarity-matrix", projectId] })
+    },
+  })
+}

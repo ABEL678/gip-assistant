@@ -87,6 +87,40 @@
 - `no_data` — ГИП **должен** создать RFI (запрос), а **не** утверждать.
 - `not_confirmed` — ГИП **должен** отклонить или исправить Goal.
 
+### 2.2. Новые сущности (ревизии)
+
+**Revision (Ревизия)** — новая версия документа. Поля:
+- `id` — UUID.
+- `document_id` — FK → documents (какой документ ревизуется).
+- `version` — номер (1, 2, 3...).
+- `date` — когда получена.
+- `source` — кто прислал (смежник, заказчик).
+- `notified` — уведомил ли смежник об изменении (bool).
+- `stop_flag` — есть ли стоп-сигнал (bool).
+
+**Change (Изменение)** — что изменилось между ревизиями. Поля:
+- `id` — UUID.
+- `revision_id` — FK → revisions.
+- `field` — какое поле (например, «отверстие D250»).
+- `old_value` — было.
+- `new_value` — стало.
+- `status` — `added` / `removed` / `changed` / `unchanged`.
+
+**RevisionDecision (Решение по ревизии)** — что ГИП решил по каждому изменению. Поля:
+- `id` — UUID.
+- `change_id` — FK → changes.
+- `decision` — `accepted` / `accepted_with_frame` / `remark` / `rejected` / `moved` / `deadline`.
+- `decided_by` — кто принял (ГИП).
+- `deadline` — срок ответа смежнику (если `moved` или `remark`).
+
+**StopFlag (Стоп-сигнал)** — признак, что надо остановиться и выяснить. Поля:
+- `id` — UUID.
+- `revision_id` — FK → revisions.
+- `reason` — один из 6 признаков (см. §4.4.3).
+- `resolved` — bool (выяснили или нет).
+
+**Правило:** если у `Revision` `notified = false` — это `changed_silently` (см. §4.4.1). ГИП должен увидеть это до сравнения.
+
 ## §3. Модель БД
 
 SQLAlchemy-модели в `backend/src/adapters/db/models/`:
@@ -136,6 +170,22 @@ Enum-значения — в `backend/src/domain/value_objects/enums.py`.
 
 **Правило:** при создании/обновлении Premise.data каждое поле должно иметь owner (из схемы или явно). Если owner нет — валидатор выставит no_data.
 
+### 3.2. Модель БД (ревизии)
+
+**Таблицы:**
+- `revisions` — с FK на `documents.id`, индексы: `idx_revisions_document`, `idx_revisions_date`.
+- `changes` — с FK на `revisions.id`, индексы: `idx_changes_revision`, `idx_changes_status`.
+- `revision_decisions` — с FK на `changes.id`, индексы: `idx_revision_decisions_change`.
+- `stop_flags` — с FK на `revisions.id`, индексы: `idx_stop_flags_revision`, `idx_stop_flags_resolved`.
+
+**Миграция Alembic:** создаёт 4 таблицы + FK + индексы. **Не** трогает `documents` (он уже есть).
+
+**Enum'ы:**
+- `ChangeStatus` — `added`, `removed`, `changed`, `unchanged`.
+- `RevisionDecisionType` — `accepted`, `accepted_with_frame`, `remark`, `rejected`, `moved`, `deadline`.
+
+**Правило:** `revision_id` в `changes` и `stop_flags` — **CASCADE** (при удалении ревизии — удаляются изменения и стоп-флаги).
+
 ## §4. DTO
 
 Pydantic-схемы в `backend/src/application/dto/`:
@@ -150,8 +200,6 @@ Pydantic-схемы в `backend/src/application/dto/`:
 - `priority` — int | None.
 - `premise_ids` — list[UUID] (какие вводные стали источником).
 - `rule` — str (какое правило сработало: «договор_срок», «тз_требование», «требование_заказчика», «просроченный_ид»).
-
-## §5. Порты и репозитории
 
 ### 4.1. DTO — как сериализуется PremiseDataField
 
@@ -180,6 +228,20 @@ class PremiseDataField(BaseModel):
 
 **Граница:** если `owner = None` — это «нет данных». Валидатор не сможет проверить Goal, который ссылается на это поле.
 
+### 4.2. DTO (ревизии)
+
+**DTO-файлы:**
+- `revision.py`: `RevisionSchema`, `RevisionCreate`, `RevisionRead`, `RevisionUpdate`.
+- `change.py`: `ChangeSchema`, `ChangeCreate`, `ChangeRead`.
+- `revision_decision.py`: `RevisionDecisionSchema`, `RevisionDecisionCreate`, `RevisionDecisionRead`.
+- `stop_flag.py`: `StopFlagSchema`, `StopFlagCreate`, `StopFlagRead`.
+
+**Enum'ы в DTO:**
+- `ChangeStatus` (4 значения).
+- `RevisionDecisionType` (6 значений).
+
+## §5. Порты и репозитории
+
 Порты в `backend/src/domain/ports/repositories.py`:
 - `PremiseRepository` (ABC).
 - `GoalRepository` (ABC).
@@ -189,6 +251,22 @@ class PremiseDataField(BaseModel):
 - `goal_repository.py` — `SqlAlchemyGoalRepository`.
 
 Метод `save` — через `session.merge()`. Mapping — `_to_domain` / `_to_model`.
+
+### 5.1. Порты и репозитории (ревизии)
+
+**Порты:**
+- `RevisionRepository` (ABC).
+- `ChangeRepository` (ABC).
+- `RevisionDecisionRepository` (ABC).
+- `StopFlagRepository` (ABC).
+
+**Репозитории:**
+- `revision_repository.py` — `SqlAlchemyRevisionRepository`.
+- `change_repository.py` — `SqlAlchemyChangeRepository`.
+- `revision_decision_repository.py` — `SqlAlchemyRevisionDecisionRepository`.
+- `stop_flag_repository.py` — `SqlAlchemyStopFlagRepository`.
+
+**Метод `save`** — через `session.merge()`. Mapping — `_to_domain` / `_to_model`.
 
 ## §6. Сервисы
 
@@ -300,6 +378,12 @@ class PremiseDataField(BaseModel):
 - `contradictions` — противоречия (если `not_confirmed`).
 
 **Граница:** если `evidence` пуст — это не `confirmed`. Это `requires_check` (валидатор не нашёл два места).
+
+#### 6.1.3. Три уровня проверки ревизии
+
+- **Уровень 1** (контроль входа) — `RevisionControlService` (6.8b).
+- **Уровень 2** (сравнение) — `RevisionDiffService` (6.8b).
+- **Уровень 3** (инженерное суждение) — UI + ГИП (6.8d).
 
 ### 6.2. Матрица смежников (часть Вехи 1)
 
@@ -427,6 +511,16 @@ DI в `backend/src/adapters/api/dependencies.py`:
 Валидатор работает **до** утверждения Goal. Матрица — **при** предложении
 связей. Протокол — **при** проверке предложений.
 
+### 7.2. Эндпоинты ревизий
+
+- `POST /api/documents/{document_id}/revisions` — создать ревизию.
+- `GET /api/documents/{document_id}/revisions` — список ревизий.
+- `GET /api/revisions/{id}` — ревизия по ID.
+- `POST /api/revisions/{id}/changes` — добавить изменение.
+- `GET /api/revisions/{id}/changes` — список изменений.
+- `POST /api/changes/{id}/decision` — принять решение.
+- `POST /api/revisions/{id}/stop-flags` — добавить стоп-сигнал.
+
 ## §8. Тесты
 
 Unit-тесты в `backend/tests/`:
@@ -439,6 +533,14 @@ Smoke-тесты маппинга:
 - `test_goal_mapping.py`.
 
 Цель: +25–30 тестов. Итого в проекте — ~150.
+
+### 8.1. Тесты ревизий
+
+- `test_revision_service.py` — CRUD Revision.
+- `test_change_service.py` — CRUD Change.
+- `test_revision_decision_service.py` — CRUD RevisionDecision.
+- `test_stop_flag_service.py` — CRUD StopFlag.
+- Цель: +30–40 тестов.
 
 ## §9. UI
 
@@ -464,6 +566,13 @@ API-клиенты в `frontend/src/api/`:
 Роутинг в `App.tsx`.
 
 UI структуры — список для MVP (ответ на вопрос 6).
+
+### 9.1. UI ревизий
+
+- `RevisionPage.tsx` — список ревизий.
+- `RevisionDiffPage.tsx` — сравнение (уровень 2).
+- `RevisionDecisionPage.tsx` — форма ответа (6 статусов, уровень 3).
+- `StopFlagPage.tsx` — стоп-сигналы.
 
 ## §10. Открытые вопросы вехи
 

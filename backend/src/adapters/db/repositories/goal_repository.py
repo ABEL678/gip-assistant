@@ -53,6 +53,9 @@ class SqlAlchemyGoalRepository(GoalRepository):
         merged = await self._session.merge(model)
         await self._session.flush()
 
+        # Refresh — чтобы updated_at не был expired после merge
+        await self._session.refresh(merged)
+
         # Удаляем старые связи
         del_stmt = (
             delete(GoalPremiseModel)

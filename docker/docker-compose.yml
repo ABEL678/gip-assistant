@@ -1,5 +1,8 @@
 services:
   # ============ PostgreSQL 15 ============
+  # Запускать из корня репозитория:
+  #   docker compose -f docker/docker-compose.yml up -d
+  # .env в корне — подхватится через env_file: ../.env
   db:
     image: mirror.gcr.io/library/postgres:15-alpine
     container_name: gip_db
@@ -8,7 +11,7 @@ services:
     environment:
       POSTGRES_DB: ${DB_NAME:-gip_assistant}
       POSTGRES_USER: ${DB_USER:-gip}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-gip}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:

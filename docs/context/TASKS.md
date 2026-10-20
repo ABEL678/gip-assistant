@@ -300,10 +300,10 @@
 
 ## 2. В работе (In Progress)
 
-**На 20.10.2026 — демо вехи 1.**
+**На 20.10.2026 — 6.10e (Action UI) закрыт.**
 
-- ⏳ Демо вехи 1 для ГИПа.
-- ⏳ Обратная связь → 6.9 (канвас).
+- ⏳ Веха 2 — Action + Task-адаптация.
+- ⏳ 6.10f — интеграция Action с Task (при раскрытии задачи показывать Actions по task_id).
 
 ## 3. Дальше (Next)
 
@@ -427,6 +427,17 @@
 - ✅ RevisionDiffPanel — просмотр diff между версиями.
 - ✅ API-клиенты + хуки.
 - ✅ Коммит `65f943b`.
+
+### 20.10.2026 (сессия 6.10e — UI для Action)
+
+- ✅ `actionApi.ts` — типы + 6 API-методов.
+- ✅ `useActions.ts` — 6 хуков (useActions, useAction, useActionsByTask, useCreateAction, useUpdateAction, useDeleteAction).
+- ✅ `ActionCard.tsx` — карточка с state-бейджами.
+- ✅ `ActionForm.tsx` — форма (formulation, measurable_result, deadline, state).
+- ✅ `ActionsPage.tsx` — CRUD-страница с фильтрацией по `?task=...`.
+- ✅ `App.tsx` — роут `/projects/:id/actions`.
+- ✅ `ProjectPage.tsx` — секция "Действия" со счётчиком.
+- ✅ Frontend build успешен. Коммит `4b1a50d`.
 
 ### 20.10.2026 (сессия 6.8f-2 — source_goal_id в Premise)
 
@@ -696,7 +707,7 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 271 | — |
+| Тесты pytest (backend) | 288 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 21 (+ 4 в миграции 6.8f + ревизии) | — |
 | Эндпоинтов API | 21 | — |
@@ -708,8 +719,8 @@
 | Портов репозиториев | 14 | — |
 | Репозиториев SQLAlchemy | 13 | — |
 | Сервисов | 13 | — |
-| API-клиентов | 5 | — |
-| Хуков TanStack Query | 22 | — |
+| API-клиентов | 6 | — |
+| Хуков TanStack Query | 28 | — |
 | **DOMAIN.md** | **v1.1** | — |
 | **React Flow страницы** | **3** (canvas-demo, timeline-demo, skeleton-demo) | — |
 | **Новых сущностей (Goal/Decision/Action/Norm/RFI)** | **0** | **5** |

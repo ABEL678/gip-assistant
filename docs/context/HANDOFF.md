@@ -6,54 +6,40 @@
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
 **Дата:** 20.10.2026
-**Сессия:** 6.8j → 6.9 (переход)
-**Статус:** веха 1 закрыта, демо готово
+**Сессия:** 6.10e
+**Статус:** 6.10e закрыт
 
 ---
 
 ## 1. Что было
 
-**6.8i (эндпоинты Result + ProjectStandard):**
-- ✅ ResultService + ProjectStandardService CRUD + валидации.
-- ✅ 15 unit-тестов. Коммит `19d37c7`.
+**6.10e (UI для Action):**
+- ✅ `actionApi.ts` — типы (Action, ActionCreate, ActionUpdate) + 6 API-методов.
+- ✅ `useActions.ts` — 6 хуков (useActions, useAction, useActionsByTask, useCreateAction, useUpdateAction, useDeleteAction).
+- ✅ `ActionCard.tsx` — карточка с state-бейджами (план/в работе/готово/просрочено/отменено).
+- ✅ `ActionForm.tsx` — форма (formulation, measurable_result, deadline, state), без responsible_id.
+- ✅ `ActionsPage.tsx` — CRUD-страница с фильтрацией по `?task=...` через `useSearchParams`.
+- ✅ `App.tsx` — роут `/projects/:id/actions`.
+- ✅ `ProjectPage.tsx` — секция "Действия" со счётчиком.
+- ✅ Frontend build успешен (tsc + vite).
+- ✅ Коммит `4b1a50d`.
 
-**6.8j-1 (UI Result + ProjectStandard):**
-- ✅ ResultPage, ProjectStandardPage — страницы CRUD.
-- ✅ ResultCard, ProjectStandardCard — карточки.
-- ✅ ResultForm, ProjectStandardForm — формы.
-- ✅ ResultGoalsPanel, StandardGoalsPanel — панели связей с целями.
-- ✅ API-клиенты + хуки. Коммит `1d57292`.
-
-**6.8j-2 (UI Revisions):**
-- ✅ RevisionsPage — страница ревизий.
-- ✅ RevisionCard — карточка ревизии.
-- ✅ RevisionForm — форма создания ревизии.
-- ✅ RevisionDiffPanel — просмотр diff между версиями.
-- ✅ API-клиенты + хуки. Коммит `65f943b`.
-
-**Итог:** веха 1 полностью готова. 271 passed. Демо для ГИПа готово.
+**Backend (6.10d):**
+- ✅ ActionService (CRUD).
+- ✅ 6 эндпоинтов.
+- ✅ 288 passed.
 
 ## 2. Что делаем сейчас
 
-**Демо вехи 1 (для ГИПа).**
+**6.10e — UI для Action. ЗАКРЫТ.**
 
-Показать:
-- Канвас (React Flow): вводные, цели, связи.
-- CRUD: цели, вводные, результаты, стандарты.
-- Валидация целей (6 правил).
-- Матрица смежников.
-- Протокол (unanimous/majority/split).
-- Ревизии и diff.
-- Документы (ГОСТ).
+Фронтенд готов. Интеграция с ProjectPage работает. Фильтрация по `?task=...` в ActionsPage реализована.
 
-После демо → обратная связь → 6.9 (канвас).
+## 3. Что дальше
 
-## 3. Что дальше (порядок — строгий)
-
-1. **Демо вехи 1** — показать ГИПу.
-2. **Обратная связь** — собрать замечания.
-3. **6.9 (канвас)** — улучшение канваса (§6.4.1 спеки).
-4. **Мерж** — после 6.9.
+1. **6.10f** — интеграция Action с Task (при раскрытии задачи показывать Actions по task_id).
+2. **Веха 2** — завершение Action + Task-адаптация.
+3. **Веха 3** — первые агенты (агент сроков, агент RFI).
 
 ## 4. Что уже в контексте (не пересказывать)
 
@@ -61,11 +47,14 @@
 - `docs/Дорожная_карта_7.0.md` — стратегия.
 - `docs/specs/spec_week_1.md` — финальная спека Вехи 1.
 - `docs/context/CONTEXT.md`, `TASKS.md`, `DATABASE.md` — обновлены.
+- `docs/context/API.md` — эндпоинты.
+- `docs/context/RULES.md` — правила.
 - `AGENTS.md` — правила GigaCode.
 
 ## 5. Открытые вопросы
 
-Нет.
+- [ ] TaskList.tsx не модифицирован (по требованию). Интеграция Actions с задачами — через фильтрацию `?task=...` в ActionsPage. Следующий шаг — полноценная интеграция.
+- [ ] `responsible_id` не добавлен в форму (нет API пользователей).
 
 ## 6. Ключи / пути / команды
 
@@ -86,15 +75,12 @@
 
     Привет. Продолжаем проект «ГИП-Ассистент». Прочитай:
     1. docs/context/HANDOFF.md
-    2. docs/context/DOMAIN.md (v1.1)
-    3. docs/Дорожная_карта_7.0.md
-    4. docs/specs/spec_week_1.md
-    5. docs/context/CONTEXT.md
-    6. docs/context/TASKS.md
-    7. AGENTS.md
+    2. docs/context/CONTEXT.md
+    3. docs/context/TASKS.md
+    4. docs/context/ARCHITECTURE.md
+    5. AGENTS.md
 
-    Мы на 6.9 (канвас). Веха 1 готова, демо для ГИПа.
-    6.8i, 6.8j-1, 6.8j-2 закрыты. 271 passed.
+    Мы на 6.10e. Action UI закрыт (288 passed backend).
     Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
 
 ---

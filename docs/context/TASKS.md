@@ -300,22 +300,10 @@
 
 ## 2. В работе (In Progress)
 
-**На 20.10.2026 — 6.8d (UI вехи 1) ЗАКРЫТ.
-6.8f — ЗАКРЫТ (20.10.2026).
-6.8f-2 — ЗАКРЫТ (20.10.2026).
-6.8g — ЗАКРЫТ (20.10.2026).**
+**На 20.10.2026 — демо вехи 1.**
 
-- ✅ API-клиенты расширены (validateGoal, similarity-matrix, run-3-times).
-- ✅ Хуки: useValidateGoal, useSimilarityMatrix, useRun3Times.
-- ✅ PremiseCard — owner в data.
-- ✅ PremiseForm — data + schema_ textarea.
-- ✅ GoalCard — verification_status + кнопка «Проверить» + evidence popup.
-- ✅ GoalForm — schema_ + readonly status.
-- ✅ SimilarityMatrixPanel — новый компонент.
-- ✅ ProtocolSummaryPanel — новый компонент.
-- ✅ GoalsPage — блоки матрицы и протокола.
-- ✅ TypeScript — без ошибок.
-- ✅ Frontend build успешен.
+- ⏳ Демо вехи 1 для ГИПа.
+- ⏳ Обратная связь → 6.9 (канвас).
 
 ## 3. Дальше (Next)
 
@@ -337,6 +325,10 @@
 - ✅ **6.8c** — DI + эндпоинты + тесты роутов.
 - ✅ **6.8d** — UI (страницы, карточки, статус, владелец, матрица, протокол).
 - ✅ **6.8f** — Result + ProjectStandard + result_goals + standard_goals + миграция + DTO + порты + репозитории.
+- ✅ **6.8g** — сервисы Result + ProjectStandard (CRUD + валидации + 15 тестов).
+- ✅ **6.8i** — эндпоинты Result + ProjectStandard + тесты роутов.
+- ✅ **6.8j-1** — UI Result + ProjectStandard (страницы, карточки, формы, панели связей).
+- ✅ **6.8j-2** — UI Revisions (страница, карточки, форма, diff-панель).
 
 ### Веха 2 — Action + Task-адаптация
 
@@ -411,6 +403,30 @@
 - ✅ 15 unit-тестов (AsyncMock, pytest-asyncio).
 - ✅ 5 файлов, +441 строки. Коммит `5e0a7c9`.
 - ✅ 240 тестов pytest (225 + 15). Ruff чисто.
+
+### 20.10.2026 (сессия 6.8i — эндпоинты Result + ProjectStandard)
+
+- ✅ Result + ProjectStandard CRUD-эндпоинты.
+- ✅ Тесты роутов (httpx.AsyncClient + ASGITransport).
+- ✅ Коммит `19d37c7`.
+
+### 20.10.2026 (сессия 6.8j-1 — UI Result + ProjectStandard)
+
+- ✅ ResultPage, ProjectStandardPage — страницы CRUD.
+- ✅ ResultCard, ProjectStandardCard — карточки.
+- ✅ ResultForm, ProjectStandardForm — формы.
+- ✅ ResultGoalsPanel, StandardGoalsPanel — панели связей с целями.
+- ✅ API-клиенты + хуки.
+- ✅ Коммит `1d57292`.
+
+### 20.10.2026 (сессия 6.8j-2 — UI Revisions)
+
+- ✅ RevisionsPage — страница ревизий.
+- ✅ RevisionCard — карточка ревизии.
+- ✅ RevisionForm — форма создания ревизии.
+- ✅ RevisionDiffPanel — просмотр diff между версиями.
+- ✅ API-клиенты + хуки.
+- ✅ Коммит `65f943b`.
 
 ### 20.10.2026 (сессия 6.8f-2 — source_goal_id в Premise)
 
@@ -680,17 +696,17 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 240 | — |
+| Тесты pytest (backend) | 271 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
-| Таблиц в БД | 17 (+ 4 в миграции 6.8f) | — |
-| Эндпоинтов API | 51 | — |
+| Таблиц в БД | 21 (+ 4 в миграции 6.8f + ревизии) | — |
+| Эндпоинтов API | 21 | — |
 | Клиентов | 0 | 1 пилот |
 | MRR | 0 ₽ | 5 000 ₽ |
 | `docs/context/` готовность | 8/8 файлов | 8/8 |
 | UI Уровня 1 | 100% | — |
 | UI Уровня 1.5 | 100% | — |
-| Портов репозиториев | 11 + 1 (GoalValidatorService) + 2 (6.8f) = 14 | — |
-| Репозиториев SQLAlchemy | 11 + 2 (6.8f) = 13 | — |
+| Портов репозиториев | 14 | — |
+| Репозиториев SQLAlchemy | 13 | — |
 | Сервисов | 13 | — |
 | API-клиентов | 5 | — |
 | Хуков TanStack Query | 22 | — |

@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.7 (20.10.2026)
-**Актуально на:** после сессии 6.8f (Result + ProjectStandard)
+**Версия:** 2.8 (20.10.2026)
+**Актуально на:** после сессии 6.8j-2 (веха 1 готова)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -141,6 +141,34 @@
 - ✅ DTO: ResultCreate/Read/Update, ProjectStandardCreate/Read/Update.
 - ✅ 16 файлов, +643 строки. Коммит `9c98717`.
 
+**6.8g — ЗАКРЫТ (20.10.2026):**
+
+- ✅ ResultService — CRUD + валидация formulation.
+- ✅ ProjectStandardService — CRUD + валидация existence.
+- ✅ 15 unit-тестов. Коммит `5e0a7c9`.
+
+**6.8i — ЗАКРЫТ (20.10.2026):**
+
+- ✅ Result + ProjectStandard CRUD-эндпоинты.
+- ✅ Тесты роутов (httpx.AsyncClient + ASGITransport).
+- ✅ Коммит `19d37c7`.
+
+**6.8j-1 — ЗАКРЫТ (20.10.2026):**
+
+- ✅ ResultPage, ProjectStandardPage — страницы CRUD.
+- ✅ ResultCard, ProjectStandardCard — карточки.
+- ✅ ResultForm, ProjectStandardForm — формы.
+- ✅ ResultGoalsPanel, StandardGoalsPanel — панели связей с целями.
+- ✅ API-клиенты + хуки. Коммит `1d57292`.
+
+**6.8j-2 — ЗАКРЫТ (20.10.2026):**
+
+- ✅ RevisionsPage — страница ревизий.
+- ✅ RevisionCard — карточка ревизии.
+- ✅ RevisionForm — форма создания ревизии.
+- ✅ RevisionDiffPanel — просмотр diff между версиями.
+- ✅ API-клиенты + хуки. Коммит `65f943b`.
+
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 
 - 3 новые таблицы: premises, goals, goal_premises.
@@ -190,13 +218,11 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 20.10.2026, после 6.8f:**
+**На 20.10.2026, после 6.8j-2:**
 
-- 6.8f закрыт (Result + ProjectStandard).
-- Следующая подсессия — **6.8g** (сервисы Result + ProjectStandard).
-- Спека — `spec_week_1.md` §2.3–2.4.
-
-**Порядок:** 6.8g (сервисы) → 6.8h (DI + эндпоинты) → 6.8i (тесты роутов) → мерж.
+- 6.8i, 6.8j-1, 6.8j-2 закрыты.
+- Веха 1 полностью готова. **Демо для ГИПа.**
+- Следующая подсессия — **6.9 (канвас)** — после демо и обратной связи.
 
 **Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.
 
@@ -266,4 +292,4 @@
 
 ---
 
-**Конец CONTEXT.md v2.3.**
+**Конец CONTEXT.md v2.8.**

@@ -19,6 +19,7 @@ class PremiseModel(Base, TimestampMixin):
         Index("idx_premises_project", "project_id"),
         Index("idx_premises_category", "category"),
         Index("idx_premises_actual", "actual"),
+        Index("idx_premises_source_goal", "source_goal_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -44,3 +45,8 @@ class PremiseModel(Base, TimestampMixin):
     valid_until: Mapped[date_type | None] = mapped_column(Date, nullable=True)
     data: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
     schema: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    source_goal_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("goals.id", ondelete="SET NULL"),
+        nullable=True,
+    )

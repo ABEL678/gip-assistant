@@ -27,6 +27,7 @@ class PremiseSchema(BaseModel):
     link: Optional[str] = Field(None, max_length=1000)
     valid_until: Optional[_date] = None
     data: dict[str, PremiseDataField] = Field(default_factory=dict)
+    source_goal_id: uuid.UUID | None = None
     schema_: dict[str, Any] = Field(
         default_factory=dict,
         validation_alias=AliasChoices("schema", "field_schema"),
@@ -68,6 +69,7 @@ class PremiseUpdate(BaseModel):
     link: Optional[str] = Field(None, max_length=1000)
     valid_until: Optional[_date] = None
     data: Optional[dict[str, Any]] = None
+    source_goal_id: Optional[uuid.UUID] = None
     schema_: Optional[dict[str, Any]] = Field(
         None,
         validation_alias=AliasChoices("schema", "field_schema"),
@@ -82,5 +84,6 @@ class PremiseRead(PremiseSchema):
 
     id: uuid.UUID
     project_id: uuid.UUID
+    source_goal_id: uuid.UUID | None = None
     created_at: datetime
     updated_at: datetime

@@ -46,6 +46,7 @@ class Premise:
     valid_until: date | None = None
     data: dict[str, Any] = field(default_factory=dict)
     schema: dict[str, Any] = field(default_factory=dict)
+    source_goal_id: UUID | None = None
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

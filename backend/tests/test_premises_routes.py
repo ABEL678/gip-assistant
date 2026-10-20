@@ -46,6 +46,7 @@ def _make_premise(
     premise.valid_until = valid_until
     premise.data = data or {}
     premise.schema = schema or {}
+    premise.source_goal_id = None
     premise.created_at = created_at or datetime.now(timezone.utc)
     premise.updated_at = updated_at or datetime.now(timezone.utc)
     return premise

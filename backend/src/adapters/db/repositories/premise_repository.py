@@ -60,6 +60,7 @@ class SqlAlchemyPremiseRepository(PremiseRepository):
             valid_until=model.valid_until,
             data=model.data or {},
             schema=model.schema or {},
+            source_goal_id=model.source_goal_id,
             created_at=model.created_at,
             updated_at=model.updated_at,
         )
@@ -79,4 +80,5 @@ class SqlAlchemyPremiseRepository(PremiseRepository):
             valid_until=domain.valid_until,
             data=domain.data or {},
             schema=domain.schema or {},
+            source_goal_id=domain.source_goal_id,
         )

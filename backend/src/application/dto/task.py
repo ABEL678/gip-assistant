@@ -17,6 +17,7 @@ class TaskBase(BaseModel):
     section_code: str | None = Field(default=None, max_length=50)
     to_section_code: str | None = Field(default=None, max_length=50)
     assignee_id: uuid.UUID | None = None
+    is_complex: bool = False
 
 
 class TaskCreate(TaskBase):
@@ -36,6 +37,7 @@ class TaskUpdate(BaseModel):
     to_section_code: str | None = Field(default=None, max_length=50)
     assignee_id: uuid.UUID | None = None
     sort_order: int | None = None
+    is_complex: bool | None = None
 
 
 class TaskRead(TaskBase):
@@ -48,6 +50,7 @@ class TaskRead(TaskBase):
     status: TaskStatus
     sort_order: int
     source: str
+    is_complex: bool
     created_at: datetime
     updated_at: datetime
 

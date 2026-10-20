@@ -120,6 +120,7 @@ class SqlAlchemyTaskRepository(TaskRepository):
             to_section_code=model.to_section_code,
             sort_order=model.sort_order,
             source=model.source,
+            is_complex=model.is_complex,
             created_at=model.created_at,
             updated_at=model.updated_at,
         )
@@ -138,4 +139,5 @@ class SqlAlchemyTaskRepository(TaskRepository):
             to_section_code=domain.to_section_code,
             sort_order=domain.sort_order,
             source=domain.source,
+            is_complex=domain.is_complex,
         )

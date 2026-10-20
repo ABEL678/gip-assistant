@@ -21,6 +21,7 @@ class Task:
     to_section_code: str | None = None     # кому (получатель задания)
     sort_order: int = 0
     source: str = "manual"
+    is_complex: bool = False
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

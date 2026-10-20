@@ -1,5 +1,6 @@
 """Все ORM-модели (см. ТЗ 3.0, раздел 4.3)."""
 
+from backend.src.adapters.db.models.action import ActionModel
 from backend.src.adapters.db.models.change import ChangeModel
 from backend.src.adapters.db.models.cross_task import CrossTask
 from backend.src.adapters.db.models.document import DocumentModel
@@ -26,6 +27,7 @@ from backend.src.adapters.db.models.task_status_history import TaskStatusHistory
 from backend.src.adapters.db.models.user import User
 
 __all__ = [
+    "ActionModel",
     "ChangeModel",
     "CrossTask",
     "DocumentLinkModel",

@@ -1,5 +1,8 @@
 """Реализации репозиториев через SQLAlchemy."""
 
+from backend.src.adapters.db.repositories.action_repository import (
+    SqlAlchemyActionRepository,
+)
 from backend.src.adapters.db.repositories.change_repository import (
     SqlAlchemyChangeRepository,
 )
@@ -59,6 +62,7 @@ from backend.src.adapters.db.repositories.user_repo import (
 )
 
 __all__ = [
+    "SqlAlchemyActionRepository",
     "SqlAlchemyChangeRepository",
     "SqlAlchemyCrossTaskRepository",
     "SqlAlchemyDocumentLinkRepository",

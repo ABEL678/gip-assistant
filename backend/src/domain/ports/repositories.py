@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from datetime import date
 from uuid import UUID
 
+from backend.src.domain.entities.action import Action
 from backend.src.domain.entities.change import Change
 from backend.src.domain.entities.cross_task import CrossTask
 from backend.src.domain.entities.document import Document
@@ -449,3 +450,27 @@ class ProjectStandardRepository(ABC):
     @abstractmethod
     async def delete(self, standard_id: UUID) -> None:
         """Удалить стандарт по ID."""
+
+
+class ActionRepository(ABC):
+    """Порт репозитория действий (Action)."""
+
+    @abstractmethod
+    async def get_by_id(self, action_id: UUID) -> Action | None:
+        """Найти действие по ID."""
+
+    @abstractmethod
+    async def list_by_task(self, task_id: UUID) -> list[Action]:
+        """Действия задачи."""
+
+    @abstractmethod
+    async def list_by_project(self, project_id: UUID) -> list[Action]:
+        """Действия проекта."""
+
+    @abstractmethod
+    async def save(self, action: Action) -> Action:
+        """Создать или обновить действие (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, action_id: UUID) -> None:
+        """Удалить действие по ID."""

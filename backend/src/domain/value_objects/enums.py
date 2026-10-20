@@ -113,3 +113,13 @@ class ProjectStandardType(StrEnum):
     DEADLINE = "deadline"
     COMPOSITION = "composition"
     FORMAT = "format"
+
+
+class ActionState(StrEnum):
+    """Состояние действия (Action)."""
+
+    PLAN = "plan"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
+    OVERDUE = "overdue"
+    CANCELLED = "cancelled"

@@ -10,6 +10,7 @@ import { ArrowLeft, Upload, Grid3x3, Plus, FileUp, Network } from "lucide-react"
 import { TaskList } from "@/components/TaskList"
 import { useDocumentsByProject } from "@/hooks/useDocuments"
 import { resultApi } from "@/api/resultApi"
+import { actionApi } from "@/api/actionApi"
 import { projectStandardApi } from "@/api/projectStandardApi"
 
 import { DocumentCard } from "@/components/DocumentCard"
@@ -34,6 +35,12 @@ export function ProjectPage() {
   const { data: goals } = useQuery({
     queryKey: ["goals", id],
     queryFn: () => goalApi.fetchGoals(id!),
+    enabled: !!id,
+  })
+
+  const { data: actions, isLoading: actionsLoading } = useQuery({
+    queryKey: ["actions", id],
+    queryFn: () => actionApi.fetchActions(id!),
     enabled: !!id,
   })
 
@@ -348,6 +355,39 @@ export function ProjectPage() {
               <div key={g.id} className="border rounded-lg p-3">
                 <div className="font-medium">{g.formulation}</div>
                 <div className="text-sm text-muted-foreground">{g.state}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">
+            Действия <span className="text-muted-foreground">({actions?.length ?? 0})</span>
+          </h2>
+          <Link to={`/projects/${id}/actions`}>
+            <Button variant="outline">Все действия</Button>
+          </Link>
+        </div>
+
+        {actionsLoading ? (
+          <p className="text-muted-foreground">Загрузка...</p>
+        ) : !actions || actions.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Пока нет действий
+            <div className="mt-4">
+              <Link to={`/projects/${id}/actions`}>
+                <Button variant="outline">Перейти к действиям</Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {actions.slice(0, 3).map((a) => (
+              <div key={a.id} className="border rounded-lg p-3">
+                <div className="font-medium">{a.formulation}</div>
+                <div className="text-sm text-muted-foreground">{a.state}</div>
               </div>
             ))}
           </div>

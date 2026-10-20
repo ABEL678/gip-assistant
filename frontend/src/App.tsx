@@ -17,6 +17,7 @@ import { RevisionDiffPage } from "@/pages/RevisionDiffPage"
 import { PremisesPage } from "@/pages/PremisesPage"
 import { GoalsPage } from "@/pages/GoalsPage"
 import { ResultsPage } from "@/pages/ResultsPage"
+import { ActionsPage } from "@/pages/ActionsPage"
 import { ProjectStandardsPage } from "@/pages/ProjectStandardsPage"
 import { UploadSourcesPage } from "@/pages/UploadSourcesPage"
 import { ProjectCanvasPage } from "@/pages/ProjectCanvasPage"
@@ -47,6 +48,7 @@ function App() {
           <Route path="projects/:id/documents/:docId/revisions/:revisionId" element={<RevisionDiffPage />} />
           <Route path="projects/:id/premises" element={<PremisesPage />} />
           <Route path="projects/:id/results" element={<ResultsPage />} />
+          <Route path="projects/:id/actions" element={<ActionsPage />} />
           <Route path="projects/:id/standards" element={<ProjectStandardsPage />} />
           <Route path="projects/:id/upload" element={<UploadSourcesPage />} />
           <Route path="projects/:id/canvas" element={<ProjectCanvasPage />} />

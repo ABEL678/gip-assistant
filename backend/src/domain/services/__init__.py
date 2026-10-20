@@ -12,6 +12,8 @@ from backend.src.domain.services.import_service import ImportService
 from backend.src.domain.services.matrix_service import MatrixService
 from backend.src.domain.services.premise_service import PremiseService
 from backend.src.domain.services.proposal_protocol_service import ProposalProtocolService
+from backend.src.domain.services.project_standard_service import ProjectStandardService
+from backend.src.domain.services.result_service import ResultService
 from backend.src.domain.services.rule_based_goal_validator import RuleBasedGoalValidator
 from backend.src.domain.services.similarity_matrix_service import SimilarityMatrixService
 
@@ -27,7 +29,9 @@ __all__ = [
     "ImportService",
     "MatrixService",
     "PremiseService",
+    "ProjectStandardService",
     "ProposalProtocolService",
+    "ResultService",
     "RuleBasedGoalValidator",
     "SimilarityMatrixService",
 ]

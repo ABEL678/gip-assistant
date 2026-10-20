@@ -1,5 +1,6 @@
 """Доменные сервисы."""
 
+from backend.src.domain.services.action_service import ActionService
 from backend.src.domain.services.change_service import ChangeService
 from backend.src.domain.services.document_link_service import DocumentLinkService
 from backend.src.domain.services.document_service import DocumentService
@@ -20,8 +21,10 @@ from backend.src.domain.services.revision_service import RevisionService
 from backend.src.domain.services.rule_based_goal_validator import RuleBasedGoalValidator
 from backend.src.domain.services.similarity_matrix_service import SimilarityMatrixService
 from backend.src.domain.services.stop_flag_service import StopFlagService
+from backend.src.domain.services.task_service import TaskService
 
 __all__ = [
+    "ActionService",
     "ChangeService",
     "DocumentLinkService",
     "DocumentService",
@@ -42,4 +45,5 @@ __all__ = [
     "RuleBasedGoalValidator",
     "SimilarityMatrixService",
     "StopFlagService",
+    "TaskService",
 ]

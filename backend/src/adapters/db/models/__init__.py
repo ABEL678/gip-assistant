@@ -14,8 +14,12 @@ from backend.src.adapters.db.models.goal_premise import GoalPremiseModel
 from backend.src.adapters.db.models.import_log import ImportLog
 from backend.src.adapters.db.models.premise import PremiseModel
 from backend.src.adapters.db.models.project import Project
+from backend.src.adapters.db.models.project_standard import ProjectStandardModel
+from backend.src.adapters.db.models.result import ResultModel
+from backend.src.adapters.db.models.result_goal import ResultGoalModel
 from backend.src.adapters.db.models.revision import RevisionModel
 from backend.src.adapters.db.models.revision_decision import RevisionDecisionModel
+from backend.src.adapters.db.models.standard_goal import StandardGoalModel
 from backend.src.adapters.db.models.stop_flag import StopFlagModel
 from backend.src.adapters.db.models.task import Task
 from backend.src.adapters.db.models.task_status_history import TaskStatusHistory
@@ -36,8 +40,12 @@ __all__ = [
     "ImportLog",
     "PremiseModel",
     "Project",
+    "ProjectStandardModel",
     "RevisionDecisionModel",
     "RevisionModel",
+    "ResultGoalModel",
+    "ResultModel",
+    "StandardGoalModel",
     "StopFlagModel",
     "Task",
     "TaskStatusHistory",

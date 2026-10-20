@@ -20,12 +20,15 @@ from backend.src.domain.entities.goal import Goal
 from backend.src.domain.entities.import_log import ImportLog
 from backend.src.domain.entities.premise import Premise
 from backend.src.domain.entities.project import Project
+from backend.src.domain.entities.project_standard import ProjectStandard
+from backend.src.domain.entities.result import Result
 from backend.src.domain.entities.revision import Revision
 from backend.src.domain.entities.revision_decision import RevisionDecision
 from backend.src.domain.entities.stop_flag import StopFlag
 from backend.src.domain.entities.task import Task
 from backend.src.domain.entities.user import User
 from backend.src.domain.value_objects.document import LifecycleStatus
+from backend.src.domain.value_objects.enums import ProjectStandardType
 
 
 class ProjectRepository(ABC):
@@ -390,3 +393,47 @@ class StopFlagRepository(ABC):
     @abstractmethod
     async def delete(self, stop_flag_id: UUID) -> None:
         """Удалить стоп-сигнал по ID."""
+
+
+class ResultRepository(ABC):
+    """Порт репозитория Result."""
+
+    @abstractmethod
+    async def get_by_id(self, result_id: UUID) -> Result | None:
+        """Найти результат по ID."""
+
+    @abstractmethod
+    async def list_by_project(self, project_id: UUID) -> list[Result]:
+        """Результаты проекта."""
+
+    @abstractmethod
+    async def save(self, result: Result) -> Result:
+        """Создать или обновить результат (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, result_id: UUID) -> None:
+        """Удалить результат по ID."""
+
+
+class ProjectStandardRepository(ABC):
+    """Порт репозитория ProjectStandard."""
+
+    @abstractmethod
+    async def get_by_id(self, standard_id: UUID) -> ProjectStandard | None:
+        """Найти стандарт по ID."""
+
+    @abstractmethod
+    async def list_by_premise(self, premise_id: UUID) -> list[ProjectStandard]:
+        """Стандарты вводной."""
+
+    @abstractmethod
+    async def list_by_type(self, type: ProjectStandardType) -> list[ProjectStandard]:
+        """Стандарты типа."""
+
+    @abstractmethod
+    async def save(self, standard: ProjectStandard) -> ProjectStandard:
+        """Создать или обновить стандарт (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, standard_id: UUID) -> None:
+        """Удалить стандарт по ID."""

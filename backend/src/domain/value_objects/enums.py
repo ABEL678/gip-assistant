@@ -105,3 +105,11 @@ class RevisionDecisionType(StrEnum):
     REJECTED = "rejected"
     MOVED = "moved"
     DEADLINE = "deadline"
+
+
+class ProjectStandardType(StrEnum):
+    """Тип стандарта проекта (spec_week_1.md §2.4)."""
+
+    DEADLINE = "deadline"
+    COMPOSITION = "composition"
+    FORMAT = "format"

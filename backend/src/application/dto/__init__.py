@@ -15,6 +15,16 @@ from backend.src.application.dto.project import (
     ProjectRead,
     ProjectUpdate,
 )
+from backend.src.application.dto.project_standard import (
+    ProjectStandardCreate,
+    ProjectStandardRead,
+    ProjectStandardUpdate,
+)
+from backend.src.application.dto.result import (
+    ResultCreate,
+    ResultRead,
+    ResultUpdate,
+)
 from backend.src.application.dto.task import (
     TaskCreate,
     TaskRead,
@@ -44,4 +54,12 @@ __all__ = [
     # User
     "UserCreate",
     "UserRead",
+    # Result
+    "ResultCreate",
+    "ResultRead",
+    "ResultUpdate",
+    # ProjectStandard
+    "ProjectStandardCreate",
+    "ProjectStandardRead",
+    "ProjectStandardUpdate",
 ]

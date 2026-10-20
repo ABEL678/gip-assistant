@@ -36,6 +36,12 @@ from backend.src.adapters.db.repositories.premise_repository import (
 from backend.src.adapters.db.repositories.project_repo import (
     SqlAlchemyProjectRepository,
 )
+from backend.src.adapters.db.repositories.project_standard_repository import (
+    SqlAlchemyProjectStandardRepository,
+)
+from backend.src.adapters.db.repositories.result_repository import (
+    SqlAlchemyResultRepository,
+)
 from backend.src.adapters.db.repositories.revision_decision_repository import (
     SqlAlchemyRevisionDecisionRepository,
 )
@@ -65,8 +71,10 @@ __all__ = [
     "SqlAlchemyImportLogRepository",
     "SqlAlchemyPremiseRepository",
     "SqlAlchemyProjectRepository",
+    "SqlAlchemyProjectStandardRepository",
     "SqlAlchemyRevisionDecisionRepository",
     "SqlAlchemyRevisionRepository",
+    "SqlAlchemyResultRepository",
     "SqlAlchemyStopFlagRepository",
     "SqlAlchemyTaskRepository",
     "SqlAlchemyUserRepository",

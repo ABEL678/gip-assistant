@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
-import { ArrowLeft, FileText, Link as LinkIcon } from "lucide-react"
+import { ArrowLeft, FileText, Link as LinkIcon, GitBranch } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -149,6 +149,12 @@ export function DocumentConstructorPage() {
               <Button variant="outline" size="sm">
                 <LinkIcon className="h-4 w-4 mr-2" />
                 Связи
+              </Button>
+            </Link>
+            <Link to={`/projects/${projectId}/documents/${docId}/revisions`}>
+              <Button variant="outline" size="sm">
+                <GitBranch className="h-4 w-4 mr-2" />
+                Ревизии
               </Button>
             </Link>
           </div>

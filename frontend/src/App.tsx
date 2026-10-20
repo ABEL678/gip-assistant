@@ -12,6 +12,8 @@ import { DocumentConstructorPage } from "@/pages/DocumentConstructorPage"
 import { DocumentLinksPage } from "@/pages/DocumentLinksPage"
 import { DocumentVersionsPage } from "@/pages/DocumentVersionsPage"
 import { DocumentsPage } from "@/pages/DocumentsPage"
+import { RevisionsPage } from "@/pages/RevisionsPage"
+import { RevisionDiffPage } from "@/pages/RevisionDiffPage"
 import { PremisesPage } from "@/pages/PremisesPage"
 import { GoalsPage } from "@/pages/GoalsPage"
 import { ResultsPage } from "@/pages/ResultsPage"
@@ -41,6 +43,8 @@ function App() {
           <Route path="projects/:id/documents/:docId/edit" element={<DocumentConstructorPage />} />
           <Route path="projects/:id/documents/:docId/versions" element={<DocumentVersionsPage />} />
           <Route path="projects/:id/documents/:docId/links" element={<DocumentLinksPage />} />
+          <Route path="projects/:id/documents/:docId/revisions" element={<RevisionsPage />} />
+          <Route path="projects/:id/documents/:docId/revisions/:revisionId" element={<RevisionDiffPage />} />
           <Route path="projects/:id/premises" element={<PremisesPage />} />
           <Route path="projects/:id/results" element={<ResultsPage />} />
           <Route path="projects/:id/standards" element={<ProjectStandardsPage />} />

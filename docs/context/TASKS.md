@@ -300,8 +300,9 @@
 
 ## 2. В работе (In Progress)
 
-**На 19.10.2026 — 6.8d (UI вехи 1) ЗАКРЫТ.
-6.8f — ЗАКРЫТ (20.10.2026).**
+**На 20.10.2026 — 6.8d (UI вехи 1) ЗАКРЫТ.
+6.8f — ЗАКРЫТ (20.10.2026).
+6.8g — ЗАКРЫТ (20.10.2026).**
 
 - ✅ API-клиенты расширены (validateGoal, similarity-matrix, run-3-times).
 - ✅ Хуки: useValidateGoal, useSimilarityMatrix, useRun3Times.
@@ -401,6 +402,14 @@
 - ✅ Миграция `b8f3a1c2d9e0` (4 таблицы + enum + 4 индекса).
 - ✅ 16 файлов, +643 строки. Коммит `9c98717`.
 - ⏳ Alembic upgrade head (БД недоступна).
+
+### 20.10.2026 (сессия 6.8g — ResultService + ProjectStandardService)
+
+- ✅ ResultService — CRUD + валидация formulation.
+- ✅ ProjectStandardService — CRUD + валидация existence.
+- ✅ 15 unit-тестов (AsyncMock, pytest-asyncio).
+- ✅ 5 файлов, +441 строки. Коммит `5e0a7c9`.
+- ✅ 240 тестов pytest (225 + 15). Ruff чисто.
 
 ### 19.10.2026 (сессия 6.8d — UI вехи 1)
 
@@ -660,7 +669,7 @@
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 219 | — |
+| Тесты pytest (backend) | 240 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 17 (+ 4 в миграции 6.8f) | — |
 | Эндпоинтов API | 51 | — |
@@ -671,7 +680,7 @@
 | UI Уровня 1.5 | 100% | — |
 | Портов репозиториев | 11 + 1 (GoalValidatorService) + 2 (6.8f) = 14 | — |
 | Репозиториев SQLAlchemy | 11 + 2 (6.8f) = 13 | — |
-| Сервисов | 11 | — |
+| Сервисов | 13 | — |
 | API-клиентов | 5 | — |
 | Хуков TanStack Query | 22 | — |
 | **DOMAIN.md** | **v1.1** | — |

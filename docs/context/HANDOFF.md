@@ -6,55 +6,61 @@
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
 **Дата:** 20.10.2026
-**Сессия:** 6.10e
-**Статус:** 6.10e закрыт
+**Сессия:** 6.10e → Веха 3 (переход)
+**Статус:** Веха 2 закрыта, 288 passed, готовы к вехе 3.
 
 ---
 
 ## 1. Что было
 
-**6.10e (UI для Action):**
-- ✅ `actionApi.ts` — типы (Action, ActionCreate, ActionUpdate) + 6 API-методов.
-- ✅ `useActions.ts` — 6 хуков (useActions, useAction, useActionsByTask, useCreateAction, useUpdateAction, useDeleteAction).
-- ✅ `ActionCard.tsx` — карточка с state-бейджами (план/в работе/готово/просрочено/отменено).
-- ✅ `ActionForm.tsx` — форма (formulation, measurable_result, deadline, state), без responsible_id.
-- ✅ `ActionsPage.tsx` — CRUD-страница с фильтрацией по `?task=...` через `useSearchParams`.
-- ✅ `App.tsx` — роут `/projects/:id/actions`.
-- ✅ `ProjectPage.tsx` — секция "Действия" со счётчиком.
-- ✅ Frontend build успешен (tsc + vite).
+**6.10a — модель Action + миграция `f9eba6941cdf`.**
+- ✅ Action model, DTO, порты, репозитории.
+- ✅ Коммит `953b558`.
+
+**6.10b — Task.is_complex (без удаления CrossTask).**
+- ✅ `Task.is_complex` — новое поле.
+- ✅ Коммит `f5a527d`.
+
+**6.10c — ActionService + TaskService + 10 тестов.**
+- ✅ CRUD-сервисы + валидации.
+- ✅ Коммит `07ea2c3`.
+
+**6.10d — эндпоинты Action (6 штук) + DI + 7 тестов роутов.**
+- ✅ POST/PATCH/DELETE /api/actions, GET /api/projects/{id}/actions, GET /api/tasks/{id}/actions.
+- ✅ Коммит `ddnf57c`.
+
+**6.10e — UI Action (ActionsPage, ActionCard, ActionForm, useActions) + интеграция в ProjectPage.**
+- ✅ Frontend build успешен.
 - ✅ Коммит `4b1a50d`.
 
-**Backend (6.10d):**
-- ✅ ActionService (CRUD).
-- ✅ 6 эндпоинтов.
-- ✅ 288 passed.
+**Итог:** 288 passed, frontend build зелёный, веха 2 закрыта.
 
 ## 2. Что делаем сейчас
 
-**6.10e — UI для Action. ЗАКРЫТ.**
+**Веха 2 закрыта.**
 
-Фронтенд готов. Интеграция с ProjectPage работает. Фильтрация по `?task=...` в ActionsPage реализована.
+Следующая подсессия — Веха 3 (Decision + Norm + DecisionLink).
 
-## 3. Что дальше
+## 3. Что дальше (порядок строгий)
 
-1. **6.10f** — интеграция Action с Task (при раскрытии задачи показывать Actions по task_id).
-2. **Веха 2** — завершение Action + Task-адаптация.
-3. **Веха 3** — первые агенты (агент сроков, агент RFI).
+1. **6.11a** — модель Decision + миграция + DTO + порты + репозитории.
+2. **6.11b** — модель Norm + DecisionLink + миграция.
+3. **6.11c** — сервисы DecisionService, NormService, DecisionLinkService.
+4. **6.11d** — эндпоинты + DI.
+5. **6.11e** — UI (DecisionsPage, NormsPage, DecisionLinkPage).
 
 ## 4. Что уже в контексте (не пересказывать)
 
-- `docs/context/DOMAIN.md` v1.1 — онтология.
+- `docs/context/DOMAIN.md` v1.1 — онтология ядра. **Главный документ.**
 - `docs/Дорожная_карта_7.0.md` — стратегия.
 - `docs/specs/spec_week_1.md` — финальная спека Вехи 1.
-- `docs/context/CONTEXT.md`, `TASKS.md`, `DATABASE.md` — обновлены.
-- `docs/context/API.md` — эндпоинты.
-- `docs/context/RULES.md` — правила.
+- `docs/context/CONTEXT.md`, `TASKS.md`, `DATABASE.md`, `API.md`, `RULES.md`, `ARCHITECTURE.md` — обновлены.
 - `AGENTS.md` — правила GigaCode.
 
 ## 5. Открытые вопросы
 
-- [ ] TaskList.tsx не модифицирован (по требованию). Интеграция Actions с задачами — через фильтрацию `?task=...` в ActionsPage. Следующий шаг — полноценная интеграция.
-- [ ] `responsible_id` не добавлен в форму (нет API пользователей).
+- [ ] 6.10f (интеграция Action с Task) — отложено (сделаем после вехи 3 или в 6.12).
+- [ ] `responsible_id` в ActionForm — не добавлен (нет API users — появится в вехе 6).
 
 ## 6. Ключи / пути / команды
 
@@ -73,15 +79,18 @@
 
 **Первое сообщение (для рутинного чата):**
 
-    Привет. Продолжаем проект «ГИП-Ассистент». Прочитай:
+    Привет. Продолжаем «ГИП-Ассистент». Прочитай:
     1. docs/context/HANDOFF.md
-    2. docs/context/CONTEXT.md
-    3. docs/context/TASKS.md
-    4. docs/context/ARCHITECTURE.md
-    5. AGENTS.md
+    2. docs/context/DOMAIN.md (v1.1)
+    3. docs/Дорожная_карта_7.0.md
+    4. docs/specs/spec_week_1.md
+    5. docs/context/CONTEXT.md
+    6. docs/context/TASKS.md
+    7. AGENTS.md
 
-    Мы на 6.10e. Action UI закрыт (288 passed backend).
-    Твоя роль: дать GigaCode промпт, проверить diff, помочь с ошибками.
+    Мы на вехе 3 (Decision + Norm + DecisionLink).
+    Веха 2 закрыта (6.10a–6.10e, 288 passed).
+    Твоя роль: дать GigaCode промпт на 6.11a, проверить diff, помочь с ошибками.
 
 ---
 

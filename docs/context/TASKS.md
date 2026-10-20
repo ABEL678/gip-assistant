@@ -300,10 +300,10 @@
 
 ## 2. В работе (In Progress)
 
-**На 20.10.2026 — 6.10e (Action UI) закрыт.**
+**На 20.10.2026 — Веха 3 (Decision + Norm + DecisionLink).**
 
-- ⏳ Веха 2 — Action + Task-адаптация.
-- ⏳ 6.10f — интеграция Action с Task (при раскрытии задачи показывать Actions по task_id).
+- ⏳ 6.11a — модель Decision.
+- Код не начат.
 
 ## 3. Дальше (Next)
 
@@ -330,10 +330,27 @@
 - ✅ **6.8j-1** — UI Result + ProjectStandard (страницы, карточки, формы, панели связей).
 - ✅ **6.8j-2** — UI Revisions (страница, карточки, форма, diff-панель).
 
+### Веха 2 — ЗАКРЫТА (20.10.2026)
+
+- ✅ **6.10a** — модель `Action` + миграция `f9eba6941cdf`. Коммит `953b558`.
+- ✅ **6.10b** — `Task.is_complex`. Коммит `f5a527d`.
+- ✅ **6.10c** — `ActionService` + `TaskService` + 10 тестов. Коммит `07ea2c3`.
+- ✅ **6.10d** — эндпоинты `Action` (6 штук) + DI + 7 тестов. Коммит `ddnf57c`.
+- ✅ **6.10e** — UI `Action` (ActionsPage, ActionCard, ActionForm) + интеграция в ProjectPage. Коммит `4b1a50d`.
+- ✅ 288 passed, frontend build зелёный.
+
 ### Веха 2 — Action + Task-адаптация
 
-- ⏳ Action как сущность.
-- ⏳ Адаптация Task/CrossTask.
+- ✅ 6.10a–6.10e — ЗАКРЫТО.
+- ✅ 288 passed.
+
+### Веха 3 — Decision + Norm + DecisionLink
+
+- ⏳ 6.11a — модель Decision + миграция + DTO + порты + репозитории.
+- ⏳ 6.11b — модель Norm + DecisionLink + миграция.
+- ⏳ 6.11c — сервисы.
+- ⏳ 6.11d — эндпоинты + DI.
+- ⏳ 6.11e — UI.
 
 ### Веха 3 — первые агенты
 
@@ -383,6 +400,15 @@
 ---
 
 ## 5. Журнал (Changelog)
+
+### 20.10.2026 (Веха 2 — Action + Task adaptation)
+
+- ✅ 6.10a: Action model + migration `f9eba6941cdf`. Коммит `953b558`.
+- ✅ 6.10b: Task.is_complex. Коммит `f5a527d`.
+- ✅ 6.10c: ActionService + TaskService + 10 тестов. Коммит `07ea2c3`.
+- ✅ 6.10d: Action endpoints + 7 тестов. Коммит `ddnf57c`.
+- ✅ 6.10e: Action UI (ActionsPage, ActionCard, ActionForm) + ProjectPage integration. Коммит `4b1a50d`.
+- ✅ 288 passed. Веха 2 закрыта.
 
 ### 20.10.2026 (сессия 6.8f — Result + ProjectStandard)
 

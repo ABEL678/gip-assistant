@@ -36,8 +36,11 @@
 | schema | JSONB | нет | Схема полей для категории |
 | created_at | timestamp | да | |
 | updated_at | timestamp | да | |
+| source_goal_id | UUID | нет | FK → goals.id (если Premise создан из Goal) |
 
 **`Premise.data` — каждое поле имеет `owner`** (проектная позиция / результат подбора / паспорт изделия). Если `owner` не указан — это «нет данных» (нельзя проверить). См. DOMAIN.md §3.4.1.
+**`source_goal_id`** — **если** `Premise` **создан** **из** `Goal` (**документ** **разработан** **и** **стал** **ИД**). **Если** `Premise` **пришёл** **извне** (**договор**, **ТЗ**) — **NULL**. **См.** **DOMAIN.md** **§3.7**.
+
 
 **Goal (Цель).**
 
@@ -180,6 +183,7 @@ Enum-значения — в `backend/src/domain/value_objects/enums.py`.
 - Значения: `confirmed`, `not_confirmed`, `requires_check`, `no_data`.
 - Default: `requires_check`.
 - Индекс: `idx_goals_verification_status`.
+- `idx_premises_source_goal` — на `source_goal_id` (FK).
 - Миграция Alembic: **создаёт** enum-тип + колонку + индекс.
 
 **`owner` в Premise.data:**
@@ -269,6 +273,8 @@ class PremiseDataField(BaseModel):
 **Enum'ы в DTO:**
 - `ChangeStatus` (4 значения).
 - `RevisionDecisionType` (6 значений).
+
+**`PremiseSchema` / `PremiseCreate` / `PremiseRead`** — **добавить** **поле** `source_goal_id: UUID | None` (nullable, **если** `Premise` **создан** **из** `Goal`).
 
 ## §5. Порты и репозитории
 
@@ -381,6 +387,7 @@ class PremiseDataField(BaseModel):
    - Если **две** и более — `requires_check`.
 7. **Проверить** **соответствие** `Goal` → `ProjectStandard`. **Если** **не** **соответствует** — `not_confirmed`.
 8. **Проверить** **связь** `Goal` → `Result`. **Если** **нет** — `requires_check`.
+9. **Проверить** **переход** `Goal` → `Premise`. **Если** `Goal.state == achieved` **и** **создан** `Premise` — **проверить**, **что** `Premise.source_goal_id` = `Goal.id`. **Если** **нет** — `requires_check`.
 
 #### 6.1.2. Агент-валидатор — выход
 
@@ -604,7 +611,7 @@ API-клиенты в `frontend/src/api/`:
 Компоненты в `frontend/src/components/`:
 - `PremiseCard.tsx` — владелец у каждого поля (если указан).
 - `PremiseForm.tsx`.
-- `GoalCard.tsx` — бейдж статуса проверки (подтверждено / не соответствует / требует проверки / нет данных).
+- `GoalCard.tsx` — бейдж статуса проверки (подтверждено / не соответствует / требует проверки / нет данных). - **Кнопка** «Создать** **ИД** **из** **цели»** — **если** `Goal.state == achieved` **и** `Goal` **не** **связан** **с** `Premise` (`source_goal_id` **нет**). **При** **нажатии** — **форма** **создания** `Premise` **с** `source_goal_id = Goal.id`.
 - `GoalForm.tsx`.
 - `GoalProposalList.tsx` — список предложений с утверждением.
 
@@ -625,6 +632,7 @@ UI структуры — список для MVP (ответ на вопрос 
 - `ProjectStandardPage.tsx` — список стандартов (из** **ТЗ**).
 - `ResultCard.tsx` — карточка** **результата** (с** **связью** **на** `Goal`).
 - `ProjectStandardCard.tsx` — карточка** **стандарта** (с** **связью** **на** `Goal`).
+- **Поле** `source_goal_id` — **readonly**, **если** `Premise` **создан** **из** `Goal` (**показывает** **какой** `Goal` **породил** `Premise`).
 
 ## §10. Открытые вопросы вехи
 

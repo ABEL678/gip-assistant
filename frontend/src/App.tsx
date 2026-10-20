@@ -14,6 +14,8 @@ import { DocumentVersionsPage } from "@/pages/DocumentVersionsPage"
 import { DocumentsPage } from "@/pages/DocumentsPage"
 import { PremisesPage } from "@/pages/PremisesPage"
 import { GoalsPage } from "@/pages/GoalsPage"
+import { ResultsPage } from "@/pages/ResultsPage"
+import { ProjectStandardsPage } from "@/pages/ProjectStandardsPage"
 import { UploadSourcesPage } from "@/pages/UploadSourcesPage"
 import { ProjectCanvasPage } from "@/pages/ProjectCanvasPage"
 import { TimelineDemoPage } from "@/pages/TimelineDemoPage"
@@ -40,6 +42,8 @@ function App() {
           <Route path="projects/:id/documents/:docId/versions" element={<DocumentVersionsPage />} />
           <Route path="projects/:id/documents/:docId/links" element={<DocumentLinksPage />} />
           <Route path="projects/:id/premises" element={<PremisesPage />} />
+          <Route path="projects/:id/results" element={<ResultsPage />} />
+          <Route path="projects/:id/standards" element={<ProjectStandardsPage />} />
           <Route path="projects/:id/upload" element={<UploadSourcesPage />} />
           <Route path="projects/:id/canvas" element={<ProjectCanvasPage />} />
           <Route path="projects/:id/timeline-demo" element={<TimelineDemoPage />} />

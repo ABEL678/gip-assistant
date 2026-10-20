@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Upload, Grid3x3, Plus, FileUp, Network } from "lucide-react"
 import { TaskList } from "@/components/TaskList"
 import { useDocumentsByProject } from "@/hooks/useDocuments"
+import { resultApi } from "@/api/resultApi"
+import { projectStandardApi } from "@/api/projectStandardApi"
 
 import { DocumentCard } from "@/components/DocumentCard"
 
@@ -33,6 +35,23 @@ export function ProjectPage() {
     queryKey: ["goals", id],
     queryFn: () => goalApi.fetchGoals(id!),
     enabled: !!id,
+  })
+
+  const { data: results, isLoading: resultsLoading } = useQuery({
+    queryKey: ["results", id],
+    queryFn: () => resultApi.fetchResults(id!),
+    enabled: !!id,
+  })
+
+  const { data: allStandards } = useQuery({
+    queryKey: ["all-standards", id],
+    queryFn: async () => {
+      if (!premises) return []
+      const all: Awaited<ReturnType<typeof projectStandardApi.fetchStandards>>[] =
+        await Promise.all(premises.map((p) => projectStandardApi.fetchStandards(p.id)))
+      return all.flat()
+    },
+    enabled: !!premises,
   })
 
   if (isLoading) {
@@ -202,6 +221,74 @@ export function ProjectPage() {
               <div key={p.id} className="border rounded-lg p-3">
                 <div className="font-medium">{p.name}</div>
                 <div className="text-sm text-muted-foreground">{p.category}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">
+            Результаты <span className="text-muted-foreground">({results?.length ?? 0})</span>
+          </h2>
+          <Link to={`/projects/${id}/results`}>
+            <Button variant="outline">Все результаты</Button>
+          </Link>
+        </div>
+
+        {resultsLoading ? (
+          <p className="text-muted-foreground">Загрузка...</p>
+        ) : !results || results.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Пока нет результатов
+            <div className="mt-4">
+              <Link to={`/projects/${id}/results`}>
+                <Button variant="outline">Перейти к результатам</Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {results.slice(0, 3).map((r) => (
+              <div key={r.id} className="border rounded-lg p-3">
+                <div className="font-medium">{r.formulation}</div>
+                {r.source && (
+                  <div className="text-sm text-muted-foreground">{r.source}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">
+            Стандарты проекта <span className="text-muted-foreground">({allStandards?.length ?? 0})</span>
+          </h2>
+          <Link to={`/projects/${id}/standards`}>
+            <Button variant="outline">Все стандарты</Button>
+          </Link>
+        </div>
+
+        {resultsLoading ? (
+          <p className="text-muted-foreground">Загрузка...</p>
+        ) : !allStandards || allStandards.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Пока нет стандартов
+            <div className="mt-4">
+              <Link to={`/projects/${id}/standards`}>
+                <Button variant="outline">Перейти к стандартам</Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {allStandards.slice(0, 3).map((s) => (
+              <div key={s.id} className="border rounded-lg p-3">
+                <div className="font-medium">{s.type}</div>
+                <div className="text-sm text-muted-foreground">{s.premise_id.slice(0, 8)}</div>
               </div>
             ))}
           </div>

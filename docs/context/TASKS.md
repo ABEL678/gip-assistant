@@ -302,6 +302,7 @@
 
 **На 20.10.2026 — 6.8d (UI вехи 1) ЗАКРЫТ.
 6.8f — ЗАКРЫТ (20.10.2026).
+6.8f-2 — ЗАКРЫТ (20.10.2026).
 6.8g — ЗАКРЫТ (20.10.2026).**
 
 - ✅ API-клиенты расширены (validateGoal, similarity-matrix, run-3-times).
@@ -410,6 +411,16 @@
 - ✅ 15 unit-тестов (AsyncMock, pytest-asyncio).
 - ✅ 5 файлов, +441 строки. Коммит `5e0a7c9`.
 - ✅ 240 тестов pytest (225 + 15). Ruff чисто.
+
+### 20.10.2026 (сессия 6.8f-2 — source_goal_id в Premise)
+
+- ✅ PremiseModel: source_goal_id FK → goals, ondelete SET NULL.
+- ✅ Premise entity: source_goal_id: UUID | None.
+- ✅ DTO: PremiseSchema/Update/Read — source_goal_id.
+- ✅ PremiseRepository: mapping _to_domain/_to_model.
+- ✅ Миграция `8fc3a69b4247` (upgrade + downgrade).
+- ✅ 6 файлов, +49 строк. Коммит `481e6e5`.
+- ✅ 240 тестов pytest. Ruff чисто.
 
 ### 19.10.2026 (сессия 6.8d — UI вехи 1)
 

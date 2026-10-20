@@ -15,6 +15,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.adapters.db.repositories import (
+    SqlAlchemyChangeRepository,
     SqlAlchemyCrossTaskRepository,
     SqlAlchemyDocumentLinkRepository,
     SqlAlchemyDocumentRepository,
@@ -28,11 +29,15 @@ from backend.src.adapters.db.repositories import (
     SqlAlchemyProjectRepository,
     SqlAlchemyProjectStandardRepository,
     SqlAlchemyResultRepository,
+    SqlAlchemyRevisionDecisionRepository,
+    SqlAlchemyRevisionRepository,
+    SqlAlchemyStopFlagRepository,
     SqlAlchemyTaskRepository,
 )
 from backend.src.adapters.db.session import AsyncSessionLocal
 from backend.src.domain.ports.goal_validator import GoalValidatorService
 from backend.src.domain.ports.repositories import (
+    ChangeRepository,
     CrossTaskRepository,
     DocumentLinkRepository,
     DocumentRepository,
@@ -46,9 +51,13 @@ from backend.src.domain.ports.repositories import (
     ProjectRepository,
     ProjectStandardRepository,
     ResultRepository,
+    RevisionDecisionRepository,
+    RevisionRepository,
+    StopFlagRepository,
     TaskRepository,
 )
 from backend.src.domain.services import (
+    ChangeService,
     DocumentLinkService,
     DocumentService,
     DocumentTypeService,
@@ -60,9 +69,14 @@ from backend.src.domain.services import (
     ImportService,
     MatrixService,
     PremiseService,
+    ProjectStandardService,
     ProposalProtocolService,
+    ResultService,
+    RevisionDecisionService,
+    RevisionService,
     RuleBasedGoalValidator,
     SimilarityMatrixService,
+    StopFlagService,
 )
 
 # ---------- Session ----------
@@ -146,6 +160,24 @@ def get_project_standard_repo(session: DbSession) -> ProjectStandardRepository:
     return SqlAlchemyProjectStandardRepository(session)
 
 
+def get_revision_repo(session: DbSession) -> RevisionRepository:
+    return SqlAlchemyRevisionRepository(session)
+
+
+def get_change_repo(session: DbSession) -> ChangeRepository:
+    return SqlAlchemyChangeRepository(session)
+
+
+def get_stop_flag_repo(session: DbSession) -> StopFlagRepository:
+    return SqlAlchemyStopFlagRepository(session)
+
+
+def get_revision_decision_repo(
+    session: DbSession,
+) -> RevisionDecisionRepository:
+    return SqlAlchemyRevisionDecisionRepository(session)
+
+
 ProjectRepoDep = Annotated[ProjectRepository, Depends(get_project_repo)]
 TaskRepoDep = Annotated[TaskRepository, Depends(get_task_repo)]
 CrossTaskRepoDep = Annotated[CrossTaskRepository, Depends(get_cross_task_repo)]
@@ -162,6 +194,12 @@ GoalRepoDep = Annotated[GoalRepository, Depends(get_goal_repo)]
 ResultRepoDep = Annotated[ResultRepository, Depends(get_result_repo)]
 ProjectStandardRepoDep = Annotated[
     ProjectStandardRepository, Depends(get_project_standard_repo)
+]
+RevisionRepoDep = Annotated[RevisionRepository, Depends(get_revision_repo)]
+ChangeRepoDep = Annotated[ChangeRepository, Depends(get_change_repo)]
+StopFlagRepoDep = Annotated[StopFlagRepository, Depends(get_stop_flag_repo)]
+RevisionDecisionRepoDep = Annotated[
+    RevisionDecisionRepository, Depends(get_revision_decision_repo)
 ]
 
 
@@ -292,6 +330,42 @@ def get_goal_validators(
     return [validator]
 
 
+def get_result_service(
+    result_repo: ResultRepoDep,
+) -> ResultService:
+    return ResultService(repo=result_repo)
+
+
+def get_project_standard_service(
+    standard_repo: ProjectStandardRepoDep,
+) -> ProjectStandardService:
+    return ProjectStandardService(repo=standard_repo)
+
+
+def get_revision_service(
+    revision_repo: RevisionRepoDep,
+) -> RevisionService:
+    return RevisionService(repo=revision_repo)
+
+
+def get_change_service(
+    change_repo: ChangeRepoDep,
+) -> ChangeService:
+    return ChangeService(repo=change_repo)
+
+
+def get_stop_flag_service(
+    stop_flag_repo: StopFlagRepoDep,
+) -> StopFlagService:
+    return StopFlagService(repo=stop_flag_repo)
+
+
+def get_revision_decision_service(
+    decision_repo: RevisionDecisionRepoDep,
+) -> RevisionDecisionService:
+    return RevisionDecisionService(repo=decision_repo)
+
+
 ImportServiceDep = Annotated[ImportService, Depends(get_import_service)]
 MatrixServiceDep = Annotated[MatrixService, Depends(get_matrix_service)]
 EntityTypeServiceDep = Annotated[EntityTypeService, Depends(get_entity_type_service)]
@@ -314,4 +388,14 @@ ProposalProtocolServiceDep = Annotated[
 GoalValidatorsDep = Annotated[
     list[GoalValidatorService],
     Depends(get_goal_validators),
+]
+ResultServiceDep = Annotated[ResultService, Depends(get_result_service)]
+ProjectStandardServiceDep = Annotated[
+    ProjectStandardService, Depends(get_project_standard_service)
+]
+RevisionServiceDep = Annotated[RevisionService, Depends(get_revision_service)]
+ChangeServiceDep = Annotated[ChangeService, Depends(get_change_service)]
+StopFlagServiceDep = Annotated[StopFlagService, Depends(get_stop_flag_service)]
+RevisionDecisionServiceDep = Annotated[
+    RevisionDecisionService, Depends(get_revision_decision_service)
 ]

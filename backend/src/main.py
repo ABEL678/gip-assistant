@@ -15,7 +15,10 @@ from backend.src.adapters.api.routes import (
     import_excel_router,
     matrix_router,
     premises_router,
+    project_standards_router,
     projects_router,
+    revisions_router,
+    results_router,
     tasks_router,
 )
 from backend.src.bootstrap import get_container
@@ -60,6 +63,9 @@ app.include_router(document_versions_router)
 app.include_router(document_links_router)
 app.include_router(premises_router)
 app.include_router(goals_router)
+app.include_router(results_router)
+app.include_router(project_standards_router)
+app.include_router(revisions_router)
 
 
 # ---------- System routes ----------

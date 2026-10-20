@@ -17,7 +17,12 @@ from backend.src.adapters.api.routes.import_excel import (
 )
 from backend.src.adapters.api.routes.matrix import router as matrix_router
 from backend.src.adapters.api.routes.premises import router as premises_router
+from backend.src.adapters.api.routes.project_standards import (
+    router as project_standards_router,
+)
 from backend.src.adapters.api.routes.projects import router as projects_router
+from backend.src.adapters.api.routes.results import router as results_router
+from backend.src.adapters.api.routes.revisions import router as revisions_router
 from backend.src.adapters.api.routes.tasks import router as tasks_router
 
 __all__ = [
@@ -30,6 +35,9 @@ __all__ = [
     "import_excel_router",
     "matrix_router",
     "premises_router",
+    "project_standards_router",
     "projects_router",
+    "revisions_router",
+    "results_router",
     "tasks_router",
 ]

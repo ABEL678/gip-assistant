@@ -15,6 +15,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.adapters.db.repositories import (
+    SqlAlchemyActionRepository,
     SqlAlchemyChangeRepository,
     SqlAlchemyCrossTaskRepository,
     SqlAlchemyDocumentLinkRepository,
@@ -37,6 +38,7 @@ from backend.src.adapters.db.repositories import (
 from backend.src.adapters.db.session import AsyncSessionLocal
 from backend.src.domain.ports.goal_validator import GoalValidatorService
 from backend.src.domain.ports.repositories import (
+    ActionRepository,
     ChangeRepository,
     CrossTaskRepository,
     DocumentLinkRepository,
@@ -57,6 +59,7 @@ from backend.src.domain.ports.repositories import (
     TaskRepository,
 )
 from backend.src.domain.services import (
+    ActionService,
     ChangeService,
     DocumentLinkService,
     DocumentService,
@@ -178,6 +181,10 @@ def get_revision_decision_repo(
     return SqlAlchemyRevisionDecisionRepository(session)
 
 
+def get_action_repo(session: DbSession) -> ActionRepository:
+    return SqlAlchemyActionRepository(session)
+
+
 ProjectRepoDep = Annotated[ProjectRepository, Depends(get_project_repo)]
 TaskRepoDep = Annotated[TaskRepository, Depends(get_task_repo)]
 CrossTaskRepoDep = Annotated[CrossTaskRepository, Depends(get_cross_task_repo)]
@@ -201,6 +208,7 @@ StopFlagRepoDep = Annotated[StopFlagRepository, Depends(get_stop_flag_repo)]
 RevisionDecisionRepoDep = Annotated[
     RevisionDecisionRepository, Depends(get_revision_decision_repo)
 ]
+ActionRepoDep = Annotated[ActionRepository, Depends(get_action_repo)]
 
 
 # ---------- Domain services ----------
@@ -348,6 +356,12 @@ def get_revision_service(
     return RevisionService(repo=revision_repo)
 
 
+def get_action_service(
+    action_repo: ActionRepoDep,
+) -> ActionService:
+    return ActionService(repo=action_repo)
+
+
 def get_change_service(
     change_repo: ChangeRepoDep,
 ) -> ChangeService:
@@ -399,3 +413,4 @@ StopFlagServiceDep = Annotated[StopFlagService, Depends(get_stop_flag_service)]
 RevisionDecisionServiceDep = Annotated[
     RevisionDecisionService, Depends(get_revision_decision_service)
 ]
+ActionServiceDep = Annotated[ActionService, Depends(get_action_service)]

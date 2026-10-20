@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_offline import FastAPIOffline
 
 from backend.src.adapters.api.routes import (
+    actions_router,
     document_links_router,
     document_types_router,
     document_versions_router,
@@ -53,6 +54,7 @@ app.add_middleware(
 # ---------- API routers ----------
 
 app.include_router(projects_router)
+app.include_router(actions_router)
 app.include_router(import_excel_router)
 app.include_router(tasks_router)
 app.include_router(matrix_router)

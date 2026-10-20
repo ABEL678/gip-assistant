@@ -1,5 +1,6 @@
 """HTTP-роуты API."""
 
+from backend.src.adapters.api.routes.actions import router as actions_router
 from backend.src.adapters.api.routes.document_links import (
     router as document_links_router,
 )
@@ -26,6 +27,7 @@ from backend.src.adapters.api.routes.revisions import router as revisions_router
 from backend.src.adapters.api.routes.tasks import router as tasks_router
 
 __all__ = [
+    "actions_router",
     "document_links_router",
     "document_types_router",
     "document_versions_router",

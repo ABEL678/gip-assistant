@@ -1,6 +1,5 @@
 """SQLAlchemy-реализация PremiseRepository."""
 
-from datetime import date as date_type
 from uuid import UUID
 
 from sqlalchemy import delete, select
@@ -27,6 +26,13 @@ class SqlAlchemyPremiseRepository(PremiseRepository):
             select(PremiseModel)
             .where(PremiseModel.project_id == project_id)
             .order_by(PremiseModel.created_at.desc())
+        )
+        result = await self._session.execute(stmt)
+        return [self._to_domain(m) for m in result.scalars().all()]
+
+    async def list_by_source_goal(self, goal_id: UUID) -> list[Premise]:
+        stmt = select(PremiseModel).where(
+            PremiseModel.source_goal_id == goal_id
         )
         result = await self._session.execute(stmt)
         return [self._to_domain(m) for m in result.scalars().all()]

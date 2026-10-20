@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.adapters.db.models.result import ResultModel
+from backend.src.adapters.db.models.result_goal import ResultGoalModel
 from backend.src.domain.entities.result import Result
 from backend.src.domain.ports.repositories import ResultRepository
 
@@ -24,6 +25,15 @@ class SqlAlchemyResultRepository(ResultRepository):
 
     async def list_by_project(self, project_id: UUID) -> list[Result]:
         stmt = select(ResultModel).where(ResultModel.project_id == project_id)
+        result = await self._session.execute(stmt)
+        return [self._to_domain(m) for m in result.scalars().all()]
+
+    async def list_by_goal(self, goal_id: UUID) -> list[Result]:
+        stmt = (
+            select(ResultModel)
+            .join(ResultGoalModel, ResultModel.id == ResultGoalModel.result_id)
+            .where(ResultGoalModel.goal_id == goal_id)
+        )
         result = await self._session.execute(stmt)
         return [self._to_domain(m) for m in result.scalars().all()]
 

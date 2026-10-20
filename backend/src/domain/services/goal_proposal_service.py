@@ -1,23 +1,23 @@
-"""GoalProposalService — 4 правила вывода целей из вводных."""
+"""GoalProposalService — правила вывода целей и стандартов из вводных."""
 
 import logging
 from datetime import date, timedelta
-from hashlib import sha256
-from uuid import UUID, uuid5, NAMESPACE_DNS
+from typing import Any
+from uuid import NAMESPACE_DNS, UUID, uuid5
 
 from backend.src.domain.entities.goal_proposal import GoalProposal
 from backend.src.domain.entities.premise import Premise
 from backend.src.domain.ports.repositories import PremiseRepository
-from backend.src.domain.value_objects.enums import PremiseCategory
+from backend.src.domain.value_objects.enums import PremiseCategory, ProjectStandardType
 
 logger = logging.getLogger(__name__)
 
 
 class GoalProposalService:
-    """Сервис предложений целей на основе вводных.
+    """Сервис предложений целей и стандартов на основе вводных.
 
-    Прогоняет Premise проекта через 4 правила и агрегирует результаты.
-    Не сохраняет в БД — возвращает эфемерный список предложений.
+    Прогоняет Premise проекта через правила и агрегирует результаты.
+    Не сохраняет в БД — возвращает эфемерные списки предложений.
     """
 
     def __init__(self, premise_repo: PremiseRepository) -> None:
@@ -26,7 +26,7 @@ class GoalProposalService:
     async def propose_goals(self, project_id: UUID) -> list[GoalProposal]:
         """Предложить цели для проекта на основе вводных.
 
-        Загружает все Premise проекта, применяет 4 правила,
+        Загружает все Premise проекта, применяет правила 1, 3, 4,
         дедуплицирует по formulation.
 
         Args:
@@ -51,7 +51,6 @@ class GoalProposalService:
 
         proposals: list[GoalProposal] = []
         proposals.extend(self._rule_contract(premises))
-        proposals.extend(self._rule_tz(premises))
         proposals.extend(self._rule_customer_requirement(premises))
         proposals.extend(self._rule_source_data(premises))
 
@@ -65,13 +64,46 @@ class GoalProposalService:
                 p.id = uuid5(ns, seed)
         logger.info("Proposals after dedup: %d", len(result))
         for r in result:
-            logger.info("  Proposal: id=%s rule=%s formulation=%r", r.id, r.rule, r.formulation)
+            logger.info(
+                "  Proposal: id=%s rule=%s formulation=%r",
+                r.id, r.rule, r.formulation,
+            )
 
         return result
 
+    async def propose_standards(
+        self, project_id: UUID,
+    ) -> list[dict[str, Any]]:
+        """Предложить стандарты (правило 2: ТЗ → ProjectStandard).
+
+        Если premise.category == TZ и premise.data содержит requirement,
+        предложить ProjectStandard с type=COMPOSITION.
+
+        Args:
+            project_id: UUID проекта.
+
+        Returns:
+            Список словарей стандартов для создания.
+        """
+        premises = await self._premise_repo.list_by_project(project_id)
+        standards: list[dict[str, Any]] = []
+        for p in premises:
+            if p.category != PremiseCategory.TZ:
+                continue
+            requirement = p.data.get("requirement")
+            if requirement:
+                standards.append({
+                    "premise_id": p.id,
+                    "type": ProjectStandardType.COMPOSITION,
+                    "value": {"requirement": requirement},
+                })
+        return standards
+
     # ---------- Правила ----------
 
-    def _rule_contract(self, premises: list[Premise]) -> list[GoalProposal]:
+    def _rule_contract(
+        self, premises: list[Premise],
+    ) -> list[GoalProposal]:
         """Правило 1 — договор со сроком → Goal.
 
         Если premise.category == CONTRACT и premise.data содержит deadline,
@@ -94,35 +126,6 @@ class GoalProposalService:
                 rule="договор_срок",
                 deadline=deadline,
                 premise_ids=[p.id],
-            ))
-        return results
-
-    def _rule_tz(self, premises: list[Premise]) -> list[GoalProposal]:
-        """Правило 2 — ТЗ → Goal.
-
-        Если premise.category == TZ:
-        - Если premise.data содержит requirement → confident formulation.
-        - Иначе → формулировка из name + confidence=0.5 (LLM TODO marker).
-        """
-        results: list[GoalProposal] = []
-        for p in premises:
-            if p.category != PremiseCategory.TZ:
-                continue
-            requirement = p.data.get("requirement")
-            if requirement:
-                formulation = requirement
-                confidence = 1.0
-            elif p.name:
-                formulation = f"Выполнить {p.name}"
-                confidence = 0.5
-            else:
-                continue
-
-            results.append(GoalProposal(
-                formulation=formulation,
-                rule="тз_требование",
-                premise_ids=[p.id],
-                confidence=confidence,
             ))
         return results
 
@@ -149,12 +152,10 @@ class GoalProposalService:
             ))
         return results
 
-    def _rule_source_data(self, premises: list[Premise]) -> list[GoalProposal]:
-        """Правило 4 — просроченный ИД → Goal «Обновить ИД».
-
-        Если premise.category == SOURCE_DATA и premise.valid_until < today,
-        предложить цель "Обновить {name}" с дедлайном valid_until + 30 дней.
-        """
+    def _rule_source_data(
+        self, premises: list[Premise],
+    ) -> list[GoalProposal]:
+        """Правило 4 — просроченный ИД → Goal «Обновить ИД»."""
         today = date.today()
         results: list[GoalProposal] = []
         for p in premises:
@@ -187,19 +188,18 @@ class GoalProposalService:
         return None
 
     @staticmethod
-    def _deduplicate(proposals: list[GoalProposal]) -> list[GoalProposal]:
-        """Дедупликация по formulation.
-
-        Если два правила дают одинаковую формулировку — объединить
-        premise_ids, оставить первый rule и minimum confidence.
-        """
+    def _deduplicate(
+        proposals: list[GoalProposal],
+    ) -> list[GoalProposal]:
+        """Дедупликация по formulation."""
         seen: dict[str, GoalProposal] = {}
         for proposal in proposals:
             key = proposal.formulation.strip().lower()
             if key in seen:
                 seen[key].premise_ids.extend(proposal.premise_ids)
-                # minimum confidence — если есть хотя бы один с confidence < 1
-                seen[key].confidence = min(seen[key].confidence, proposal.confidence)
+                seen[key].confidence = min(
+                    seen[key].confidence, proposal.confidence,
+                )
             else:
                 seen[key] = GoalProposal(
                     formulation=proposal.formulation,

@@ -17,8 +17,14 @@ from backend.src.domain.ports.goal_validator import GoalValidatorService
 from backend.src.domain.ports.repositories import (
     GoalRepository,
     PremiseRepository,
+    ProjectStandardRepository,
+    ResultRepository,
 )
-from backend.src.domain.value_objects.enums import VerificationStatus
+from backend.src.domain.value_objects.enums import (
+    GoalState,
+    ProjectStandardType,
+    VerificationStatus,
+)
 
 
 def _parse_date(value: object) -> object:
@@ -35,9 +41,13 @@ class RuleBasedGoalValidator(GoalValidatorService):
         self,
         goal_repo: GoalRepository,
         premise_repo: PremiseRepository,
+        result_repo: ResultRepository,
+        standard_repo: ProjectStandardRepository,
     ) -> None:
         self._goal_repo = goal_repo
         self._premise_repo = premise_repo
+        self._result_repo = result_repo
+        self._standard_repo = standard_repo
 
     async def validate(self, goal_id: UUID) -> ValidationResult:
         """Прогнать правила 1–6, обновить goal.verification_status, вернуть результат."""
@@ -151,6 +161,45 @@ class RuleBasedGoalValidator(GoalValidatorService):
                             break
                     if not found:
                         missing.append(f"no source for {num_str}")
+
+        # --- Step 7: Goal → ProjectStandard ---
+        standards = await self._standard_repo.list_by_goal(goal.id)
+        if not standards:
+            missing.append("no ProjectStandard")
+            has_requires_check = True
+        else:
+            for std in standards:
+                if std.type == ProjectStandardType.DEADLINE:
+                    std_deadline = std.value.get("deadline")
+                    if goal.deadline is not None and std_deadline:
+                        try:
+                            std_date = _parse_date(std_deadline)
+                            if goal.deadline != std_date:
+                                contradictions.append(
+                                    f"deadline mismatch: goal={goal.deadline}, "
+                                    f"standard={std_deadline}"
+                                )
+                                has_contradiction = True
+                        except (ValueError, TypeError):
+                            pass
+                # COMPOSITION и FORMAT — пока не проверяем (сложно)
+
+        # --- Step 8: Goal → Result ---
+        results = await self._result_repo.list_by_goal(goal.id)
+        if not results:
+            missing.append("no Result")
+            has_requires_check = True
+
+        # --- Step 9: Goal achieved → Premise ---
+        if goal.state == GoalState.ACHIEVED:
+            achieved_premises = await self._premise_repo.list_by_source_goal(
+                goal.id
+            )
+            if not achieved_premises:
+                missing.append(
+                    "goal achieved but no Premise (source_goal_id)"
+                )
+                has_requires_check = True
 
         # Rule 6: итоговый статус
         # Приоритет: NOT_CONFIRMED > NO_DATA > REQUIRES_CHECK

@@ -281,6 +281,10 @@ class PremiseRepository(ABC):
         """Вводные проекта, сортировка по created_at DESC."""
 
     @abstractmethod
+    async def list_by_source_goal(self, goal_id: UUID) -> list[Premise]:
+        """Вводные, где goal_id — source_goal_id."""
+
+    @abstractmethod
     async def save(self, premise: Premise) -> Premise:
         """Создать или обновить вводную (merge по id)."""
 
@@ -407,6 +411,10 @@ class ResultRepository(ABC):
         """Результаты проекта."""
 
     @abstractmethod
+    async def list_by_goal(self, goal_id: UUID) -> list[Result]:
+        """Результаты, связанные с целью."""
+
+    @abstractmethod
     async def save(self, result: Result) -> Result:
         """Создать или обновить результат (merge по id)."""
 
@@ -429,6 +437,10 @@ class ProjectStandardRepository(ABC):
     @abstractmethod
     async def list_by_type(self, type: ProjectStandardType) -> list[ProjectStandard]:
         """Стандарты типа."""
+
+    @abstractmethod
+    async def list_by_goal(self, goal_id: UUID) -> list[ProjectStandard]:
+        """Стандарты, связанные с целью."""
 
     @abstractmethod
     async def save(self, standard: ProjectStandard) -> ProjectStandard:

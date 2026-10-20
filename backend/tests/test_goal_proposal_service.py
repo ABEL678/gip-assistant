@@ -114,25 +114,33 @@ async def test_rule_contract_no_deadline(service: GoalProposalService, mock_repo
     assert len(rule_proposals) == 0
 
 
-# ---------- Правило 2: ТЗ с требованием ----------
+# ---------- Правило 2: ТЗ → ProjectStandard (не Goal) ----------
 
 
 @pytest.mark.asyncio
-async def test_rule_tz_serves(service: GoalProposalService, mock_repo: AsyncMock, tz_premise: Premise):
-    """Правило 2 — срабатывает когда в ТЗ есть requirement."""
+async def test_rule_tz_no_goal_proposal(
+    service: GoalProposalService, mock_repo: AsyncMock, tz_premise: Premise,
+):
+    """Правило 2 — TZ больше не порождает Goal.
+
+    TZ premise с requirement должен порождаться через propose_standards,
+    а не propose_goals.
+    """
     mock_repo.list_by_project.return_value = [tz_premise]
 
     proposals = await service.propose_goals(uuid4())
 
-    assert len(proposals) == 1
-    assert proposals[0].rule == "тз_требование"
-    assert proposals[0].formulation == "Расчёт ВК"
-    assert proposals[0].confidence == 1.0
+    tz_proposals = [p for p in proposals if p.rule == "тз_требование"]
+    assert len(tz_proposals) == 0
+    # propose_goals должен вернуть пустой список (только TZ premise)
+    assert len(proposals) == 0
 
 
 @pytest.mark.asyncio
-async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: AsyncMock):
-    """Правило 2 — без requirement: формулировка из name + confidence=0.5."""
+async def test_rule_tz_no_goal_from_name(
+    service: GoalProposalService, mock_repo: AsyncMock,
+):
+    """Правило 2 — TZ без requirement тоже не порождает Goal."""
     mock_repo.list_by_project.return_value = [
         Premise(
             id=uuid4(),
@@ -146,9 +154,8 @@ async def test_rule_tz_no_requirement(service: GoalProposalService, mock_repo: A
     proposals = await service.propose_goals(uuid4())
 
     rule_proposals = [p for p in proposals if p.rule == "тз_требование"]
-    assert len(rule_proposals) == 1
-    assert rule_proposals[0].formulation == "Выполнить ТЗ на разработку"
-    assert rule_proposals[0].confidence == 0.5
+    assert len(rule_proposals) == 0
+    assert len(proposals) == 0
 
 
 # ---------- Правило 3: требование Заказчика ----------
@@ -238,9 +245,9 @@ async def test_deduplication(service: GoalProposalService, mock_repo: AsyncMock)
     premise2 = Premise(
         id=uuid4(),
         project_id=uuid4(),
-        category=PremiseCategory.TZ,
+        category=PremiseCategory.CUSTOMER_REQUIREMENT,
         name="ТЗ",
-        data={"requirement": "Сдать Том 7 к 2026-12-01"},
+        data={"content": "Сдать Том 7 к 2026-12-01"},
     )
     mock_repo.list_by_project.return_value = [premise1, premise2]
 
@@ -284,9 +291,11 @@ async def test_rule_contract_confidence(service: GoalProposalService, mock_repo:
 
 
 @pytest.mark.asyncio
-async def test_proposal_has_id(service: GoalProposalService, mock_repo: AsyncMock, tz_premise: Premise):
+async def test_proposal_has_id(
+    service: GoalProposalService, mock_repo: AsyncMock, contract_premise: Premise,
+):
     """Предложение имеет id (для React key)."""
-    mock_repo.list_by_project.return_value = [tz_premise]
+    mock_repo.list_by_project.return_value = [contract_premise]
 
     proposals = await service.propose_goals(uuid4())
 
@@ -295,9 +304,11 @@ async def test_proposal_has_id(service: GoalProposalService, mock_repo: AsyncMoc
 
 
 @pytest.mark.asyncio
-async def test_proposal_id_deterministic(service: GoalProposalService, mock_repo: AsyncMock, tz_premise: Premise):
+async def test_proposal_id_deterministic(
+    service: GoalProposalService, mock_repo: AsyncMock, contract_premise: Premise,
+):
     """Id детерминирован — одинаковая формулировка → одинаковый id."""
-    mock_repo.list_by_project.return_value = [tz_premise]
+    mock_repo.list_by_project.return_value = [contract_premise]
 
     proposals1 = await service.propose_goals(uuid4())
     proposals2 = await service.propose_goals(uuid4())
@@ -313,3 +324,54 @@ async def test_empty_premises(service: GoalProposalService, mock_repo: AsyncMock
     proposals = await service.propose_goals(uuid4())
 
     assert proposals == []
+
+
+# ---------- propose_standards (правило 2) ----------
+
+
+@pytest.mark.asyncio
+async def test_propose_standards_tz_with_requirement(
+    service: GoalProposalService, mock_repo: AsyncMock, tz_premise: Premise,
+):
+    """propose_standards: TZ с requirement → standard dict."""
+    mock_repo.list_by_project.return_value = [tz_premise]
+
+    standards = await service.propose_standards(uuid4())
+
+    assert len(standards) == 1
+    assert standards[0]["premise_id"] == tz_premise.id
+    assert standards[0]["type"] == "composition"
+    assert standards[0]["value"] == {"requirement": "Расчёт ВК"}
+
+
+@pytest.mark.asyncio
+async def test_propose_standards_tz_no_requirement(
+    service: GoalProposalService, mock_repo: AsyncMock,
+):
+    """propose_standards: TZ без requirement → пустой список."""
+    mock_repo.list_by_project.return_value = [
+        Premise(
+            id=uuid4(),
+            project_id=uuid4(),
+            category=PremiseCategory.TZ,
+            name="ТЗ без требования",
+            data={},
+        )
+    ]
+
+    standards = await service.propose_standards(uuid4())
+
+    assert standards == []
+
+
+@pytest.mark.asyncio
+async def test_propose_goals_no_tz_rule(
+    service: GoalProposalService, mock_repo: AsyncMock, tz_premise: Premise,
+):
+    """propose_goals: TZ premise не порождает Goal."""
+    mock_repo.list_by_project.return_value = [tz_premise]
+
+    proposals = await service.propose_goals(uuid4())
+
+    tz_proposals = [p for p in proposals if p.rule == "тз_требование"]
+    assert len(tz_proposals) == 0

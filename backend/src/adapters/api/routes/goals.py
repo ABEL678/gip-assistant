@@ -3,12 +3,14 @@
 POST   /api/projects/{id}/goals                     — создать цель
 GET    /api/projects/{id}/goals                     — список целей проекта
 GET    /api/projects/{id}/goals/proposals           — предложенные цели
+GET    /api/projects/{id}/goals/standard-proposals  — предложенные стандарты
 POST   /api/projects/{id}/goals/from-proposal       — утвердить предложение
 GET    /api/goals/{id}                              — цель по ID
 PATCH  /api/goals/{id}                              — обновить цель
 DELETE /api/goals/{id}                              — удалить цель
 """
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
@@ -92,6 +94,19 @@ async def get_goal_proposals(
 ) -> list[GoalProposalRead]:
     proposals = await service.propose_goals(project_id)
     return [GoalProposalRead.model_validate(p, from_attributes=True) for p in proposals]
+
+
+@router.get(
+    "/projects/{project_id}/goals/standard-proposals",
+    response_model=list[dict[str, Any]],
+    summary="Предложенные стандарты (из ТЗ)",
+)
+async def get_standard_proposals(
+    project_id: UUID,
+    service: GoalProposalServiceDep,
+) -> list[dict[str, Any]]:
+    standards = await service.propose_standards(project_id)
+    return standards
 
 
 @router.post(

@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.adapters.db.models.project_standard import ProjectStandardModel
+from backend.src.adapters.db.models.standard_goal import StandardGoalModel
 from backend.src.domain.entities.project_standard import ProjectStandard
 from backend.src.domain.ports.repositories import ProjectStandardRepository
 from backend.src.domain.value_objects.enums import ProjectStandardType
@@ -33,6 +34,18 @@ class SqlAlchemyProjectStandardRepository(ProjectStandardRepository):
     async def list_by_type(self, type: ProjectStandardType) -> list[ProjectStandard]:
         stmt = select(ProjectStandardModel).where(
             ProjectStandardModel.type == type.value
+        )
+        result = await self._session.execute(stmt)
+        return [self._to_domain(m) for m in result.scalars().all()]
+
+    async def list_by_goal(self, goal_id: UUID) -> list[ProjectStandard]:
+        stmt = (
+            select(ProjectStandardModel)
+            .join(
+                StandardGoalModel,
+                ProjectStandardModel.id == StandardGoalModel.standard_id,
+            )
+            .where(StandardGoalModel.goal_id == goal_id)
         )
         result = await self._session.execute(stmt)
         return [self._to_domain(m) for m in result.scalars().all()]

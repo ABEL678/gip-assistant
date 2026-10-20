@@ -12,11 +12,15 @@ from backend.src.application.dto.validation_result import (
 )
 from backend.src.domain.entities.goal import Goal
 from backend.src.domain.entities.premise import Premise
+from backend.src.domain.entities.project_standard import ProjectStandard
+from backend.src.domain.entities.result import Result
 from backend.src.domain.services.rule_based_goal_validator import (
     RuleBasedGoalValidator,
 )
 from backend.src.domain.value_objects.enums import (
+    GoalState,
     PremiseCategory,
+    ProjectStandardType,
     VerificationStatus,
 )
 
@@ -36,14 +40,42 @@ def mock_premise_repo() -> AsyncMock:
     repo = AsyncMock()
     repo.get_by_id = AsyncMock()
     repo.list_by_project = AsyncMock()
+    repo.list_by_source_goal = AsyncMock()
+    return repo
+
+
+@pytest.fixture
+def mock_result_repo() -> AsyncMock:
+    repo = AsyncMock()
+    repo.get_by_id = AsyncMock()
+    repo.list_by_project = AsyncMock()
+    repo.list_by_goal = AsyncMock()
+    return repo
+
+
+@pytest.fixture
+def mock_standard_repo() -> AsyncMock:
+    repo = AsyncMock()
+    repo.get_by_id = AsyncMock()
+    repo.list_by_premise = AsyncMock()
+    repo.list_by_type = AsyncMock()
+    repo.list_by_goal = AsyncMock()
     return repo
 
 
 @pytest.fixture
 def service(
-    mock_goal_repo: AsyncMock, mock_premise_repo: AsyncMock
+    mock_goal_repo: AsyncMock,
+    mock_premise_repo: AsyncMock,
+    mock_result_repo: AsyncMock,
+    mock_standard_repo: AsyncMock,
 ) -> RuleBasedGoalValidator:
-    return RuleBasedGoalValidator(mock_goal_repo, mock_premise_repo)
+    return RuleBasedGoalValidator(
+        goal_repo=mock_goal_repo,
+        premise_repo=mock_premise_repo,
+        result_repo=mock_result_repo,
+        standard_repo=mock_standard_repo,
+    )
 
 
 # --- Helpers ---
@@ -344,3 +376,207 @@ async def test_validate_saves_status(
     mock_goal_repo.save.assert_called_once()
     saved_goal = mock_goal_repo.save.call_args[0][0]
     assert saved_goal.verification_status == VerificationStatus.CONFIRMED
+
+
+# --- Steps 7–9 ---
+
+
+@pytest.mark.asyncio
+async def test_validate_no_project_standard(
+    service: RuleBasedGoalValidator,
+    mock_goal_repo: AsyncMock,
+    mock_premise_repo: AsyncMock,
+    mock_standard_repo: AsyncMock,
+):
+    """Step 7: нет ProjectStandard → REQUIRES_CHECK."""
+    deadline = date(2026, 12, 1)
+    premise1 = _make_premise(
+        category=PremiseCategory.CONTRACT,
+        data={
+            "deadline": {"value": "2026-12-01", "owner": "contract", "source": None},
+        },
+        name="Договор",
+    )
+    premise2 = _make_premise(
+        category=PremiseCategory.TZ,
+        data={
+            "requirement": {
+                "value": "Сдать том 7",
+                "owner": "tz",
+                "source": None,
+            },
+        },
+        name="ТЗ",
+    )
+    goal = _make_goal(
+        premise_ids=[premise1.id, premise2.id],
+        deadline=deadline,
+    )
+    mock_goal_repo.get_by_id.return_value = goal
+    mock_premise_repo.get_by_id.side_effect = [premise1, premise2]
+    mock_standard_repo.list_by_goal.return_value = []
+
+    result = await service.validate(goal.id)
+
+    assert result.verification_status == VerificationStatus.REQUIRES_CHECK
+    assert any("no ProjectStandard" in m for m in result.missing)
+
+
+@pytest.mark.asyncio
+async def test_validate_no_result(
+    service: RuleBasedGoalValidator,
+    mock_goal_repo: AsyncMock,
+    mock_premise_repo: AsyncMock,
+    mock_standard_repo: AsyncMock,
+    mock_result_repo: AsyncMock,
+):
+    """Step 8: нет Result → REQUIRES_CHECK."""
+    deadline = date(2026, 12, 1)
+    premise1 = _make_premise(
+        category=PremiseCategory.CONTRACT,
+        data={
+            "deadline": {"value": "2026-12-01", "owner": "contract", "source": None},
+        },
+        name="Договор",
+    )
+    premise2 = _make_premise(
+        category=PremiseCategory.TZ,
+        data={
+            "requirement": {
+                "value": "Сдать том 7",
+                "owner": "tz",
+                "source": None,
+            },
+        },
+        name="ТЗ",
+    )
+    goal = _make_goal(
+        premise_ids=[premise1.id, premise2.id],
+        deadline=deadline,
+    )
+    mock_goal_repo.get_by_id.return_value = goal
+    mock_premise_repo.get_by_id.side_effect = [premise1, premise2]
+
+    std = ProjectStandard(
+        id=uuid4(),
+        premise_id=uuid4(),
+        type=ProjectStandardType.DEADLINE,
+        value={"deadline": "2026-12-01"},
+    )
+    mock_standard_repo.list_by_goal.return_value = [std]
+    mock_result_repo.list_by_goal.return_value = []
+
+    result = await service.validate(goal.id)
+
+    assert result.verification_status == VerificationStatus.REQUIRES_CHECK
+    assert any("no Result" in m for m in result.missing)
+
+
+@pytest.mark.asyncio
+async def test_validate_achieved_goal_no_premise(
+    service: RuleBasedGoalValidator,
+    mock_goal_repo: AsyncMock,
+    mock_premise_repo: AsyncMock,
+    mock_standard_repo: AsyncMock,
+    mock_result_repo: AsyncMock,
+):
+    """Step 9: goal achieved но нет Premise (source_goal_id) → REQUIRES_CHECK."""
+    deadline = date(2026, 12, 1)
+    premise1 = _make_premise(
+        category=PremiseCategory.CONTRACT,
+        data={
+            "deadline": {"value": "2026-12-01", "owner": "contract", "source": None},
+        },
+        name="Договор",
+    )
+    premise2 = _make_premise(
+        category=PremiseCategory.TZ,
+        data={
+            "requirement": {
+                "value": "Сдать том 7",
+                "owner": "tz",
+                "source": None,
+            },
+        },
+        name="ТЗ",
+    )
+    goal = _make_goal(
+        premise_ids=[premise1.id, premise2.id],
+        deadline=deadline,
+    )
+    goal.state = GoalState.ACHIEVED
+    mock_goal_repo.get_by_id.return_value = goal
+    mock_premise_repo.get_by_id.side_effect = [premise1, premise2]
+
+    std = ProjectStandard(
+        id=uuid4(),
+        premise_id=uuid4(),
+        type=ProjectStandardType.DEADLINE,
+        value={"deadline": "2026-12-01"},
+    )
+    mock_standard_repo.list_by_goal.return_value = [std]
+    mock_result_repo.list_by_goal.return_value = [
+        Result(id=uuid4(), project_id=uuid4(), formulation="Result")
+    ]
+    mock_premise_repo.list_by_source_goal.return_value = []
+
+    result = await service.validate(goal.id)
+
+    assert result.verification_status == VerificationStatus.REQUIRES_CHECK
+    assert any(
+        "goal achieved but no Premise" in m for m in result.missing
+    )
+
+
+@pytest.mark.asyncio
+async def test_validate_standard_deadline_mismatch(
+    service: RuleBasedGoalValidator,
+    mock_goal_repo: AsyncMock,
+    mock_premise_repo: AsyncMock,
+    mock_standard_repo: AsyncMock,
+    mock_result_repo: AsyncMock,
+):
+    """Step 7: goal.deadline ≠ standard.deadline → NOT_CONFIRMED."""
+    goal_deadline = date(2026, 12, 1)
+    premise1 = _make_premise(
+        category=PremiseCategory.CONTRACT,
+        data={
+            "deadline": {"value": "2026-12-01", "owner": "contract", "source": None},
+        },
+        name="Договор",
+    )
+    premise2 = _make_premise(
+        category=PremiseCategory.TZ,
+        data={
+            "requirement": {
+                "value": "Сдать том 7",
+                "owner": "tz",
+                "source": None,
+            },
+        },
+        name="ТЗ",
+    )
+    goal = _make_goal(
+        premise_ids=[premise1.id, premise2.id],
+        deadline=goal_deadline,
+    )
+    mock_goal_repo.get_by_id.return_value = goal
+    mock_premise_repo.get_by_id.side_effect = [premise1, premise2]
+
+    std = ProjectStandard(
+        id=uuid4(),
+        premise_id=uuid4(),
+        type=ProjectStandardType.DEADLINE,
+        value={"deadline": "2026-06-01"},
+    )
+    mock_standard_repo.list_by_goal.return_value = [std]
+    mock_result_repo.list_by_goal.return_value = [
+        Result(id=uuid4(), project_id=uuid4(), formulation="Result")
+    ]
+
+    result = await service.validate(goal.id)
+
+    assert result.verification_status == VerificationStatus.NOT_CONFIRMED
+    assert any(
+        "deadline mismatch" in c for c in result.contradictions
+    )

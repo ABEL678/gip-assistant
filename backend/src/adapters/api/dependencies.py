@@ -26,6 +26,8 @@ from backend.src.adapters.db.repositories import (
     SqlAlchemyImportLogRepository,
     SqlAlchemyPremiseRepository,
     SqlAlchemyProjectRepository,
+    SqlAlchemyProjectStandardRepository,
+    SqlAlchemyResultRepository,
     SqlAlchemyTaskRepository,
 )
 from backend.src.adapters.db.session import AsyncSessionLocal
@@ -42,6 +44,8 @@ from backend.src.domain.ports.repositories import (
     ImportLogRepository,
     PremiseRepository,
     ProjectRepository,
+    ProjectStandardRepository,
+    ResultRepository,
     TaskRepository,
 )
 from backend.src.domain.services import (
@@ -134,6 +138,14 @@ def get_goal_repo(session: DbSession) -> GoalRepository:
     return SqlAlchemyGoalRepository(session)
 
 
+def get_result_repo(session: DbSession) -> ResultRepository:
+    return SqlAlchemyResultRepository(session)
+
+
+def get_project_standard_repo(session: DbSession) -> ProjectStandardRepository:
+    return SqlAlchemyProjectStandardRepository(session)
+
+
 ProjectRepoDep = Annotated[ProjectRepository, Depends(get_project_repo)]
 TaskRepoDep = Annotated[TaskRepository, Depends(get_task_repo)]
 CrossTaskRepoDep = Annotated[CrossTaskRepository, Depends(get_cross_task_repo)]
@@ -147,6 +159,10 @@ DocumentVersionRepoDep = Annotated[DocumentVersionRepository, Depends(get_docume
 DocumentLinkRepoDep = Annotated[DocumentLinkRepository, Depends(get_document_link_repo)]
 PremiseRepoDep = Annotated[PremiseRepository, Depends(get_premise_repo)]
 GoalRepoDep = Annotated[GoalRepository, Depends(get_goal_repo)]
+ResultRepoDep = Annotated[ResultRepository, Depends(get_result_repo)]
+ProjectStandardRepoDep = Annotated[
+    ProjectStandardRepository, Depends(get_project_standard_repo)
+]
 
 
 # ---------- Domain services ----------
@@ -246,8 +262,15 @@ def get_goal_proposal_service(
 def get_goal_validator_service(
     goal_repo: GoalRepoDep,
     premise_repo: PremiseRepoDep,
+    result_repo: ResultRepoDep,
+    standard_repo: ProjectStandardRepoDep,
 ) -> RuleBasedGoalValidator:
-    return RuleBasedGoalValidator(goal_repo=goal_repo, premise_repo=premise_repo)
+    return RuleBasedGoalValidator(
+        goal_repo=goal_repo,
+        premise_repo=premise_repo,
+        result_repo=result_repo,
+        standard_repo=standard_repo,
+    )
 
 
 def get_similarity_matrix_service(

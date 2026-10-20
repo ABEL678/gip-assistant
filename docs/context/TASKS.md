@@ -300,7 +300,8 @@
 
 ## 2. В работе (In Progress)
 
-**На 19.10.2026 — 6.8d (UI вехи 1) ЗАКРЫТ.**
+**На 19.10.2026 — 6.8d (UI вехи 1) ЗАКРЫТ.
+6.8f — ЗАКРЫТ (20.10.2026).**
 
 - ✅ API-клиенты расширены (validateGoal, similarity-matrix, run-3-times).
 - ✅ Хуки: useValidateGoal, useSimilarityMatrix, useRun3Times.
@@ -333,6 +334,7 @@
 - ✅ **6.8b** — сервисы (валидатор + матрица + протокол). Коммиты `130c334`, `fe894d0`, `21880b7`, `964579d`, `411932f`.
 - ✅ **6.8c** — DI + эндпоинты + тесты роутов.
 - ✅ **6.8d** — UI (страницы, карточки, статус, владелец, матрица, протокол).
+- ✅ **6.8f** — Result + ProjectStandard + result_goals + standard_goals + миграция + DTO + порты + репозитории.
 
 ### Веха 2 — Action + Task-адаптация
 
@@ -387,6 +389,18 @@
 ---
 
 ## 5. Журнал (Changelog)
+
+### 20.10.2026 (сессия 6.8f — Result + ProjectStandard)
+
+- ✅ `ProjectStandardType` enum (deadline, composition, format).
+- ✅ Domain entities: Result, ProjectStandard.
+- ✅ Порты: ResultRepository, ProjectStandardRepository.
+- ✅ SQLAlchemy-модели: ResultModel, ResultGoalModel, ProjectStandardModel, StandardGoalModel.
+- ✅ DTO: ResultCreate/Read/Update, ProjectStandardCreate/Read/Update.
+- ✅ Репозитории: SqlAlchemyResultRepository, SqlAlchemyProjectStandardRepository.
+- ✅ Миграция `b8f3a1c2d9e0` (4 таблицы + enum + 4 индекса).
+- ✅ 16 файлов, +643 строки. Коммит `9c98717`.
+- ⏳ Alembic upgrade head (БД недоступна).
 
 ### 19.10.2026 (сессия 6.8d — UI вехи 1)
 
@@ -648,15 +662,15 @@
 |---------|----------|------|
 | Тесты pytest (backend) | 219 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
-| Таблиц в БД | 17 | — |
+| Таблиц в БД | 17 (+ 4 в миграции 6.8f) | — |
 | Эндпоинтов API | 51 | — |
 | Клиентов | 0 | 1 пилот |
 | MRR | 0 ₽ | 5 000 ₽ |
 | `docs/context/` готовность | 8/8 файлов | 8/8 |
 | UI Уровня 1 | 100% | — |
 | UI Уровня 1.5 | 100% | — |
-| Портов репозиториев | 11 + 1 (GoalValidatorService) = 12 | — |
-| Репозиториев SQLAlchemy | 11 | — |
+| Портов репозиториев | 11 + 1 (GoalValidatorService) + 2 (6.8f) = 14 | — |
+| Репозиториев SQLAlchemy | 11 + 2 (6.8f) = 13 | — |
 | Сервисов | 11 | — |
 | API-клиентов | 5 | — |
 | Хуков TanStack Query | 22 | — |

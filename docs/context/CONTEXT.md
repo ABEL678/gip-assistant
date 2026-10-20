@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.6 (19.10.2026)
-**Актуально на:** после сессии 6.8d (UI вехи 1 восстановлен)
+**Версия:** 2.7 (20.10.2026)
+**Актуально на:** после сессии 6.8f (Result + ProjectStandard)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -131,6 +131,16 @@
 - Гексагональная архитектура: domain / application / adapters.
 - 11 портов, 11 SQLAlchemy-репозиториев, 8 сервисов + **PremiseService, GoalService, GoalProposalService**.
 
+**6.8f — ЗАКРЫТ (20.10.2026):**
+
+- ✅ Result + ProjectStandard + result_goals + standard_goals.
+- ✅ 4 таблицы: results, result_goals, project_standards, standard_goals.
+- ✅ Миграция `b8f3a1c2d9e0`.
+- ✅ 2 порта: ResultRepository, ProjectStandardRepository.
+- ✅ 2 репозитория: SqlAlchemyResultRepository, SqlAlchemyProjectStandardRepository.
+- ✅ DTO: ResultCreate/Read/Update, ProjectStandardCreate/Read/Update.
+- ✅ 16 файлов, +643 строки. Коммит `9c98717`.
+
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 
 - 3 новые таблицы: premises, goals, goal_premises.
@@ -180,13 +190,13 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 18.10.2026, после 6.8b:**
+**На 20.10.2026, после 6.8f:**
 
-- 6.8b закрыт (219 passed).
-- Следующая подсессия — **6.8c** (DI + эндпоинты + тесты роутов).
-- Спека — `spec_week_1.md` §7.1.
+- 6.8f закрыт (Result + ProjectStandard).
+- Следующая подсессия — **6.8g** (сервисы Result + ProjectStandard).
+- Спека — `spec_week_1.md` §2.3–2.4.
 
-**Порядок:** 6.8c → 6.8d (UI) → мерж.
+**Порядок:** 6.8g (сервисы) → 6.8h (DI + эндпоинты) → 6.8i (тесты роутов) → мерж.
 
 **Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.
 

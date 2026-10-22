@@ -133,3 +133,21 @@ class DecisionState(StrEnum):
     ACCEPTED = "accepted"  # Принято
     CANCELLED = "cancelled"  # Отменено
     REPLACED = "replaced"  # Заменено
+
+
+class NormType(StrEnum):
+    """Тип нормативного документа (spec_week_3.md §2.2)."""
+
+    GOST = "gost"  # ГОСТ
+    SNIP = "snip"  # СНиП
+    NPA = "npa"  # НПА
+    XML_SCHEMA = "xml_schema"  # XML-схема
+    OTHER = "other"  # Прочее
+
+
+class DecisionLinkType(StrEnum):
+    """Тип связи между решениями (spec_week_3.md §2.3)."""
+
+    SEQUENTIAL = "sequential"  # Последовательная
+    PARALLEL = "parallel"  # Параллельная
+    NESTED = "nested"  # Вложенная

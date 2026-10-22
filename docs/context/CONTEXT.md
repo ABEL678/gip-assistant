@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.9 (20.10.2026)
-**Актуально на:** после сессии 6.10e (веха 2 закрыта)
+**Версия:** 2.10 (22.10.2026)
+**Актуально на:** после сессии 6.11b (веха 3, часть b)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -190,6 +190,18 @@
 - ✅ **Миграция:** `8aad8fd713f0`.
 - ✅ **298 тестов pytest.**
 
+**Веха 3 — 6.11b (22.10.2026):**
+
+- ✅ **Norm** — доменная сущность + `NormType` (5 значений).
+- ✅ **DecisionLink** — доменная сущность + `DecisionLinkType` (3 значения).
+- ✅ **Модели:** `NormModel`, `DecisionLinkModel`, `DecisionNormModel`.
+- ✅ **Таблицы:** `norms`, `decision_links`, `decision_norms`.
+- ✅ **Порты:** `NormRepository`, `DecisionLinkRepository`, `DecisionNormRepository`.
+- ✅ **Репозитории:** `SqlAlchemyNormRepository`, `SqlAlchemyDecisionLinkRepository`, `SqlAlchemyDecisionNormRepository`.
+- ✅ **DTO:** `NormBase/Create/Update/Read`, `DecisionLinkBase/Create/Read`.
+- ✅ **Миграция:** `c52a3c176d47`.
+- ✅ **310 тестов pytest.**
+
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 
 - 3 новые таблицы: premises, goals, goal_premises.
@@ -242,7 +254,7 @@
 **На 20.10.2026, после 6.10e:**
 
 - Веха 2 закрыта (288 passed).
-- Следующая подсессия — **Веха 3** (Decision + Norm + DecisionLink).
+- Следующая подсессия — **6.11c** (сервисы: NormService, DecisionLinkService, DecisionNormService).
 - Порядок: 6.11a (модель Decision) → 6.11b (Norm + DecisionLink) → 6.11c (сервисы) → 6.11d (эндпоинты) → 6.11e (UI).
 
 **Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.

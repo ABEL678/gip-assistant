@@ -302,8 +302,17 @@
 
 **На 22.10.2026 — Веха 3 (Decision + Norm + DecisionLink).**
 
-- ⏳ 6.11b — модель Norm + DecisionLink + миграция + DTO + порты + репозитории.
-- Код не начат.
+- ✅ 6.11b — ЗАКРЫТ (22.10.2026).
+  - 3 новые сущности: Norm, DecisionLink, DecisionNorm.
+  - 3 новые таблицы: norms, decision_links, decision_norms.
+  - 2 новых enum'а: NormType (5), DecisionLinkType (3).
+  - 3 новых порта, 3 новых репозитория, 2 DTO-файла.
+  - Миграция: `c52a3c176d47`.
+  - 12 smoke-тестов.
+  - **Итого в проекте: 310 тестов pytest.**
+- ⏳ 6.11c — сервисы (NormService, DecisionLinkService, DecisionNormService).
+- ⏳ 6.11d — эндпоинты + DI.
+- ⏳ 6.11e — UI.
 
 ## 3. Дальше (Next)
 
@@ -357,7 +366,26 @@
   - Миграция: `8aad8fd713f0`.
   - Тесты: 10 smoke-тестов (mapping, M:N, task.decision_id).
   - **Итого в проекте: 298 тестов pytest.**
-- ⏳ 6.11b — модель Norm + DecisionLink + миграция.
+- ✅ **6.11b** — модель Norm + DecisionLink + DecisionNorm + миграция + DTO + порты + репозитории (22.10.2026).
+  - Домен: `Norm` entity, `DecisionLink` entity, `NormType` (5 значений), `DecisionLinkType` (3 значения).
+  - Модели: `NormModel`, `DecisionLinkModel`, `DecisionNormModel`.
+  - Таблицы: `norms`, `decision_links`, `decision_norms`.
+  - Порты: `NormRepository`, `DecisionLinkRepository`, `DecisionNormRepository`.
+  - Репозитории: `SqlAlchemyNormRepository`, `SqlAlchemyDecisionLinkRepository`, `SqlAlchemyDecisionNormRepository`.
+  - DTO: `NormBase/Create/Update/Read`, `DecisionLinkBase/Create/Read`.
+  - Миграция: `c52a3c176d47`.
+  - Тесты: 12 smoke-тестов (mapping, enums, link/unlink, idempotency).
+  - **Итого в проекте: 310 тестов pytest.**
+- ✅ **6.11b** — модель Norm + DecisionLink + DecisionNorm + миграция + DTO + порты + репозитории (22.10.2026).
+  - Домен: `Norm` entity, `DecisionLink` entity, `NormType` (5 значений), `DecisionLinkType` (3 значения).
+  - Модели: `NormModel`, `DecisionLinkModel`, `DecisionNormModel`.
+  - Таблицы: `norms`, `decision_links`, `decision_norms`.
+  - Порты: `NormRepository`, `DecisionLinkRepository`, `DecisionNormRepository`.
+  - Репозитории: `SqlAlchemyNormRepository`, `SqlAlchemyDecisionLinkRepository`, `SqlAlchemyDecisionNormRepository`.
+  - DTO: `NormBase/Create/Update/Read`, `DecisionLinkBase/Create/Read`.
+  - Миграция: `c52a3c176d47`.
+  - Тесты: 12 smoke-тестов (mapping, enums, link/unlink, idempotency).
+  - **Итого в проекте: 310 тестов pytest.**
 - ⏳ 6.11c — сервисы.
 - ⏳ 6.11d — эндпоинты + DI.
 - ⏳ 6.11e — UI.
@@ -508,6 +536,20 @@ DecisionLink), не смешиваются с 6.11a–e.
 - ✅ Миграция `8fc3a69b4247` (upgrade + downgrade).
 - ✅ 6 файлов, +49 строк. Коммит `481e6e5`.
 - ✅ 240 тестов pytest. Ruff чисто.
+
+### 22.10.2026 (сессия 6.11b — Norm + DecisionLink + DecisionNorm)
+
+- ✅ `NormType` enum (5 значений: gost, snip, npa, xml_schema, other).
+- ✅ `DecisionLinkType` enum (3 значения: sequential, parallel, nested).
+- ✅ Domain: `Norm`, `DecisionLink` entities.
+- ✅ SQLAlchemy-модели: `NormModel`, `DecisionLinkModel`, `DecisionNormModel`.
+- ✅ Таблицы: `norms`, `decision_links`, `decision_norms`.
+- ✅ Порты: `NormRepository`, `DecisionLinkRepository`, `DecisionNormRepository`.
+- ✅ Репозитории: `SqlAlchemyNormRepository`, `SqlAlchemyDecisionLinkRepository`, `SqlAlchemyDecisionNormRepository`.
+- ✅ DTO: `NormBase/Create/Update/Read`, `DecisionLinkBase/Create/Read`.
+- ✅ Миграция: `c52a3c176d47` (upgrade + downgrade OK).
+- ✅ 12 smoke-тестов (mapping, enums, link/unlink, idempotency).
+- ✅ **Итого в проекте: 310 тестов pytest.**
 
 ### 22.10.2026 (сессия 6.11a — Decision model + migration + ports + repo)
 
@@ -780,17 +822,17 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 298 | — |
+| Тесты pytest (backend) | 310 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
-| Таблиц в БД | 24 (+ 3 в миграции 6.11a) | — |
+| Таблиц в БД | 24 (+ 3 в миграции 6.11a, + 3 в миграции 6.11b) = 27 | — |
 | Эндпоинтов API | 21 | — |
 | Клиентов | 0 | 1 пилот |
 | MRR | 0 ₽ | 5 000 ₽ |
 | `docs/context/` готовность | 8/8 файлов | 8/8 |
 | UI Уровня 1 | 100% | — |
 | UI Уровня 1.5 | 100% | — |
-| Портов репозиториев | 14 | — |
-| Репозиториев SQLAlchemy | 13 | — |
+| Портов репозиториев | 14 → 17 | — |
+| Репозиториев SQLAlchemy | 13 → 16 | — |
 | Сервисов | 13 | — |
 | API-клиентов | 6 | — |
 | Хуков TanStack Query | 28 | — |

@@ -12,6 +12,7 @@ from backend.src.domain.entities.action import Action
 from backend.src.domain.entities.change import Change
 from backend.src.domain.entities.cross_task import CrossTask
 from backend.src.domain.entities.decision import Decision
+from backend.src.domain.entities.decision_link import DecisionLink
 from backend.src.domain.entities.document import Document
 from backend.src.domain.entities.document_link import DocumentLink
 from backend.src.domain.entities.document_type import DocumentType
@@ -20,6 +21,7 @@ from backend.src.domain.entities.entity import Entity
 from backend.src.domain.entities.entity_type import EntityType
 from backend.src.domain.entities.goal import Goal
 from backend.src.domain.entities.import_log import ImportLog
+from backend.src.domain.entities.norm import Norm
 from backend.src.domain.entities.premise import Premise
 from backend.src.domain.entities.project import Project
 from backend.src.domain.entities.project_standard import ProjectStandard
@@ -333,6 +335,70 @@ class DecisionRepository(ABC):
     @abstractmethod
     async def delete(self, decision_id: UUID) -> None:
         """Удалить решение по ID."""
+
+
+class NormRepository(ABC):
+    """Порт репозитория нормативных документов (Norm)."""
+
+    @abstractmethod
+    async def get_by_id(self, norm_id: UUID) -> Norm | None:
+        """Найти норму по ID."""
+
+    @abstractmethod
+    async def list_by_project(self, project_id: UUID) -> list[Norm]:
+        """Нормы проекта, сортировка по created_at DESC."""
+
+    @abstractmethod
+    async def save(self, norm: Norm) -> Norm:
+        """Создать или обновить норму (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, norm_id: UUID) -> None:
+        """Удалить норму по ID."""
+
+
+class DecisionLinkRepository(ABC):
+    """Порт репозитория связей решений (DecisionLink)."""
+
+    @abstractmethod
+    async def get_by_id(self, link_id: UUID) -> DecisionLink | None:
+        """Найти связь по ID."""
+
+    @abstractmethod
+    async def list_by_decision(self, decision_id: UUID) -> list[DecisionLink]:
+        """Связи, где decision_id — from или to."""
+
+    @abstractmethod
+    async def list_by_project(self, project_id: UUID) -> list[DecisionLink]:
+        """Связи проекта, сортировка по created_at DESC."""
+
+    @abstractmethod
+    async def save(self, link: DecisionLink) -> DecisionLink:
+        """Создать или обновить связь (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, link_id: UUID) -> None:
+        """Удалить связь по ID."""
+
+
+class DecisionNormRepository(ABC):
+    """Порт репозитория связи Decision ↔ Norm (M:N)."""
+
+    @abstractmethod
+    async def list_norms_by_decision(self, decision_id: UUID) -> list[UUID]:
+        """UUID норм, связанных с решением."""
+
+    @abstractmethod
+    async def list_decisions_by_norm(self, norm_id: UUID) -> list[UUID]:
+        """UUID решений, связанных с нормой."""
+
+    @abstractmethod
+    async def link(self, decision_id: UUID, norm_id: UUID) -> None:
+        """Связать решение с нормой (идемпотентно)."""
+
+    @abstractmethod
+    async def unlink(self, decision_id: UUID, norm_id: UUID) -> None:
+        """Разорвать связь решения с нормой."""
 
 
 class RevisionRepository(ABC):

@@ -8,19 +8,19 @@
 **Обновлено:** 22.10.2026
 **СУБД:** PostgreSQL 15+
 **ORM:** SQLAlchemy 2.0 async
-**Текущая миграция:** `8aad8fd713f0`
+**Текущая миграция:** `c52a3c176d47`
 
 ---
 
 ## 1. Обзор
 
-**Всего таблиц:** 24.
+**Всего таблиц:** 27.
 
 | Группа | Таблицы |
 |--------|---------|
 | Проекты и задачи | projects, tasks, cross_tasks, task_status_history |
 | Вводные и цели | premises, goals, goal_premises |
-| Решения | decisions, decision_goals, decision_premises |
+| Решения | decisions, decision_goals, decision_premises, **norms, decision_links, decision_norms** |
 | Пользователи | users, executors |
 | Импорт | import_logs |
 | Универсальные сущности | entity_types, entities |
@@ -377,7 +377,66 @@
 
 **Индексы:** `decision_premises_pkey` (PK, composite), `idx_decision_premises_decision`, `idx_decision_premises_premise`.
 
-### 2.16. alembic_version
+### 2.16. norms
+
+**Назначение:** нормативные документы проекта (ГОСТ, СНиП, НПА, XML-схема).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| project_id | UUID | FK → projects.id (CASCADE), NOT NULL | Проект |
+| code | VARCHAR(100) | NOT NULL | Обозначение |
+| title | VARCHAR(500) | NOT NULL | Название |
+| norm_type | ENUM(norm_type) | NOT NULL | Тип (gost/snip/npa/xml_schema/other) |
+| issued_at | DATE | nullable | Дата введения |
+| source_url | VARCHAR(1000) | nullable | Источник |
+| document_id | UUID | FK → documents.id (SET NULL), nullable | Документ |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+| updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
+
+**Ограничения:** UniqueConstraint(project_id, code) — uq_norms_project_code.
+
+**Индексы:** `norms_pkey` (PK), `idx_norms_project` (project_id), `idx_norms_type` (norm_type).
+
+**FK:** projects (CASCADE), documents (SET NULL).
+
+### 2.17. decision_links
+
+**Назначение:** связь между решениями проекта (M:N с типом).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| project_id | UUID | FK → projects.id (CASCADE), NOT NULL | Проект |
+| from_decision_id | UUID | FK → decisions.id (CASCADE), NOT NULL | Исходное решение |
+| to_decision_id | UUID | FK → decisions.id (CASCADE), NOT NULL | Целевое решение |
+| link_type | ENUM(decision_link_type) | NOT NULL | sequential/parallel/nested |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+| updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
+
+**Ограничения:**
+- UniqueConstraint(from_decision_id, to_decision_id, link_type) — uq_decision_links_triple.
+- CheckConstraint(from_decision_id != to_decision_id) — ck_decision_links_no_self.
+
+**Индексы:** `decision_links_pkey` (PK), `idx_decision_links_from` (from_decision_id), `idx_decision_links_to` (to_decision_id).
+
+**FK:** projects (CASCADE), decisions (CASCADE, обе стороны).
+
+### 2.18. decision_norms
+
+**Назначение:** связь Decision ↔ Norm (M:N).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| decision_id | UUID | PK, FK → decisions.id (CASCADE) | Решение |
+| norm_id | UUID | PK, FK → norms.id (CASCADE) | Норма |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+
+**Индексы:** `decision_norms_pkey` (PK, composite), `idx_decision_norms_decision`, `idx_decision_norms_norm`.
+
+**FK:** decisions (CASCADE), norms (CASCADE).
+
+### 2.19. alembic_version
 
 **Назначение:** служебная таблица Alembic.
 
@@ -385,7 +444,7 @@
 |------|-----|-------------|
 | version_num | VARCHAR(32) | PK |
 
-**Текущая версия:** `8aad8fd713f0` (add decisions + decision_goals + decision_premises + tasks.decision_id).
+**Текущая версия:** `c52a3c176d47` (add norms + decision_links + decision_norms).
 
 ### 2.17. document_types
 
@@ -493,6 +552,8 @@
 | PremiseCategory | contract, tz, customer_requirement, source_data, norm, npa, bureaucracy, internal | premises.category |
 | GoalState | plan, in_progress, achieved, cancelled | goals.state |
 | DecisionState | plan, in_progress, accepted, cancelled, replaced | decisions.state |
+| NormType | gost, snip, npa, xml_schema, other | norms.norm_type |
+| DecisionLinkType | sequential, parallel, nested | decision_links.link_type |
 | VerificationStatus | confirmed, not_confirmed, requires_check, no_data | goals.verification_status |
 | XMLDocumentStatus | DRAFT, GENERATED, VALIDATED, INVALID, EXPORTED | xml_documents (план) |
 | DocumentKind | ПД, РД | домен (value_objects/document.py) |
@@ -517,6 +578,7 @@
 | `686491cea3fd` | add_premises_and_goals | 2026-10-16 |
 | `cd056578f798` | add verification_status to goals | 2026-10-18 |
 | `8aad8fd713f0` | add decisions + decision_goals + decision_premises + tasks.decision_id | 2026-10-22 |
+| `c52a3c176d47` | add norms + decision_links + decision_norms | 2026-10-22 |
 
 **Команды:**
 

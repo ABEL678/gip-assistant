@@ -5,6 +5,8 @@ from backend.src.adapters.db.models.change import ChangeModel
 from backend.src.adapters.db.models.cross_task import CrossTask
 from backend.src.adapters.db.models.decision import DecisionModel
 from backend.src.adapters.db.models.decision_goal import DecisionGoalModel
+from backend.src.adapters.db.models.decision_link import DecisionLinkModel
+from backend.src.adapters.db.models.decision_norm import DecisionNormModel
 from backend.src.adapters.db.models.decision_premise import DecisionPremiseModel
 from backend.src.adapters.db.models.document import DocumentModel
 from backend.src.adapters.db.models.document_link import DocumentLinkModel
@@ -16,6 +18,7 @@ from backend.src.adapters.db.models.executor import Executor
 from backend.src.adapters.db.models.goal import GoalModel
 from backend.src.adapters.db.models.goal_premise import GoalPremiseModel
 from backend.src.adapters.db.models.import_log import ImportLog
+from backend.src.adapters.db.models.norm import NormModel
 from backend.src.adapters.db.models.premise import PremiseModel
 from backend.src.adapters.db.models.project import Project
 from backend.src.adapters.db.models.project_standard import ProjectStandardModel
@@ -34,7 +37,9 @@ __all__ = [
     "ChangeModel",
     "CrossTask",
     "DecisionGoalModel",
+    "DecisionLinkModel",
     "DecisionModel",
+    "DecisionNormModel",
     "DecisionPremiseModel",
     "DocumentLinkModel",
     "DocumentModel",
@@ -46,6 +51,7 @@ __all__ = [
     "GoalModel",
     "GoalPremiseModel",
     "ImportLog",
+    "NormModel",
     "PremiseModel",
     "Project",
     "ProjectStandardModel",

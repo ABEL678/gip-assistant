@@ -178,6 +178,18 @@
 - ✅ **6.10e** — UI `Action` (ActionsPage, ActionCard, ActionForm) + интеграция в ProjectPage. Коммит `4b1a50d`.
 - ✅ 288 passed, frontend build зелёный.
 
+**Веха 3 — 6.11a (22.10.2026):**
+
+- ✅ **Decision** — доменная сущность + `DecisionState` (5 значений).
+- ✅ **Модели:** `DecisionModel`, `DecisionGoalModel`, `DecisionPremiseModel`.
+- ✅ **Таблицы:** `decisions`, `decision_goals`, `decision_premises`.
+- ✅ **tasks.decision_id** — FK SET NULL + индекс.
+- ✅ **Порт:** `DecisionRepository`.
+- ✅ **Репозиторий:** `SqlAlchemyDecisionRepository` (M:N через _fetch_*_ids).
+- ✅ **DTO:** `DecisionBase`, `DecisionCreate`, `DecisionUpdate`, `DecisionRead`.
+- ✅ **Миграция:** `8aad8fd713f0`.
+- ✅ **298 тестов pytest.**
+
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 
 - 3 новые таблицы: premises, goals, goal_premises.

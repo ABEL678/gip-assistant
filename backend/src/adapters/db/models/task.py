@@ -20,6 +20,7 @@ class Task(Base, TimestampMixin):
         Index("idx_tasks_deadline", "deadline"),
         Index("idx_tasks_section", "section_code"),
         Index("idx_tasks_to_section", "to_section_code"),
+        Index("idx_tasks_decision", "decision_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -47,4 +48,9 @@ class Task(Base, TimestampMixin):
     source: Mapped[str] = mapped_column(String(20), nullable=False, default="manual")
     is_complex: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default="false"
+    )
+    decision_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("decisions.id", ondelete="SET NULL"),
+        nullable=True,
     )

@@ -300,9 +300,9 @@
 
 ## 2. В работе (In Progress)
 
-**На 20.10.2026 — Веха 3 (Decision + Norm + DecisionLink).**
+**На 22.10.2026 — Веха 3 (Decision + Norm + DecisionLink).**
 
-- ⏳ 6.11a — модель Decision.
+- ⏳ 6.11b — модель Norm + DecisionLink + миграция + DTO + порты + репозитории.
 - Код не начат.
 
 ## 3. Дальше (Next)
@@ -346,7 +346,17 @@
 
 ### Веха 3 — Decision + Norm + DecisionLink
 
-- ⏳ 6.11a — модель Decision + миграция + DTO + порты + репозитории.
+- ✅ **6.11a** — модель Decision + миграция + DTO + порты + репозитории (22.10.2026).
+  - Домен: `Decision` entity, `DecisionState` enum (5 значений).
+  - Модели: `DecisionModel`, `DecisionGoalModel`, `DecisionPremiseModel`.
+  - Таблицы: `decisions`, `decision_goals`, `decision_premises`.
+  - Колонка: `tasks.decision_id` (FK SET NULL).
+  - Порт: `DecisionRepository`.
+  - Репозиторий: `SqlAlchemyDecisionRepository` (с _fetch_goal/premise_ids).
+  - DTO: `DecisionBase`, `DecisionCreate`, `DecisionUpdate`, `DecisionRead`.
+  - Миграция: `8aad8fd713f0`.
+  - Тесты: 10 smoke-тестов (mapping, M:N, task.decision_id).
+  - **Итого в проекте: 298 тестов pytest.**
 - ⏳ 6.11b — модель Norm + DecisionLink + миграция.
 - ⏳ 6.11c — сервисы.
 - ⏳ 6.11d — эндпоинты + DI.
@@ -488,6 +498,19 @@ DecisionLink), не смешиваются с 6.11a–e.
 ### 20.10.2026 (сессия 6.8f-2 — source_goal_id в Premise)
 
 - ✅ PremiseModel: source_goal_id FK → goals, ondelete SET NULL.
+
+### 22.10.2026 (сессия 6.11a — Decision model + migration + ports + repo)
+
+- ✅ Домен: `Decision` entity, `DecisionState` enum (5 значений).
+- ✅ Модели: `DecisionModel`, `DecisionGoalModel`, `DecisionPremiseModel`.
+- ✅ Таблицы: `decisions`, `decision_goals`, `decision_premises`.
+- ✅ Колонка: `tasks.decision_id` (FK SET NULL) + индекс.
+- ✅ Порт: `DecisionRepository`.
+- ✅ Репозиторий: `SqlAlchemyDecisionRepository` (с _fetch_goal/premise_ids).
+- ✅ DTO: `DecisionBase`, `DecisionCreate`, `DecisionUpdate`, `DecisionRead`.
+- ✅ Миграция: `8aad8fd713f0`.
+- ✅ Тесты: 10 smoke-тестов (mapping, M:N, task.decision_id).
+- ✅ **Итого в проекте: 298 тестов pytest.**
 - ✅ Premise entity: source_goal_id: UUID | None.
 - ✅ DTO: PremiseSchema/Update/Read — source_goal_id.
 - ✅ PremiseRepository: mapping _to_domain/_to_model.
@@ -753,9 +776,9 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 288 | — |
+| Тесты pytest (backend) | 298 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
-| Таблиц в БД | 21 (+ 4 в миграции 6.8f + ревизии) | — |
+| Таблиц в БД | 24 (+ 3 в миграции 6.11a) | — |
 | Эндпоинтов API | 21 | — |
 | Клиентов | 0 | 1 пилот |
 | MRR | 0 ₽ | 5 000 ₽ |
@@ -769,7 +792,7 @@ DecisionLink), не смешиваются с 6.11a–e.
 | Хуков TanStack Query | 28 | — |
 | **DOMAIN.md** | **v1.1** | — |
 | **React Flow страницы** | **3** (canvas-demo, timeline-demo, skeleton-demo) | — |
-| **Новых сущностей (Goal/Decision/Action/Norm/RFI)** | **0** | **5** |
+| **Новых сущностей (Goal/Decision/Action/Norm/RFI)** | **2** | **5** |
 | **Агентов** | **0** | **5** |
 
 ---

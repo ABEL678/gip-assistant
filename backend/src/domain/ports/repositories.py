@@ -11,6 +11,7 @@ from uuid import UUID
 from backend.src.domain.entities.action import Action
 from backend.src.domain.entities.change import Change
 from backend.src.domain.entities.cross_task import CrossTask
+from backend.src.domain.entities.decision import Decision
 from backend.src.domain.entities.document import Document
 from backend.src.domain.entities.document_link import DocumentLink
 from backend.src.domain.entities.document_type import DocumentType
@@ -312,6 +313,26 @@ class GoalRepository(ABC):
     @abstractmethod
     async def delete(self, goal_id: UUID) -> None:
         """Удалить цель по ID."""
+
+
+class DecisionRepository(ABC):
+    """Порт репозитория решений (Decision)."""
+
+    @abstractmethod
+    async def get_by_id(self, decision_id: UUID) -> Decision | None:
+        """Найти решение по ID."""
+
+    @abstractmethod
+    async def list_by_project(self, project_id: UUID) -> list[Decision]:
+        """Решения проекта, сортировка по created_at DESC."""
+
+    @abstractmethod
+    async def save(self, decision: Decision) -> Decision:
+        """Создать или обновить решение (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, decision_id: UUID) -> None:
+        """Удалить решение по ID."""
 
 
 class RevisionRepository(ABC):

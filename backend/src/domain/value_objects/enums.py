@@ -123,3 +123,13 @@ class ActionState(StrEnum):
     DONE = "done"
     OVERDUE = "overdue"
     CANCELLED = "cancelled"
+
+
+class DecisionState(StrEnum):
+    """Состояние решения (Decision)."""
+
+    PLAN = "plan"  # В плане
+    IN_PROGRESS = "in_progress"  # В работе
+    ACCEPTED = "accepted"  # Принято
+    CANCELLED = "cancelled"  # Отменено
+    REPLACED = "replaced"  # Заменено

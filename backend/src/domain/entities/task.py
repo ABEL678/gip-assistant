@@ -22,6 +22,7 @@ class Task:
     sort_order: int = 0
     source: str = "manual"
     is_complex: bool = False
+    decision_id: UUID | None = None
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

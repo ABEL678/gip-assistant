@@ -3,6 +3,9 @@
 from backend.src.adapters.db.models.action import ActionModel
 from backend.src.adapters.db.models.change import ChangeModel
 from backend.src.adapters.db.models.cross_task import CrossTask
+from backend.src.adapters.db.models.decision import DecisionModel
+from backend.src.adapters.db.models.decision_goal import DecisionGoalModel
+from backend.src.adapters.db.models.decision_premise import DecisionPremiseModel
 from backend.src.adapters.db.models.document import DocumentModel
 from backend.src.adapters.db.models.document_link import DocumentLinkModel
 from backend.src.adapters.db.models.document_type import DocumentTypeModel
@@ -30,6 +33,9 @@ __all__ = [
     "ActionModel",
     "ChangeModel",
     "CrossTask",
+    "DecisionGoalModel",
+    "DecisionModel",
+    "DecisionPremiseModel",
     "DocumentLinkModel",
     "DocumentModel",
     "DocumentTypeModel",

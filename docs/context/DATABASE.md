@@ -8,13 +8,13 @@
 **Обновлено:** 18.10.2026
 **СУБД:** PostgreSQL 15+
 **ORM:** SQLAlchemy 2.0 async
-**Текущая миграция:** `cd056578f798`
+**Текущая миграция:** `8aad8fd713f0`
 
 ---
 
 ## 1. Обзор
 
-**Всего таблиц:** 17.
+**Всего таблиц:** 20.
 
 | Группа | Таблицы |
 |--------|---------|
@@ -28,6 +28,7 @@
 **Всего индексов:** 43 (17 PK + 2 UNIQUE + 24 дополнительных).
 Пересчитано после Сессии 5.1 (+17 индексов).
 После 6.8a: +3 таблицы (premises, goals, goal_premises) и +1 индекс (idx_goals_verification_status).
+После 6.11a: +3 таблицы (decisions, decision_goals, decision_premises) + колонка tasks.decision_id + enum decision_state.
 
 **ГОСТ-документы (MVP-1.5, сессия 5.1):**
 
@@ -79,8 +80,9 @@
 | created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
 | updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
 | to_section_code | VARCHAR(50) | nullable | Раздел-получатель |
+| decision_id | UUID | FK → decisions.id (SET NULL), nullable | Решение |
 
-**Внимание:** `to_section_code` — **последняя колонка** (добавлена миграцией `272f011cf740`).
+**Внимание:** `to_section_code` — **последняя колонка** (добавлена миграцией `272f011cf740`). `decision_id` — добавлена миграцией `8aad8fd713f0`.
 
 **Индексы:**
 
@@ -90,6 +92,7 @@
 - `idx_tasks_deadline` (deadline)
 - `idx_tasks_section` (section_code)
 - `idx_tasks_to_section` (to_section_code)
+- `idx_tasks_decision` (decision_id)
 
 **FK:**
 
@@ -331,7 +334,57 @@
 |------|-----|-------------|
 | version_num | VARCHAR(32) | PK |
 
-**Текущая версия:** `cd056578f798` (add verification_status to goals).
+**Текущая версия:** `8aad8fd713f0` (add decisions + decision_goals + decision_premises + tasks.decision_id).
+
+### 2.14. decisions
+
+**Назначение:** решения управления проектом.
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| id | UUID | PK, default=uuid4 | ID |
+| project_id | UUID | FK → projects.id (CASCADE), NOT NULL | Проект |
+| formulation | VARCHAR(500) | NOT NULL | Формулировка |
+| rationale | TEXT | nullable | Обоснование |
+| context | TEXT | nullable | Контекст |
+| deadline | DATE | nullable | Срок |
+| state | ENUM(decision_state) | NOT NULL, default='plan' | Состояние |
+| created_by | UUID | FK → users.id (SET NULL), nullable | Кто создал |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+| updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
+
+**Индексы:**
+
+- `decisions_pkey` (PK)
+- `idx_decisions_project` (project_id)
+- `idx_decisions_state` (state)
+- `idx_decisions_deadline` (deadline)
+
+**FK:** projects (CASCADE), users (SET NULL).
+
+### 2.15. decision_goals
+
+**Назначение:** связь Decision ↔ Goal (M:N).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| decision_id | UUID | PK, FK → decisions.id (CASCADE) | Решение |
+| goal_id | UUID | PK, FK → goals.id (CASCADE) | Цель |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+
+**Индексы:** `decision_goals_pkey` (PK, composite), `idx_decision_goals_decision`, `idx_decision_goals_goal`.
+
+### 2.16. decision_premises
+
+**Назначение:** связь Decision ↔ Premise (M:N).
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| decision_id | UUID | PK, FK → decisions.id (CASCADE) | Решение |
+| premise_id | UUID | PK, FK → premises.id (CASCADE) | Вводная |
+| created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
+
+**Индексы:** `decision_premises_pkey` (PK, composite), `idx_decision_premises_decision`, `idx_decision_premises_premise`.
 
 ### 2.14. document_types
 
@@ -438,6 +491,7 @@
 | ImportStatus | SUCCESS, PARTIAL, FAILED | import_logs.status |
 | PremiseCategory | contract, tz, customer_requirement, source_data, norm, npa, bureaucracy, internal | premises.category |
 | GoalState | plan, in_progress, achieved, cancelled | goals.state |
+| DecisionState | plan, in_progress, accepted, cancelled, replaced | decisions.state |
 | VerificationStatus | confirmed, not_confirmed, requires_check, no_data | goals.verification_status |
 | XMLDocumentStatus | DRAFT, GENERATED, VALIDATED, INVALID, EXPORTED | xml_documents (план) |
 | DocumentKind | ПД, РД | домен (value_objects/document.py) |
@@ -461,6 +515,7 @@
 | `de7ac71d9ae0` | goal_premise_links_relationship | 2026-10-17 |
 | `686491cea3fd` | add_premises_and_goals | 2026-10-16 |
 | `cd056578f798` | add verification_status to goals | 2026-10-18 |
+| `8aad8fd713f0` | add decisions + decision_goals + decision_premises + tasks.decision_id | 2026-10-22 |
 
 **Команды:**
 

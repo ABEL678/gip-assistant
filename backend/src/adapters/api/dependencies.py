@@ -18,6 +18,9 @@ from backend.src.adapters.db.repositories import (
     SqlAlchemyActionRepository,
     SqlAlchemyChangeRepository,
     SqlAlchemyCrossTaskRepository,
+    SqlAlchemyDecisionLinkRepository,
+    SqlAlchemyDecisionNormRepository,
+    SqlAlchemyDecisionRepository,
     SqlAlchemyDocumentLinkRepository,
     SqlAlchemyDocumentRepository,
     SqlAlchemyDocumentTypeRepository,
@@ -26,6 +29,7 @@ from backend.src.adapters.db.repositories import (
     SqlAlchemyEntityTypeRepository,
     SqlAlchemyGoalRepository,
     SqlAlchemyImportLogRepository,
+    SqlAlchemyNormRepository,
     SqlAlchemyPremiseRepository,
     SqlAlchemyProjectRepository,
     SqlAlchemyProjectStandardRepository,
@@ -41,6 +45,9 @@ from backend.src.domain.ports.repositories import (
     ActionRepository,
     ChangeRepository,
     CrossTaskRepository,
+    DecisionLinkRepository,
+    DecisionNormRepository,
+    DecisionRepository,
     DocumentLinkRepository,
     DocumentRepository,
     DocumentTypeRepository,
@@ -49,6 +56,7 @@ from backend.src.domain.ports.repositories import (
     EntityTypeRepository,
     GoalRepository,
     ImportLogRepository,
+    NormRepository,
     PremiseRepository,
     ProjectRepository,
     ProjectStandardRepository,
@@ -61,6 +69,10 @@ from backend.src.domain.ports.repositories import (
 from backend.src.domain.services import (
     ActionService,
     ChangeService,
+    DecisionLinkService,
+    DecisionNormService,
+    DecisionProposalService,
+    DecisionService,
     DocumentLinkService,
     DocumentService,
     DocumentTypeService,
@@ -71,6 +83,7 @@ from backend.src.domain.services import (
     GoalService,
     ImportService,
     MatrixService,
+    NormService,
     PremiseService,
     ProjectStandardService,
     ProposalProtocolService,
@@ -155,6 +168,22 @@ def get_goal_repo(session: DbSession) -> GoalRepository:
     return SqlAlchemyGoalRepository(session)
 
 
+def get_decision_repo(session: DbSession) -> DecisionRepository:
+    return SqlAlchemyDecisionRepository(session)
+
+
+def get_norm_repo(session: DbSession) -> NormRepository:
+    return SqlAlchemyNormRepository(session)
+
+
+def get_decision_link_repo(session: DbSession) -> DecisionLinkRepository:
+    return SqlAlchemyDecisionLinkRepository(session)
+
+
+def get_decision_norm_repo(session: DbSession) -> DecisionNormRepository:
+    return SqlAlchemyDecisionNormRepository(session)
+
+
 def get_result_repo(session: DbSession) -> ResultRepository:
     return SqlAlchemyResultRepository(session)
 
@@ -198,6 +227,10 @@ DocumentVersionRepoDep = Annotated[DocumentVersionRepository, Depends(get_docume
 DocumentLinkRepoDep = Annotated[DocumentLinkRepository, Depends(get_document_link_repo)]
 PremiseRepoDep = Annotated[PremiseRepository, Depends(get_premise_repo)]
 GoalRepoDep = Annotated[GoalRepository, Depends(get_goal_repo)]
+DecisionRepoDep = Annotated[DecisionRepository, Depends(get_decision_repo)]
+NormRepoDep = Annotated[NormRepository, Depends(get_norm_repo)]
+DecisionLinkRepoDep = Annotated[DecisionLinkRepository, Depends(get_decision_link_repo)]
+DecisionNormRepoDep = Annotated[DecisionNormRepository, Depends(get_decision_norm_repo)]
 ResultRepoDep = Annotated[ResultRepository, Depends(get_result_repo)]
 ProjectStandardRepoDep = Annotated[
     ProjectStandardRepository, Depends(get_project_standard_repo)
@@ -305,6 +338,55 @@ def get_goal_proposal_service(
     return GoalProposalService(premise_repo=premise_repo)
 
 
+def get_decision_service(
+    decision_repo: DecisionRepoDep,
+    project_repo: ProjectRepoDep,
+    premise_repo: PremiseRepoDep,
+    goal_repo: GoalRepoDep,
+) -> DecisionService:
+    return DecisionService(
+        repo=decision_repo,
+        project_repo=project_repo,
+        premise_repo=premise_repo,
+        goal_repo=goal_repo,
+    )
+
+
+def get_norm_service(
+    norm_repo: NormRepoDep,
+) -> NormService:
+    return NormService(repo=norm_repo)
+
+
+def get_decision_link_service(
+    link_repo: DecisionLinkRepoDep,
+    decision_repo: DecisionRepoDep,
+) -> DecisionLinkService:
+    return DecisionLinkService(repo=link_repo, decision_repo=decision_repo)
+
+
+def get_decision_norm_service(
+    decision_norm_repo: DecisionNormRepoDep,
+    decision_repo: DecisionRepoDep,
+    norm_repo: NormRepoDep,
+) -> DecisionNormService:
+    return DecisionNormService(
+        repo=decision_norm_repo,
+        decision_repo=decision_repo,
+        norm_repo=norm_repo,
+    )
+
+
+def get_decision_proposal_service(
+    goal_repo: GoalRepoDep,
+    decision_repo: DecisionRepoDep,
+) -> DecisionProposalService:
+    return DecisionProposalService(
+        goal_repo=goal_repo,
+        decision_repo=decision_repo,
+    )
+
+
 def get_goal_validator_service(
     goal_repo: GoalRepoDep,
     premise_repo: PremiseRepoDep,
@@ -392,6 +474,17 @@ DocumentLinkServiceDep = Annotated[DocumentLinkService, Depends(get_document_lin
 PremiseServiceDep = Annotated[PremiseService, Depends(get_premise_service)]
 GoalServiceDep = Annotated[GoalService, Depends(get_goal_service)]
 GoalProposalServiceDep = Annotated[GoalProposalService, Depends(get_goal_proposal_service)]
+DecisionServiceDep = Annotated[DecisionService, Depends(get_decision_service)]
+NormServiceDep = Annotated[NormService, Depends(get_norm_service)]
+DecisionLinkServiceDep = Annotated[
+    DecisionLinkService, Depends(get_decision_link_service)
+]
+DecisionNormServiceDep = Annotated[
+    DecisionNormService, Depends(get_decision_norm_service)
+]
+DecisionProposalServiceDep = Annotated[
+    DecisionProposalService, Depends(get_decision_proposal_service)
+]
 GoalValidatorServiceDep = Annotated[RuleBasedGoalValidator, Depends(get_goal_validator_service)]
 SimilarityMatrixServiceDep = Annotated[
     SimilarityMatrixService, Depends(get_similarity_matrix_service)

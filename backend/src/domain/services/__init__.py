@@ -2,6 +2,12 @@
 
 from backend.src.domain.services.action_service import ActionService
 from backend.src.domain.services.change_service import ChangeService
+from backend.src.domain.services.decision_link_service import DecisionLinkService
+from backend.src.domain.services.decision_norm_service import DecisionNormService
+from backend.src.domain.services.decision_proposal_service import (
+    DecisionProposalService,
+)
+from backend.src.domain.services.decision_service import DecisionService
 from backend.src.domain.services.document_link_service import DocumentLinkService
 from backend.src.domain.services.document_service import DocumentService
 from backend.src.domain.services.document_type_service import DocumentTypeService
@@ -12,6 +18,7 @@ from backend.src.domain.services.goal_proposal_service import GoalProposalServic
 from backend.src.domain.services.goal_service import GoalService
 from backend.src.domain.services.import_service import ImportService
 from backend.src.domain.services.matrix_service import MatrixService
+from backend.src.domain.services.norm_service import NormService
 from backend.src.domain.services.premise_service import PremiseService
 from backend.src.domain.services.project_standard_service import ProjectStandardService
 from backend.src.domain.services.proposal_protocol_service import ProposalProtocolService
@@ -26,6 +33,10 @@ from backend.src.domain.services.task_service import TaskService
 __all__ = [
     "ActionService",
     "ChangeService",
+    "DecisionLinkService",
+    "DecisionNormService",
+    "DecisionProposalService",
+    "DecisionService",
     "DocumentLinkService",
     "DocumentService",
     "DocumentTypeService",
@@ -36,6 +47,7 @@ __all__ = [
     "GoalService",
     "ImportService",
     "MatrixService",
+    "NormService",
     "PremiseService",
     "ProjectStandardService",
     "ProposalProtocolService",

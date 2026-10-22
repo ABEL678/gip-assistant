@@ -55,3 +55,21 @@ class DecisionRead(DecisionBase):
     created_by: uuid.UUID | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
+
+
+class DecisionProposal(BaseModel):
+    """Эфемерная схема для предложения решения системой.
+
+    Используется в DecisionProposalService для возврата предложенных решений.
+    Не сохраняется в БД.
+    """
+
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+    id: uuid.UUID
+    formulation: str
+    rationale: str | None = None
+    state: DecisionState = DecisionState.PLAN
+    premise_ids: list[uuid.UUID] = Field(default_factory=list)
+    goal_ids: list[uuid.UUID] = Field(default_factory=list)
+    rule: str  # название правила: "goal_без_решения", "срок_из_вводных"

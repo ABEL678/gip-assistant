@@ -23,6 +23,17 @@ class SqlAlchemyNormRepository(NormRepository):
             return None
         return self._to_domain(model)
 
+    async def get_by_code(self, project_id: UUID, code: str) -> Norm | None:
+        stmt = select(NormModel).where(
+            NormModel.project_id == project_id,
+            NormModel.code == code,
+        )
+        result = await self._session.execute(stmt)
+        model = result.scalars().first()
+        if model is None:
+            return None
+        return self._to_domain(model)
+
     async def list_by_project(self, project_id: UUID) -> list[Norm]:
         stmt = (
             select(NormModel)

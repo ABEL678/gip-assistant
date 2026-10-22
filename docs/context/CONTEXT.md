@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.10 (22.10.2026)
-**Актуально на:** после сессии 6.11b (веха 3, часть b)
+**Версия:** 2.11 (22.10.2026)
+**Актуально на:** после сессии 6.11c (веха 3, часть c)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -202,6 +202,15 @@
 - ✅ **Миграция:** `c52a3c176d47`.
 - ✅ **310 тестов pytest.**
 
+**Веха 3 — 6.11c (22.10.2026):**
+
+- ✅ **Сервисы:** DecisionService (CRUD + валидации premise_ids/goal_ids из того же проекта), NormService (code уникален в проекте), DecisionLinkService (self-link → ValueError), DecisionNormService (link/unlink, идемпотентно), DecisionProposalService (2 правила вывода: goal_без_решения, срок_из_вводных; без дедупликации).
+- ✅ **Домен:** DecisionProposal entity (эфемерная).
+- ✅ **DTO:** DecisionProposal.
+- ✅ **Порт:** NormRepository.get_by_code.
+- ✅ **DI:** 5 service-getter'ов + 4 repo-getter'а.
+- ✅ **366 тестов pytest.**
+
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 
 - 3 новые таблицы: premises, goals, goal_premises.
@@ -251,11 +260,11 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 20.10.2026, после 6.10e:**
+**На 22.10.2026, после 6.11c:**
 
-- Веха 2 закрыта (288 passed).
-- Следующая подсессия — **6.11c** (сервисы: NormService, DecisionLinkService, DecisionNormService).
-- Порядок: 6.11a (модель Decision) → 6.11b (Norm + DecisionLink) → 6.11c (сервисы) → 6.11d (эндпоинты) → 6.11e (UI).
+- 6.11a/b/c закрыты: модель Decision + Norm + DecisionLink + сервисы (366 passed).
+- Следующая подсессия — **6.11d** (эндпоинты + DI для роутов).
+- Порядок: 6.11d (эндпоинты) → 6.11e (UI).
 
 **Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.
 
@@ -325,4 +334,4 @@
 
 ---
 
-**Конец CONTEXT.md v2.8.**
+**Конец CONTEXT.md v2.11.**

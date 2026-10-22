@@ -345,6 +345,10 @@ class NormRepository(ABC):
         """Найти норму по ID."""
 
     @abstractmethod
+    async def get_by_code(self, project_id: UUID, code: str) -> Norm | None:
+        """Найти норму по обозначению (уникально в проекте)."""
+
+    @abstractmethod
     async def list_by_project(self, project_id: UUID) -> list[Norm]:
         """Нормы проекта, сортировка по created_at DESC."""
 

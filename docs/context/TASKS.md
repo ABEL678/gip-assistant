@@ -310,7 +310,13 @@
   - Миграция: `c52a3c176d47`.
   - 12 smoke-тестов.
   - **Итого в проекте: 310 тестов pytest.**
-- ⏳ 6.11c — сервисы (NormService, DecisionLinkService, DecisionNormService).
+- ✅ 6.11c — ЗАКРЫТ (22.10.2026).
+  - 5 сервисов: DecisionService, NormService, DecisionLinkService, DecisionNormService, DecisionProposalService.
+  - Домен: DecisionProposal entity (эфемерная). DTO: DecisionProposal.
+  - Порт: NormRepository.get_by_code (уникальность code в проекте).
+  - DI: 4 repo-getter'а + 5 service-getter'ов.
+  - 56 unit-тестов.
+  - **Итого в проекте: 366 тестов pytest.**
 - ⏳ 6.11d — эндпоинты + DI.
 - ⏳ 6.11e — UI.
 
@@ -376,17 +382,15 @@
   - Миграция: `c52a3c176d47`.
   - Тесты: 12 smoke-тестов (mapping, enums, link/unlink, idempotency).
   - **Итого в проекте: 310 тестов pytest.**
-- ✅ **6.11b** — модель Norm + DecisionLink + DecisionNorm + миграция + DTO + порты + репозитории (22.10.2026).
-  - Домен: `Norm` entity, `DecisionLink` entity, `NormType` (5 значений), `DecisionLinkType` (3 значения).
-  - Модели: `NormModel`, `DecisionLinkModel`, `DecisionNormModel`.
-  - Таблицы: `norms`, `decision_links`, `decision_norms`.
-  - Порты: `NormRepository`, `DecisionLinkRepository`, `DecisionNormRepository`.
-  - Репозитории: `SqlAlchemyNormRepository`, `SqlAlchemyDecisionLinkRepository`, `SqlAlchemyDecisionNormRepository`.
-  - DTO: `NormBase/Create/Update/Read`, `DecisionLinkBase/Create/Read`.
-  - Миграция: `c52a3c176d47`.
-  - Тесты: 12 smoke-тестов (mapping, enums, link/unlink, idempotency).
-  - **Итого в проекте: 310 тестов pytest.**
-- ⏳ 6.11c — сервисы.
+- ✅ **6.11c** — сервисы вехи 3 (22.10.2026).
+  - Сервисы: `DecisionService` (CRUD + валидации), `NormService` (code уникален в проекте), `DecisionLinkService` (self-link/дубль/проект → ValueError), `DecisionNormService` (link/unlink, идемпотентно), `DecisionProposalService` (2 правила: goal_без_решения, срок_из_вводных; без дедупликации).
+  - Домен: `DecisionProposal` entity (эфемерная, uuid5-ids для UI).
+  - DTO: `DecisionProposal`.
+  - Порт: `NormRepository.get_by_code` (+ реализация).
+  - DI: 4 repo-getter'а + 5 service-getter'ов (dependencies.py).
+  - Экспорт 4 репозиториев 6.11a/b в repositories/__init__.py.
+  - Тесты: 56 unit-тестов (5 файлов).
+  - **Итого в проекте: 366 тестов pytest.**
 - ⏳ 6.11d — эндпоинты + DI.
 - ⏳ 6.11e — UI.
 
@@ -462,6 +466,18 @@ DecisionLink), не смешиваются с 6.11a–e.
   либо откатить (убрать из домена и маппинга, оставить только FK в БД).
 
 ## 5. Журнал (Changelog)
+
+### 22.10.2026 (сессия 6.11c — сервисы вехи 3)
+
+- ✅ 5 сервисов: DecisionService, NormService, DecisionLinkService, DecisionNormService, DecisionProposalService.
+- ✅ Домен: `DecisionProposal` entity (эфемерная, uuid5-ids для UI).
+- ✅ DTO: `DecisionProposal` в decision.py.
+- ✅ Порт: `NormRepository.get_by_code` + реализация в SqlAlchemyNormRepository.
+- ✅ DI: DecisionServiceDep, NormServiceDep, DecisionLinkServiceDep, DecisionNormServiceDep, DecisionProposalServiceDep.
+- ✅ repositories/__init__.py — экспорт 4 репозиториев 6.11a/b (не были экспортированы).
+- ✅ DecisionNormService — дополнение к §6 спеки (DOMAIN.md §7.2), по образцу DocumentLinkService.
+- ✅ 56 unit-тестов (AsyncMock, pytest-asyncio).
+- ✅ **Итого в проекте: 366 тестов pytest.** Ruff по новым файлам чисто.
 
 ### 20.10.2026 (Веха 2 — Action + Task adaptation)
 
@@ -822,7 +838,7 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 310 | — |
+| Тесты pytest (backend) | 366 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 24 (+ 3 в миграции 6.11a, + 3 в миграции 6.11b) = 27 | — |
 | Эндпоинтов API | 21 | — |
@@ -833,7 +849,7 @@ DecisionLink), не смешиваются с 6.11a–e.
 | UI Уровня 1.5 | 100% | — |
 | Портов репозиториев | 14 → 17 | — |
 | Репозиториев SQLAlchemy | 13 → 16 | — |
-| Сервисов | 13 | — |
+| Сервисов | 18 | — |
 | API-клиентов | 6 | — |
 | Хуков TanStack Query | 28 | — |
 | **DOMAIN.md** | **v1.1** | — |

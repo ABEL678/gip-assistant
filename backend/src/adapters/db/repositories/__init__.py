@@ -9,6 +9,15 @@ from backend.src.adapters.db.repositories.change_repository import (
 from backend.src.adapters.db.repositories.cross_task_repo import (
     SqlAlchemyCrossTaskRepository,
 )
+from backend.src.adapters.db.repositories.decision_link_repository import (
+    SqlAlchemyDecisionLinkRepository,
+)
+from backend.src.adapters.db.repositories.decision_norm_repository import (
+    SqlAlchemyDecisionNormRepository,
+)
+from backend.src.adapters.db.repositories.decision_repository import (
+    SqlAlchemyDecisionRepository,
+)
 from backend.src.adapters.db.repositories.document_link_repository import (
     SqlAlchemyDocumentLinkRepository,
 )
@@ -32,6 +41,9 @@ from backend.src.adapters.db.repositories.goal_repository import (
 )
 from backend.src.adapters.db.repositories.import_log_repo import (
     SqlAlchemyImportLogRepository,
+)
+from backend.src.adapters.db.repositories.norm_repository import (
+    SqlAlchemyNormRepository,
 )
 from backend.src.adapters.db.repositories.premise_repository import (
     SqlAlchemyPremiseRepository,
@@ -65,6 +77,9 @@ __all__ = [
     "SqlAlchemyActionRepository",
     "SqlAlchemyChangeRepository",
     "SqlAlchemyCrossTaskRepository",
+    "SqlAlchemyDecisionLinkRepository",
+    "SqlAlchemyDecisionNormRepository",
+    "SqlAlchemyDecisionRepository",
     "SqlAlchemyDocumentLinkRepository",
     "SqlAlchemyDocumentRepository",
     "SqlAlchemyDocumentTypeRepository",
@@ -73,6 +88,7 @@ __all__ = [
     "SqlAlchemyEntityTypeRepository",
     "SqlAlchemyGoalRepository",
     "SqlAlchemyImportLogRepository",
+    "SqlAlchemyNormRepository",
     "SqlAlchemyPremiseRepository",
     "SqlAlchemyProjectRepository",
     "SqlAlchemyProjectStandardRepository",

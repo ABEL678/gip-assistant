@@ -429,6 +429,17 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 ---
 
+## 4. Блокеры (Blockers)
+
+### Известные ограничения (не блокеры)
+
+- ⚠️ **6.11a: `decision_id` в домене Task и маппинге TaskRepository** —
+  отклонение от спеки `spec_week_3.md §2.1` (там связь Decision → Task
+  только через FK в БД, домен Task про Decision не знает). Причина:
+  smoke-тест `test_tasks_decision_id` требует доменного поля.
+  Решение в 6.11c: либо узаконить (Task зависит от Decision в домене),
+  либо откатить (убрать из домена и маппинга, оставить только FK в БД).
+
 ## 5. Журнал (Changelog)
 
 ### 20.10.2026 (Веха 2 — Action + Task adaptation)
@@ -498,6 +509,12 @@ DecisionLink), не смешиваются с 6.11a–e.
 ### 20.10.2026 (сессия 6.8f-2 — source_goal_id в Premise)
 
 - ✅ PremiseModel: source_goal_id FK → goals, ondelete SET NULL.
+- ✅ Premise entity: source_goal_id: UUID | None.
+- ✅ DTO: PremiseSchema/Update/Read — source_goal_id.
+- ✅ PremiseRepository: mapping _to_domain/_to_model.
+- ✅ Миграция `8fc3a69b4247` (upgrade + downgrade).
+- ✅ 6 файлов, +49 строк. Коммит `481e6e5`.
+- ✅ 240 тестов pytest. Ruff чисто.
 
 ### 22.10.2026 (сессия 6.11a — Decision model + migration + ports + repo)
 
@@ -511,12 +528,6 @@ DecisionLink), не смешиваются с 6.11a–e.
 - ✅ Миграция: `8aad8fd713f0`.
 - ✅ Тесты: 10 smoke-тестов (mapping, M:N, task.decision_id).
 - ✅ **Итого в проекте: 298 тестов pytest.**
-- ✅ Premise entity: source_goal_id: UUID | None.
-- ✅ DTO: PremiseSchema/Update/Read — source_goal_id.
-- ✅ PremiseRepository: mapping _to_domain/_to_model.
-- ✅ Миграция `8fc3a69b4247` (upgrade + downgrade).
-- ✅ 6 файлов, +49 строк. Коммит `481e6e5`.
-- ✅ 240 тестов pytest. Ruff чисто.
 
 ### 19.10.2026 (сессия 6.8d — UI вехи 1)
 

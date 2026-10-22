@@ -5,7 +5,7 @@
 > `sqlacodegen` + GitHub Actions. Пока — вручную.
 
 **Версия:** 1.2
-**Обновлено:** 18.10.2026
+**Обновлено:** 22.10.2026
 **СУБД:** PostgreSQL 15+
 **ORM:** SQLAlchemy 2.0 async
 **Текущая миграция:** `8aad8fd713f0`
@@ -14,12 +14,13 @@
 
 ## 1. Обзор
 
-**Всего таблиц:** 20.
+**Всего таблиц:** 24.
 
 | Группа | Таблицы |
 |--------|---------|
 | Проекты и задачи | projects, tasks, cross_tasks, task_status_history |
 | Вводные и цели | premises, goals, goal_premises |
+| Решения | decisions, decision_goals, decision_premises |
 | Пользователи | users, executors |
 | Импорт | import_logs |
 | Универсальные сущности | entity_types, entities |
@@ -326,17 +327,7 @@
 - `goal_premises_goal_id_fkey` → goals.id (CASCADE)
 - `goal_premises_premise_id_fkey` → premises.id (CASCADE)
 
-### 2.13. alembic_version
-
-**Назначение:** служебная таблица Alembic.
-
-| Поле | Тип | Ограничения |
-|------|-----|-------------|
-| version_num | VARCHAR(32) | PK |
-
-**Текущая версия:** `8aad8fd713f0` (add decisions + decision_goals + decision_premises + tasks.decision_id).
-
-### 2.14. decisions
+### 2.13. decisions
 
 **Назначение:** решения управления проектом.
 
@@ -362,7 +353,7 @@
 
 **FK:** projects (CASCADE), users (SET NULL).
 
-### 2.15. decision_goals
+### 2.14. decision_goals
 
 **Назначение:** связь Decision ↔ Goal (M:N).
 
@@ -374,7 +365,7 @@
 
 **Индексы:** `decision_goals_pkey` (PK, composite), `idx_decision_goals_decision`, `idx_decision_goals_goal`.
 
-### 2.16. decision_premises
+### 2.15. decision_premises
 
 **Назначение:** связь Decision ↔ Premise (M:N).
 
@@ -386,7 +377,17 @@
 
 **Индексы:** `decision_premises_pkey` (PK, composite), `idx_decision_premises_decision`, `idx_decision_premises_premise`.
 
-### 2.14. document_types
+### 2.16. alembic_version
+
+**Назначение:** служебная таблица Alembic.
+
+| Поле | Тип | Ограничения |
+|------|-----|-------------|
+| version_num | VARCHAR(32) | PK |
+
+**Текущая версия:** `8aad8fd713f0` (add decisions + decision_goals + decision_premises + tasks.decision_id).
+
+### 2.17. document_types
 
 **Назначение:** справочник типов ГОСТ-документов.
 
@@ -401,7 +402,7 @@
 
 **Индексы:** `document_types_pkey` (PK), `uq_document_types_code` (UNIQUE).
 
-### 2.15. documents
+### 2.18. documents
 
 **Назначение:** карточка ГОСТ-документа (ГОСТ Р 21.101-2026).
 
@@ -437,7 +438,7 @@
 
 **FK:** projects, entities (SET NULL), tasks (SET NULL), document_types, documents (само-рекурсия), users.
 
-### 2.16. document_versions
+### 2.19. document_versions
 
 **Назначение:** версия файла ГОСТ-документа.
 
@@ -461,7 +462,7 @@
 
 **Индексы:** `document_versions_pkey` (PK), `idx_document_versions_document`, `idx_document_versions_current` (partial: WHERE is_current = TRUE).
 
-### 2.17. document_links
+### 2.20. document_links
 
 **Назначение:** связь между ГОСТ-документами.
 

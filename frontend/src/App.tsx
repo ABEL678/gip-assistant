@@ -24,6 +24,9 @@ import { ProjectCanvasPage } from "@/pages/ProjectCanvasPage"
 import { TimelineDemoPage } from "@/pages/TimelineDemoPage"
 import { GoalGraph } from "@/pages/CanvasDemoPage"
 import { SkeletonDemoPage } from "@/pages/SkeletonDemoPage"
+import { DecisionsPage } from "@/pages/DecisionsPage"
+import { NormsPage } from "@/pages/NormsPage"
+import { DecisionLinkPage } from "@/pages/DecisionLinkPage"
 
 function App() {
   return (
@@ -56,6 +59,9 @@ function App() {
           <Route path="projects/:id/canvas-demo" element={<GoalGraph />} />
           <Route path="projects/:id/skeleton-demo" element={<SkeletonDemoPage />} />
           <Route path="projects/:id/goals" element={<GoalsPage />} />
+          <Route path="projects/:id/decisions" element={<DecisionsPage />} />
+          <Route path="projects/:id/norms" element={<NormsPage />} />
+          <Route path="projects/:id/decision-links" element={<DecisionLinkPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

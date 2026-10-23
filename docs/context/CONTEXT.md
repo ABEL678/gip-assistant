@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.12 (22.10.2026)
-**Актуально на:** после сессии 6.11d (веха 3: эндпоинты)
+**Версия:** 2.13 (22.10.2026)
+**Актуально на:** после сессии 6.11e (веха 3: модель + сервисы + эндпоинты + UI — закрыта)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -222,6 +222,16 @@
 - ✅ 26 тестов роутов (httpx.AsyncClient + ASGITransport).
 - ✅ **392 теста pytest.**
 
+**Веха 3 — 6.11e (22.10.2026):**
+
+- ✅ **UI вехи 3:** DecisionsPage (с блоком предложений), NormsPage (CRUD), DecisionLinkPage (CRUD).
+- ✅ **4 API-клиента:** decisionApi (7 методов), normApi (5), decisionLinkApi (5), decisionNormApi (4).
+- ✅ **3 хука:** useDecisions (7 хуков), useNorms (5), useDecisionLinks (5).
+- ✅ **7 компонентов:** DecisionCard, DecisionForm, DecisionProposalList, NormCard, NormForm, DecisionLinkCard, DecisionLinkForm.
+- ✅ **Роутинг:** App.tsx (+3 маршрута), ProjectPage.tsx (секция «Решения»).
+- ✅ **npm run build** зелёный.
+- **Веха 3 закрыта: 6.11a → 6.11b → 6.11c → 6.11d → 6.11e.**
+
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 
 - 3 новые таблицы: premises, goals, goal_premises.
@@ -271,11 +281,10 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 22.10.2026, после 6.11d:**
+**На 22.10.2026, после 6.11e: веха 3 закрыта.**
 
-- 6.11a/b/c/d закрыты: модель + сервисы + эндпоинты (392 passed).
-- Следующая подсессия — **6.11e** (UI: DecisionsPage, NormsPage, DecisionLinkPage).
-- После 6.11e — «Очередь после вехи 3» (дашборд, скелет, отчёты, экспорт, поиск).
+- 6.11a/b/c/d/e закрыты: модель + сервисы + эндпоинты + UI.
+- Следующий шаг — «Очередь после вехи 3» (дашборд, скелет, отчёты, экспорт, поиск).
 
 **Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.
 
@@ -345,4 +354,4 @@
 
 ---
 
-**Конец CONTEXT.md v2.11.**
+**Конец CONTEXT.md v2.13.**

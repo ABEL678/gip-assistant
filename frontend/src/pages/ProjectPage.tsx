@@ -11,6 +11,7 @@ import { TaskList } from "@/components/TaskList"
 import { useDocumentsByProject } from "@/hooks/useDocuments"
 import { resultApi } from "@/api/resultApi"
 import { actionApi } from "@/api/actionApi"
+import { useDecisions } from "@/hooks/useDecisions"
 import { projectStandardApi } from "@/api/projectStandardApi"
 
 import { DocumentCard } from "@/components/DocumentCard"
@@ -60,6 +61,8 @@ export function ProjectPage() {
     },
     enabled: !!premises,
   })
+
+  const { data: decisions, isLoading: decisionsLoading } = useDecisions(id!)
 
   if (isLoading) {
     return <div className="text-muted-foreground">Загрузка проекта...</div>
@@ -388,6 +391,39 @@ export function ProjectPage() {
               <div key={a.id} className="border rounded-lg p-3">
                 <div className="font-medium">{a.formulation}</div>
                 <div className="text-sm text-muted-foreground">{a.state}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">
+            Решения <span className="text-muted-foreground">({decisions?.length ?? 0})</span>
+          </h2>
+          <Link to={`/projects/${id}/decisions`}>
+            <Button variant="outline">Все решения</Button>
+          </Link>
+        </div>
+
+        {decisionsLoading ? (
+          <p className="text-muted-foreground">Загрузка...</p>
+        ) : !decisions || decisions.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Пока нет решений
+            <div className="mt-4">
+              <Link to={`/projects/${id}/decisions`}>
+                <Button variant="outline">Перейти к решениям</Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {decisions.slice(0, 3).map((d) => (
+              <div key={d.id} className="border rounded-lg p-3">
+                <div className="font-medium line-clamp-2">{d.formulation}</div>
+                <div className="text-sm text-muted-foreground">{d.state}</div>
               </div>
             ))}
           </div>

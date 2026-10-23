@@ -324,7 +324,14 @@
   - Регистрация в main.py + routes/__init__.py.
   - 26 тестов роутов (httpx.AsyncClient + ASGITransport).
   - **Итого в проекте: 392 теста pytest.**
-- ⏳ 6.11e — UI (DecisionsPage, NormsPage, DecisionLinkPage).
+- ✅ **6.11e** — UI вехи 3 (22.10.2026).
+  - 4 API-клиента: decisionApi, normApi, decisionLinkApi, decisionNormApi.
+  - 3 хука: useDecisions (7), useNorms (5), useDecisionLinks (5).
+  - 7 компонентов: DecisionCard, DecisionForm, DecisionProposalList, NormCard, NormForm, DecisionLinkCard, DecisionLinkForm.
+  - 3 страницы: DecisionsPage, NormsPage, DecisionLinkPage.
+  - Роутинг: App.tsx (3 маршрута), ProjectPage.tsx (секция «Решения»).
+  - `npm run build` зелёный.
+- **Веха 3 закрыта: 6.11a → 6.11b → 6.11c → 6.11d → 6.11e.**
 
 ## 3. Дальше (Next)
 
@@ -397,8 +404,15 @@
   - Экспорт 4 репозиториев 6.11a/b в repositories/__init__.py.
   - Тесты: 56 unit-тестов (5 файлов).
   - **Итого в проекте: 366 тестов pytest.**
-- ⏳ 6.11d — эндпоинты + DI.
-- ⏳ 6.11e — UI.
+- ✅ **6.11d** — эндпоинты + DI (22.10.2026).
+  - 4 роутера: decisions (7), norms (5), decision_links (5), decision_norms (4).
+  - 21 эндпоинт: CRUD + proposals/from-proposal + link/unlink.
+  - 26 тестов роутов.
+  - **Итого в проекте: 392 теста pytest.**
+- ✅ **6.11e** — UI вехи 3 (22.10.2026).
+  - 4 API-клиента, 3 хука, 7 компонентов, 3 страницы, роутинг.
+  - `npm run build` зелёный.
+- **Веха 3 закрыта: 6.11a → 6.11b → 6.11c → 6.11d → 6.11e.**
 
 ### Веха 3 — первые агенты
 
@@ -476,6 +490,16 @@ DecisionLink), не смешиваются с 6.11a–e.
   роутерами — отдельная задача.
 
 ## 5. Журнал (Changelog)
+
+### 22.10.2026 (сессия 6.11e — UI вехи 3)
+
+- ✅ 4 API-клиента: decisionApi.ts (7 методов), normApi.ts (5), decisionLinkApi.ts (5), decisionNormApi.ts (4).
+- ✅ 3 хука: useDecisions.ts (7 хуков), useNorms.ts (5), useDecisionLinks.ts (5).
+- ✅ 7 компонентов: DecisionCard, DecisionForm, DecisionProposalList, NormCard, NormForm, DecisionLinkCard, DecisionLinkForm.
+- ✅ 3 страницы: DecisionsPage (с блоком предложений), NormsPage (CRUD), DecisionLinkPage (CRUD).
+- ✅ Роутинг: App.tsx (+3 маршрута), ProjectPage.tsx (секция «Решения» через useDecisions).
+- ✅ `npm run build` — без ошибок.
+- **Веха 3 закрыта: 6.11a → 6.11b → 6.11c → 6.11d → 6.11e.**
 
 ### 22.10.2026 (сессия 6.11d — эндпоинты вехи 3)
 
@@ -871,12 +895,13 @@ DecisionLink), не смешиваются с 6.11a–e.
 | Портов репозиториев | 14 → 17 | — |
 | Репозиториев SQLAlchemy | 13 → 16 | — |
 | Сервисов | 18 | — |
-| API-клиентов | 6 | — |
-| Хуков TanStack Query | 28 | — |
+| API-клиентов | 10 | — |
+| Хуков TanStack Query | 45 | — |
 | **DOMAIN.md** | **v1.1** | — |
 | **React Flow страницы** | **3** (canvas-demo, timeline-demo, skeleton-demo) | — |
 | **Новых сущностей (Goal/Decision/Action/Norm/RFI)** | **2** | **5** |
 | **Агентов** | **0** | **5** |
+| **UI вехи 3** | **100%** | — |
 
 ---
 

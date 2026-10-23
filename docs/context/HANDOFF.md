@@ -5,62 +5,74 @@
 > или при приближении к лимиту контекста.
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
-**Дата:** 20.10.2026
-**Сессия:** 6.10e → Веха 3 (переход)
-**Статус:** Веха 2 закрыта, 288 passed, готовы к вехе 3.
+**Дата:** 22.10.2026
+**Сессия:** 6.11e → Веха 3 закрыта
+**Статус:** Веха 3 ЗАКРЫТА полностью (6.11a → 6.11b → 6.11c → 6.11d → 6.11e). 392 теста, frontend build зелёный.
 
 ---
 
-## 1. Что было
+## 1. Что было в прошлой сессии
 
-**6.10a — модель Action + миграция `f9eba6941cdf`.**
-- ✅ Action model, DTO, порты, репозитории.
-- ✅ Коммит `953b558`.
+**Веха 3 — полностью закрыта (22.10.2026):**
 
-**6.10b — Task.is_complex (без удаления CrossTask).**
-- ✅ `Task.is_complex` — новое поле.
-- ✅ Коммит `f5a527d`.
+- ✅ **6.11a** — модель Decision + миграция `8aad8fd713f0` (298 тестов).
+- ✅ **6.11b** — модели Norm + DecisionLink + DecisionNorm + миграция `c52a3c176d47` (310 тестов).
+- ✅ **6.11c** — 5 сервисов + DecisionProposalService (2 правила) (366 тестов).
+- ✅ **6.11d** — 21 эндпоинт (decisions 7, norms 5, decision-links 5, decision-norms 4) + 26 тестов роутов (392 теста).
+- ✅ **6.11e** — UI: 4 API-клиента, 3 хука, 7 компонентов, 3 страницы (DecisionsPage, NormsPage, DecisionLinkPage), роутинг (85822e4).
 
-**6.10c — ActionService + TaskService + 10 тестов.**
-- ✅ CRUD-сервисы + валидации.
-- ✅ Коммит `07ea2c3`.
+**Коммиты вехи 3:** `8fa1bd8` (6.11b), `d35aee4` (6.11c), `ca297f5` (6.11d), `85822e4` (6.11e).
 
-**6.10d — эндпоинты Action (6 штук) + DI + 7 тестов роутов.**
-- ✅ POST/PATCH/DELETE /api/actions, GET /api/projects/{id}/actions, GET /api/tasks/{id}/actions.
-- ✅ Коммит `ddnf57c`.
-
-**6.10e — UI Action (ActionsPage, ActionCard, ActionForm, useActions) + интеграция в ProjectPage.**
-- ✅ Frontend build успешен.
-- ✅ Коммит `4b1a50d`.
-
-**Итог:** 288 passed, frontend build зелёный, веха 2 закрыта.
+**Итог вехи 3:**
+- 392 теста pytest.
+- 27 таблиц в БД.
+- 60+ эндпоинтов API.
+- Весь стек: domain → application → adapters → frontend.
 
 ## 2. Что делаем сейчас
 
-**Веха 2 закрыта.**
+**Веха 3 закрыта.** Следующий шаг — развилка.
 
-Следующая подсессия — Веха 3 (Decision + Norm + DecisionLink).
+## 3. Что дальше
 
-## 3. Что дальше (порядок строгий)
+**Развилка — не решено (нужен выбор):**
 
-1. **6.11a** — модель Decision + миграция + DTO + порты + репозитории.
-2. **6.11b** — модель Norm + DecisionLink + миграция.
-3. **6.11c** — сервисы DecisionService, NormService, DecisionLinkService.
-4. **6.11d** — эндпоинты + DI.
-5. **6.11e** — UI (DecisionsPage, NormsPage, DecisionLinkPage).
+### Путь A: «Очередь после вехи 3» (доработка вехи 1)
+1. Дашборд ГИПа (§5.1.12 Дорожная карта 7.0).
+2. Скелет из договора (§5.1.13).
+3. Отчёты и недельный план (§5.1.14).
+4. Экспорт в MS Project XML (§5.1.15).
+5. Полнотекстовый поиск (§5.1.16).
 
-## 4. Что уже в контексте (не пересказывать)
+### Путь B: Веха 4 (RFI) — **рекомендуется**
+1. RFI как особый Task (причина — нехватка ИД, результат — Document).
+2. «Живые вводные»: RFI → Document → новые ИД → пополнение Premise.
+3. Document ↔ Action связь.
+4. Агент RFI.
+
+**Рекомендация: Путь B.** RFI — ядро онтологии (`DOMAIN.md §3.3`), без него вводные статичны. Дашборд/скелет — после RFI, когда данные «живые».
+
+## 4. Что уже в контексте (не надо пересказывать)
 
 - `docs/context/DOMAIN.md` v1.1 — онтология ядра. **Главный документ.**
 - `docs/Дорожная_карта_7.0.md` — стратегия.
-- `docs/specs/spec_week_1.md` — финальная спека Вехи 1.
-- `docs/context/CONTEXT.md`, `TASKS.md`, `DATABASE.md`, `API.md`, `RULES.md`, `ARCHITECTURE.md` — обновлены.
-- `AGENTS.md` — правила GigaCode.
+- `docs/specs/spec_week_3.md` — финальная спека Вехи 3.
+- `docs/context/CONTEXT.md` v2.13 — резюме.
+- `docs/context/TASKS.md` v2.5 — статус.
+- `docs/context/ARCHITECTURE.md` — структура.
+- `docs/context/DATABASE.md` — схема БД.
+- `docs/context/API.md` v1.1 — эндпоинты.
+- `docs/context/RULES.md` — правила.
+- `AGENTS.md` — правила для GigaCode.
+- `GIGACODE.md` v1.3 — правила (адаптация под GigaIDE + GLM-5.3).
 
-## 5. Открытые вопросы
+## 5. Открытые вопросы / блокеры
 
-- [ ] 6.10f (интеграция Action с Task) — отложено (сделаем после вехи 3 или в 6.12).
-- [ ] `responsible_id` в ActionForm — не добавлен (нет API users — появится в вехе 6).
+- [ ] **`decision_id` в домене Task** — отклонение от спеки §2.1 (6.11a). В домене Task есть поле decision_id, но в спеке связь только через FK в БД. Зафиксировано в TASKS.md §4. Решение: узаконить или откатить — в вехе 4 или позже.
+- [ ] **API.md baseline** — несвежий (до 6.11d не включал Actions, Results, ProjectStandards, Revisions). Полная сверка с фактическими роутерами — отдельная задача.
+- [ ] **CONTEXT.md** — §4/§6 всё ещё ссылается на `docs/archive/` — почистить.
+
+**Блокеров нет.**
 
 ## 6. Ключи / пути / команды
 
@@ -83,14 +95,16 @@
     1. docs/context/HANDOFF.md
     2. docs/context/DOMAIN.md (v1.1)
     3. docs/Дорожная_карта_7.0.md
-    4. docs/specs/spec_week_1.md
+    4. docs/specs/spec_week_3.md
     5. docs/context/CONTEXT.md
     6. docs/context/TASKS.md
     7. AGENTS.md
 
-    Мы на вехе 3 (Decision + Norm + DecisionLink).
-    Веха 2 закрыта (6.10a–6.10e, 288 passed).
-    Твоя роль: дать GigaCode промпт на 6.11a, проверить diff, помочь с ошибками.
+    Веха 3 ЗАКРЫТА (6.11a → 6.11e, 392 теста).
+    Следующий шаг: развилка — Путь A (очередь после вехи 3) или Путь B (веха 4 RFI).
+    Рекомендация: Путь B.
+
+    Твоя роль: помочь выбрать путь, дать GigaCode промпт.
 
 ---
 

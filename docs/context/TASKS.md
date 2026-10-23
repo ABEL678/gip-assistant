@@ -317,8 +317,14 @@
   - DI: 4 repo-getter'а + 5 service-getter'ов.
   - 56 unit-тестов.
   - **Итого в проекте: 366 тестов pytest.**
-- ⏳ 6.11d — эндпоинты + DI.
-- ⏳ 6.11e — UI.
+- ✅ 6.11d — ЗАКРЫТ (22.10.2026).
+  - 4 роутера: decisions (7), norms (5), decision_links (5), decision_norms (4).
+  - 21 новый эндпоинт: ValueError → 400, IntegrityError → 409, not found → 404.
+  - DTO: DecisionProposalApprove (без state — по образцу GoalProposalApprove).
+  - Регистрация в main.py + routes/__init__.py.
+  - 26 тестов роутов (httpx.AsyncClient + ASGITransport).
+  - **Итого в проекте: 392 теста pytest.**
+- ⏳ 6.11e — UI (DecisionsPage, NormsPage, DecisionLinkPage).
 
 ## 3. Дальше (Next)
 
@@ -462,10 +468,25 @@ DecisionLink), не смешиваются с 6.11a–e.
   отклонение от спеки `spec_week_3.md §2.1` (там связь Decision → Task
   только через FK в БД, домен Task про Decision не знает). Причина:
   smoke-тест `test_tasks_decision_id` требует доменного поля.
-  Решение в 6.11c: либо узаконить (Task зависит от Decision в домене),
+  Решение в 6.11e: либо узаконить (Task зависит от Decision в домене),
   либо откатить (убрать из домена и маппинга, оставить только FK в БД).
+- ⚠️ **API.md не полон:** до 6.11d не включал эндпоинты Actions, Results,
+  ProjectStandards, Revisions (сессии 6.10d, 6.8i). В 6.11d добавлены 21
+  эндпоинт вехи 3 (итого 60 + системные). Полная сверка с фактическими
+  роутерами — отдельная задача.
 
 ## 5. Журнал (Changelog)
+
+### 22.10.2026 (сессия 6.11d — эндпоинты вехи 3)
+
+- ✅ 4 роутера: decisions.py (7), norms.py (5), decision_links.py (5), decision_norms.py (4).
+- ✅ 21 эндпоинт: CRUD + proposals/from-proposal + связи + link/unlink.
+- ✅ Ошибки: ValueError → 400, IntegrityError → 409, not found → 404.
+- ✅ Порядок: /proposals и /from-proposal ПЕРЕД /{id}.
+- ✅ DTO: DecisionProposalApprove (без state, по образцу GoalProposalApprove).
+- ✅ API.md обновлён (v1.1): +4 раздела, 60 эндпоинтов + системные.
+- ✅ 26 тестов роутов (httpx.AsyncClient + ASGITransport).
+- ✅ **Итого в проекте: 392 теста pytest.** Ruff чисто. Миграций нет.
 
 ### 22.10.2026 (сессия 6.11c — сервисы вехи 3)
 
@@ -838,10 +859,10 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 366 | — |
+| Тесты pytest (backend) | 392 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 24 (+ 3 в миграции 6.11a, + 3 в миграции 6.11b) = 27 | — |
-| Эндпоинтов API | 21 | — |
+| Эндпоинтов API | 42 | — |
 | Клиентов | 0 | 1 пилот |
 | MRR | 0 ₽ | 5 000 ₽ |
 | `docs/context/` готовность | 8/8 файлов | 8/8 |

@@ -1,6 +1,13 @@
 """HTTP-роуты API."""
 
 from backend.src.adapters.api.routes.actions import router as actions_router
+from backend.src.adapters.api.routes.decision_links import (
+    router as decision_links_router,
+)
+from backend.src.adapters.api.routes.decision_norms import (
+    router as decision_norms_router,
+)
+from backend.src.adapters.api.routes.decisions import router as decisions_router
 from backend.src.adapters.api.routes.document_links import (
     router as document_links_router,
 )
@@ -17,6 +24,7 @@ from backend.src.adapters.api.routes.import_excel import (
     router as import_excel_router,
 )
 from backend.src.adapters.api.routes.matrix import router as matrix_router
+from backend.src.adapters.api.routes.norms import router as norms_router
 from backend.src.adapters.api.routes.premises import router as premises_router
 from backend.src.adapters.api.routes.project_standards import (
     router as project_standards_router,
@@ -28,6 +36,9 @@ from backend.src.adapters.api.routes.tasks import router as tasks_router
 
 __all__ = [
     "actions_router",
+    "decision_links_router",
+    "decision_norms_router",
+    "decisions_router",
     "document_links_router",
     "document_types_router",
     "document_versions_router",
@@ -36,6 +47,7 @@ __all__ = [
     "goals_router",
     "import_excel_router",
     "matrix_router",
+    "norms_router",
     "premises_router",
     "project_standards_router",
     "projects_router",

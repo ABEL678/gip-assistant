@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.11 (22.10.2026)
-**Актуально на:** после сессии 6.11c (веха 3, часть c)
+**Версия:** 2.12 (22.10.2026)
+**Актуально на:** после сессии 6.11d (веха 3: эндпоинты)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -211,6 +211,17 @@
 - ✅ **DI:** 5 service-getter'ов + 4 repo-getter'а.
 - ✅ **366 тестов pytest.**
 
+**Веха 3 — 6.11d (22.10.2026):**
+
+- ✅ **Роутеры:** decisions (7), norms (5), decision_links (5), decision_norms (4) — 21 эндпоинт.
+- ✅ **Proposals:** GET /decisions/proposals + POST /decisions/from-proposal (ГИП утверждает).
+- ✅ **Ошибки:** ValueError → 400, IntegrityError → 409, not found → 404.
+- ✅ **DTO:** DecisionProposalApprove (без state — по образцу GoalProposalApprove).
+- ✅ **Регистрация:** main.py + routes/__init__.py.
+- ✅ **API.md v1.1:** +4 раздела, 60 эндпоинтов + системные.
+- ✅ 26 тестов роутов (httpx.AsyncClient + ASGITransport).
+- ✅ **392 теста pytest.**
+
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 
 - 3 новые таблицы: premises, goals, goal_premises.
@@ -260,11 +271,11 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 22.10.2026, после 6.11c:**
+**На 22.10.2026, после 6.11d:**
 
-- 6.11a/b/c закрыты: модель Decision + Norm + DecisionLink + сервисы (366 passed).
-- Следующая подсессия — **6.11d** (эндпоинты + DI для роутов).
-- Порядок: 6.11d (эндпоинты) → 6.11e (UI).
+- 6.11a/b/c/d закрыты: модель + сервисы + эндпоинты (392 passed).
+- Следующая подсессия — **6.11e** (UI: DecisionsPage, NormsPage, DecisionLinkPage).
+- После 6.11e — «Очередь после вехи 3» (дашборд, скелет, отчёты, экспорт, поиск).
 
 **Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.
 

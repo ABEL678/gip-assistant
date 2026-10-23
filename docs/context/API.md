@@ -4,8 +4,8 @@
 > **Автогенерация:** в MVP-2 файл обновляется автоматически из OpenAPI
 > (`/openapi.json`). Пока — вручную.
 
-**Версия:** 1.0
-**Обновлено:** 11.10.2026
+**Версия:** 1.1
+**Обновлено:** 22.10.2026
 **Base URL:** `http://localhost:8000`
 **Документация:** `http://localhost:8000/api/docs` (Swagger UI)
 
@@ -13,7 +13,7 @@
 
 ## 1. Обзор
 
-**Всего эндпоинтов:** 39 + системные.
+**Всего эндпоинтов:** 60 + системные.
 
 **Группы:**
 
@@ -31,6 +31,10 @@
 | DocumentLinks | 4 | `/api/documents/{id}/links`, `/api/document-links` |
 | Premises | 5 | `/api/projects/{id}/premises`, `/api/premises` |
 | Goals | 7 | `/api/projects/{id}/goals`, `/api/goals`, `/api/projects/{id}/goals/proposals` |
+| Decisions | 7 | `/api/projects/{id}/decisions`, `/api/decisions`, `/api/projects/{id}/decisions/proposals` |
+| Norms | 5 | `/api/projects/{id}/norms`, `/api/norms` |
+| DecisionLinks | 5 | `/api/projects/{id}/decision-links`, `/api/decision-links`, `/api/decisions/{id}/links` |
+| DecisionNorms | 4 | `/api/decisions/{id}/norms`, `/api/norms/{id}/decisions` |
 | System | 3 | `/api/health`, `/api/version`, `/api/ai/ping` |
 
 ---
@@ -721,6 +725,215 @@
 **Описание:** удалить цель.
 
 **Ответ 204:** пусто.
+
+---
+
+## 15. Decisions (Решения)
+
+### POST /api/projects/{project_id}/decisions
+
+**Описание:** создать решение в проекте.
+
+**Body:**
+    {
+      "formulation": "Определить способ реализации",
+      "rationale": "Срок из вводных",
+      "context": null,
+      "deadline": "2026-12-01",
+      "state": "plan",
+      "premise_ids": ["uuid"],
+      "goal_ids": ["uuid"]
+    }
+
+**Ответ 201:** созданное решение.
+
+**Ошибки:** 400 — пустая формулировка, проект/вводные/цели не найдены или из другого проекта; 409 — конфликт БД.
+
+### GET /api/projects/{project_id}/decisions
+
+**Описание:** список решений проекта.
+
+**Ответ 200:** `[Decision, ...]` (с реальными premise_ids и goal_ids).
+
+### GET /api/projects/{project_id}/decisions/proposals
+
+**Описание:** предложенные решения (2 правила: `goal_без_решения`, `срок_из_вводных`). Не сохраняются в БД.
+
+**Ответ 200:**
+    [
+      {
+        "id": "uuid",
+        "formulation": "Определить способ реализации цели: X",
+        "rationale": null,
+        "state": "plan",
+        "premise_ids": [],
+        "goal_ids": ["uuid"],
+        "rule": "goal_без_решения"
+      }
+    ]
+
+### POST /api/projects/{project_id}/decisions/from-proposal
+
+**Описание:** утвердить предложенное решение (ГИП может править).
+
+**Body:**
+    {
+      "formulation": "Определить способ реализации цели: X",
+      "rationale": "Срок из вводных",
+      "premise_ids": ["uuid"],
+      "goal_ids": ["uuid"]
+    }
+
+**Ответ 201:** созданное решение.
+
+### GET /api/decisions/{decision_id}
+
+**Описание:** решение по ID.
+
+**Ответ 200:** решение.
+
+**Ошибка 404:** не найдено.
+
+### PATCH /api/decisions/{decision_id}
+
+**Описание:** обновить решение.
+
+**Body:** любое подмножество полей.
+
+**Ответ 200:** обновлённое решение.
+
+### DELETE /api/decisions/{decision_id}
+
+**Описание:** удалить решение (CASCADE чистит decision_goals, decision_premises, decision_norms, decision_links).
+
+**Ответ 204:** пусто.
+
+---
+
+## 16. Norms (Нормативные документы)
+
+### POST /api/projects/{project_id}/norms
+
+**Описание:** создать норму в проекте.
+
+**Body:**
+    {
+      "code": "ГОСТ Р 21.101-2026",
+      "title": "Основные положения",
+      "norm_type": "gost",
+      "issued_at": "2026-01-01",
+      "source_url": "https://gost.ru",
+      "document_id": null
+    }
+
+**Ответ 201:** созданная норма.
+
+**Ошибки:** 400 — пустые code/title или code уже занят в проекте; 409 — конфликт уникальности (project_id, code).
+
+### GET /api/projects/{project_id}/norms
+
+**Описание:** список норм проекта.
+
+**Ответ 200:** `[Norm, ...]`.
+
+### GET /api/norms/{norm_id}
+
+**Описание:** норма по ID.
+
+**Ответ 200:** норма.
+
+**Ошибка 404:** не найдена.
+
+### PATCH /api/norms/{norm_id}
+
+**Описание:** обновить норму.
+
+**Body:** любое подмножество полей.
+
+**Ответ 200:** обновлённая норма.
+
+### DELETE /api/norms/{norm_id}
+
+**Описание:** удалить норму (CASCADE чистит decision_norms).
+
+**Ответ 204:** пусто.
+
+---
+
+## 17. Decision Links (Связи решений)
+
+### POST /api/projects/{project_id}/decision-links
+
+**Описание:** создать связь между решениями.
+
+**Body:**
+    {
+      "from_decision_id": "uuid",
+      "to_decision_id": "uuid",
+      "link_type": "sequential"
+    }
+
+**Ответ 201:** созданная связь.
+
+**Ошибки:** 400 — self-link, решения не найдены или из разных проектов, дубль связи; 409 — конфликт БД (uq_decision_links_triple, ck_decision_links_no_self).
+
+### GET /api/projects/{project_id}/decision-links
+
+**Описание:** список связей проекта.
+
+**Ответ 200:** `[DecisionLink, ...]`.
+
+### GET /api/decision-links/{link_id}
+
+**Описание:** связь по ID.
+
+**Ответ 200:** связь.
+
+**Ошибка 404:** не найдена.
+
+### DELETE /api/decision-links/{link_id}
+
+**Описание:** удалить связь.
+
+**Ответ 204:** пусто.
+
+**Ошибка 404:** не найдена.
+
+### GET /api/decisions/{decision_id}/links
+
+**Описание:** связи решения (обе стороны: from и to).
+
+**Ответ 200:** `[DecisionLink, ...]`.
+
+---
+
+## 18. Decision Norms (Связь Decision ↔ Norm)
+
+### POST /api/decisions/{decision_id}/norms/{norm_id}
+
+**Описание:** связать решение с нормой (идемпотентно — повторный link не ошибка).
+
+**Ответ 204:** пусто.
+
+**Ошибка 400:** решение/норма не найдены или из разных проектов.
+
+### DELETE /api/decisions/{decision_id}/norms/{norm_id}
+
+**Описание:** разорвать связь решения с нормой (идемпотентно).
+
+**Ответ 204:** пусто.
+
+### GET /api/decisions/{decision_id}/norms
+
+**Описание:** UUID норм, связанных с решением.
+
+**Ответ 200:** `["uuid", ...]`.
+
+### GET /api/norms/{norm_id}/decisions
+
+**Описание:** UUID решений, связанных с нормой.
+
+**Ответ 200:** `["uuid", ...]`.
 
 ---
 

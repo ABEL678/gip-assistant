@@ -73,3 +73,15 @@ class DecisionProposal(BaseModel):
     premise_ids: list[uuid.UUID] = Field(default_factory=list)
     goal_ids: list[uuid.UUID] = Field(default_factory=list)
     rule: str  # название правила: "goal_без_решения", "срок_из_вводных"
+
+
+class DecisionProposalApprove(BaseModel):
+    """DTO для утверждения предложения решения.
+
+    ГИП может править перед утверждением.
+    """
+
+    formulation: str = Field(..., min_length=1, max_length=500)
+    rationale: str | None = None
+    premise_ids: list[uuid.UUID] = Field(default_factory=list)
+    goal_ids: list[uuid.UUID] = Field(default_factory=list)

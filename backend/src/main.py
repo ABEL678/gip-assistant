@@ -7,6 +7,9 @@ from fastapi_offline import FastAPIOffline
 
 from backend.src.adapters.api.routes import (
     actions_router,
+    decision_links_router,
+    decision_norms_router,
+    decisions_router,
     document_links_router,
     document_types_router,
     document_versions_router,
@@ -15,11 +18,12 @@ from backend.src.adapters.api.routes import (
     goals_router,
     import_excel_router,
     matrix_router,
+    norms_router,
     premises_router,
     project_standards_router,
     projects_router,
-    revisions_router,
     results_router,
+    revisions_router,
     tasks_router,
 )
 from backend.src.bootstrap import get_container
@@ -65,6 +69,10 @@ app.include_router(document_versions_router)
 app.include_router(document_links_router)
 app.include_router(premises_router)
 app.include_router(goals_router)
+app.include_router(decisions_router)
+app.include_router(norms_router)
+app.include_router(decision_links_router)
+app.include_router(decision_norms_router)
 app.include_router(results_router)
 app.include_router(project_standards_router)
 app.include_router(revisions_router)

@@ -32,6 +32,7 @@ from backend.src.adapters.api.routes.project_standards import (
 from backend.src.adapters.api.routes.projects import router as projects_router
 from backend.src.adapters.api.routes.results import router as results_router
 from backend.src.adapters.api.routes.revisions import router as revisions_router
+from backend.src.adapters.api.routes.rfis import router as rfis_router
 from backend.src.adapters.api.routes.tasks import router as tasks_router
 
 __all__ = [
@@ -53,5 +54,6 @@ __all__ = [
     "projects_router",
     "revisions_router",
     "results_router",
+    "rfis_router",
     "tasks_router",
 ]

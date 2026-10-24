@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.14 (22.10.2026)
-**Актуально на:** после сессии 6.12a (веха 4: модель RFI + Document-Action связи — закрыта)
+**Версия:** 2.15 (24.10.2026)
+**Актуально на:** после сессии 6.12c (веха 4: RFI эндпоинты + DI — закрыта)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -244,6 +244,16 @@
 - ✅ Миграция `c0a9ff2f6038`.
 - ✅ 12 тестов. **404 теста pytest.**
 
+**Веха 4 — 6.12c (24.10.2026):**
+
+- ✅ `routes/rfis.py` — 8 эндпоинтов: GET/POST /projects/{id}/rfis, GET/PATCH/DELETE /rfis/{id}, GET /projects/{id}/rfis/proposals, POST /projects/{id}/rfis/from-proposal, POST /rfis/{id}/escalate.
+- ✅ Порядок: /proposals и /from-proposal ПЕРЕД /{id}.
+- ✅ Ошибки: ValueError → 400, IntegrityError → 409, not found → 404.
+- ✅ Маппинг: RfiProposalApprove.formulation → title, rationale → description.
+- ✅ Регистрация: routes/__init__.py + main.py.
+- ✅ 14 тестов роутов (httpx.AsyncClient + ASGITransport).
+- ✅ **450 тестов pytest.**
+
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 
 - 3 новые таблицы: premises, goals, goal_premises.
@@ -293,9 +303,11 @@
 
 ## 5. Что в работе / следующий шаг
 
-**На 22.10.2026, после 6.11e: веха 3 закрыта.**
+**На 24.10.2026, после 6.12c: веха 3 закрыта, веха 4 (RFI endpoints) закрыта.**
 
 - 6.11a/b/c/d/e закрыты: модель + сервисы + эндпоинты + UI.
+- 6.12a закрыта: модель RFI + миграция.
+- 6.12c закрыта: 8 эндпоинтов RFI + DI + тесты.
 - Следующий шаг — «Очередь после вехи 3» (дашборд, скелет, отчёты, экспорт, поиск).
 
 **Ветка `feat/entity-type-templates-domain`** — в паузе, не мержить, не удалять.

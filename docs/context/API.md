@@ -4,8 +4,8 @@
 > **Автогенерация:** в MVP-2 файл обновляется автоматически из OpenAPI
 > (`/openapi.json`). Пока — вручную.
 
-**Версия:** 1.1
-**Обновлено:** 22.10.2026
+**Версия:** 1.2
+**Обновлено:** 24.10.2026
 **Base URL:** `http://localhost:8000`
 **Документация:** `http://localhost:8000/api/docs` (Swagger UI)
 
@@ -13,7 +13,7 @@
 
 ## 1. Обзор
 
-**Всего эндпоинтов:** 60 + системные.
+**Всего эндпоинтов:** 68 + системные.
 
 **Группы:**
 
@@ -35,6 +35,7 @@
 | Norms | 5 | `/api/projects/{id}/norms`, `/api/norms` |
 | DecisionLinks | 5 | `/api/projects/{id}/decision-links`, `/api/decision-links`, `/api/decisions/{id}/links` |
 | DecisionNorms | 4 | `/api/decisions/{id}/norms`, `/api/norms/{id}/decisions` |
+| RFI | 8 | `/api/projects/{id}/rfis`, `/api/rfis`, `/api/projects/{id}/rfis/proposals` |
 | System | 3 | `/api/health`, `/api/version`, `/api/ai/ping` |
 
 ---

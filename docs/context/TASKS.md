@@ -512,6 +512,16 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 ## 5. Журнал (Changelog)
 
+### 24.10.2026 (сессия 6.12c — RFI эндпоинты + DI)
+
+- ✅ `routes/rfis.py` — 8 эндпоинтов: GET/POST /projects/{id}/rfis, GET/PATCH/DELETE /rfis/{id}, GET /projects/{id}/rfis/proposals, POST /projects/{id}/rfis/from-proposal, POST /rfis/{id}/escalate.
+- ✅ Порядок: /proposals и /from-proposal ПЕРЕД /{id}.
+- ✅ Ошибки: ValueError → 400, IntegrityError → 409, not found → 404.
+- ✅ Маппинг: RfiProposalApprove.formulation → title, rationale → description.
+- ✅ Регистрация: routes/__init__.py + main.py.
+- ✅ 14 тестов роутов (httpx.AsyncClient + ASGITransport).
+- ✅ **Итого в проекте: 450 тестов pytest.**
+
 ### 24.10.2026 — docs: agent security pattern
 
 - ✅ ARCHITECTURE.md §7.5 — «Слой изоляции агентов (Agent Gateway + MCP)».
@@ -925,10 +935,10 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 404 | — |
+| Тесты pytest (backend) | 450 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 24 (+ 3 в миграции 6.11a, + 3 в миграции 6.11b) = 27 | — |
-| Эндпоинтов API | 42 | — |
+| Эндпоинтов API | 50 | — |
 | Клиентов | 0 | 1 пилот |
 | MRR | 0 ₽ | 5 000 ₽ |
 | `docs/context/` готовность | 8/8 файлов | 8/8 |

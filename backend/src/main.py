@@ -24,6 +24,7 @@ from backend.src.adapters.api.routes import (
     projects_router,
     results_router,
     revisions_router,
+    rfis_router,
     tasks_router,
 )
 from backend.src.bootstrap import get_container
@@ -76,6 +77,7 @@ app.include_router(decision_norms_router)
 app.include_router(results_router)
 app.include_router(project_standards_router)
 app.include_router(revisions_router)
+app.include_router(rfis_router)
 
 
 # ---------- System routes ----------

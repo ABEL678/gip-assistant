@@ -25,6 +25,8 @@ from backend.src.domain.services.proposal_protocol_service import ProposalProtoc
 from backend.src.domain.services.result_service import ResultService
 from backend.src.domain.services.revision_decision_service import RevisionDecisionService
 from backend.src.domain.services.revision_service import RevisionService
+from backend.src.domain.services.rfi_proposal_service import RfiProposalService
+from backend.src.domain.services.rfi_service import RfiService
 from backend.src.domain.services.rule_based_goal_validator import RuleBasedGoalValidator
 from backend.src.domain.services.similarity_matrix_service import SimilarityMatrixService
 from backend.src.domain.services.stop_flag_service import StopFlagService
@@ -51,9 +53,11 @@ __all__ = [
     "PremiseService",
     "ProjectStandardService",
     "ProposalProtocolService",
+    "RfiProposalService",
+    "RfiService",
+    "ResultService",
     "RevisionDecisionService",
     "RevisionService",
-    "ResultService",
     "RuleBasedGoalValidator",
     "SimilarityMatrixService",
     "StopFlagService",

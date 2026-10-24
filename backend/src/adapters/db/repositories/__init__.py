@@ -63,6 +63,9 @@ from backend.src.adapters.db.repositories.revision_decision_repository import (
 from backend.src.adapters.db.repositories.revision_repository import (
     SqlAlchemyRevisionRepository,
 )
+from backend.src.adapters.db.repositories.rfi_repository import (
+    SqlAlchemyRfiRepository,
+)
 from backend.src.adapters.db.repositories.stop_flag_repository import (
     SqlAlchemyStopFlagRepository,
 )
@@ -92,9 +95,10 @@ __all__ = [
     "SqlAlchemyPremiseRepository",
     "SqlAlchemyProjectRepository",
     "SqlAlchemyProjectStandardRepository",
+    "SqlAlchemyRfiRepository",
+    "SqlAlchemyResultRepository",
     "SqlAlchemyRevisionDecisionRepository",
     "SqlAlchemyRevisionRepository",
-    "SqlAlchemyResultRepository",
     "SqlAlchemyStopFlagRepository",
     "SqlAlchemyTaskRepository",
     "SqlAlchemyUserRepository",

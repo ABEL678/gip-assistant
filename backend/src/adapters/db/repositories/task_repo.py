@@ -6,6 +6,8 @@ from uuid import UUID
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.src.adapters.db.models.document import DocumentModel
+from backend.src.adapters.db.models.premise import PremiseModel
 from backend.src.adapters.db.models.task import Task as TaskModel
 from backend.src.domain.entities.task import Task
 from backend.src.domain.ports.repositories import TaskRepository
@@ -22,7 +24,14 @@ class SqlAlchemyTaskRepository(TaskRepository):
         stmt = select(TaskModel).where(TaskModel.id == task_id)
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
-        return self._to_domain(model) if model else None
+        if model is None:
+            return None
+        premise_ids = (
+            await self._fetch_premise_ids(model.id)
+            if model.is_rfi
+            else []
+        )
+        return self._to_domain(model, premise_ids=premise_ids)
 
     async def get_by_project(
         self, project_id: UUID, limit: int = 500, offset: int = 0
@@ -35,7 +44,16 @@ class SqlAlchemyTaskRepository(TaskRepository):
             .offset(offset)
         )
         result = await self._session.execute(stmt)
-        return [self._to_domain(m) for m in result.scalars().all()]
+        models = result.scalars().all()
+        tasks = []
+        for m in models:
+            premise_ids = (
+                await self._fetch_premise_ids(m.id)
+                if m.is_rfi
+                else []
+            )
+            tasks.append(self._to_domain(m, premise_ids=premise_ids))
+        return tasks
 
     async def get_by_pair(
         self,
@@ -62,7 +80,16 @@ class SqlAlchemyTaskRepository(TaskRepository):
             )
         )
         result = await self._session.execute(stmt)
-        return [self._to_domain(m) for m in result.scalars().all()]
+        models = result.scalars().all()
+        tasks = []
+        for m in models:
+            premise_ids = (
+                await self._fetch_premise_ids(m.id)
+                if m.is_rfi
+                else []
+            )
+            tasks.append(self._to_domain(m, premise_ids=premise_ids))
+        return tasks
 
     async def get_overdue(self, as_of: date | None = None) -> list[Task]:
         as_of = as_of or date.today()
@@ -71,7 +98,16 @@ class SqlAlchemyTaskRepository(TaskRepository):
             TaskModel.status.notin_([TaskStatus.DONE, TaskStatus.CANCELLED]),
         )
         result = await self._session.execute(stmt)
-        return [self._to_domain(m) for m in result.scalars().all()]
+        models = result.scalars().all()
+        tasks = []
+        for m in models:
+            premise_ids = (
+                await self._fetch_premise_ids(m.id)
+                if m.is_rfi
+                else []
+            )
+            tasks.append(self._to_domain(m, premise_ids=premise_ids))
+        return tasks
 
     async def get_upcoming(self, days: int = 3) -> list[Task]:
         today = date.today()
@@ -82,14 +118,28 @@ class SqlAlchemyTaskRepository(TaskRepository):
             TaskModel.status.notin_([TaskStatus.DONE, TaskStatus.CANCELLED]),
         )
         result = await self._session.execute(stmt)
-        return [self._to_domain(m) for m in result.scalars().all()]
+        models = result.scalars().all()
+        tasks = []
+        for m in models:
+            premise_ids = (
+                await self._fetch_premise_ids(m.id)
+                if m.is_rfi
+                else []
+            )
+            tasks.append(self._to_domain(m, premise_ids=premise_ids))
+        return tasks
 
     async def save(self, task: Task) -> Task:
         model = self._to_model(task)
         merged = await self._session.merge(model)
         await self._session.flush()
         await self._session.refresh(merged)
-        return self._to_domain(merged)
+        premise_ids = (
+            await self._fetch_premise_ids(merged.id)
+            if merged.is_rfi
+            else []
+        )
+        return self._to_domain(merged, premise_ids=premise_ids)
 
     async def bulk_save(self, tasks: list[Task]) -> list[Task]:
         models = [self._to_model(t) for t in tasks]
@@ -97,7 +147,15 @@ class SqlAlchemyTaskRepository(TaskRepository):
         await self._session.flush()
         for m in models:
             await self._session.refresh(m)  # ← НОВЫЙ ЦИКЛ
-        return [self._to_domain(m) for m in models]
+        result = []
+        for m in models:
+            premise_ids = (
+                await self._fetch_premise_ids(m.id)
+                if m.is_rfi
+                else []
+            )
+            result.append(self._to_domain(m, premise_ids=premise_ids))
+        return result
 
     async def delete(self, task_id: UUID) -> None:
         stmt = delete(TaskModel).where(TaskModel.id == task_id)
@@ -107,13 +165,25 @@ class SqlAlchemyTaskRepository(TaskRepository):
     # ---------- Mapping ----------
 
     async def _fetch_premise_ids(self, task_id: UUID) -> list[UUID]:
-        """Placeholder: реализация — в 6.12b (JOIN через documents).
-        В 6.12a возвращает [] для всех Task (включая RFI).
-        """
-        return []
+        """Premise ID через цепочку: Task → Document → Premise.
 
-    @staticmethod
-    def _to_domain(model: TaskModel) -> Task:
+        SELECT premise.id FROM premises
+        JOIN documents ON premises.source_document_id = documents.id
+        WHERE documents.rfi_id = :task_id
+        """
+        stmt = (
+            select(PremiseModel.id)
+            .join(DocumentModel, PremiseModel.source_document_id == DocumentModel.id)
+            .where(DocumentModel.rfi_id == task_id)
+        )
+        result = await self._session.execute(stmt)
+        return list(result.scalars().all())
+
+    def _to_domain(
+        self,
+        model: TaskModel,
+        premise_ids: list[UUID] | None = None,
+    ) -> Task:
         return Task(
             id=model.id,
             project_id=model.project_id,
@@ -133,6 +203,7 @@ class SqlAlchemyTaskRepository(TaskRepository):
             rfi_cause_goal_id=model.rfi_cause_goal_id,
             rfi_due_date=model.rfi_due_date,
             rfi_state=RfiState(model.rfi_state) if model.rfi_state is not None else None,
+            premise_ids=premise_ids if premise_ids is not None else [],
             created_at=model.created_at,
             updated_at=model.updated_at,
         )

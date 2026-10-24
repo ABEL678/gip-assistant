@@ -47,6 +47,7 @@ class Premise:
     data: dict[str, Any] = field(default_factory=dict)
     schema: dict[str, Any] = field(default_factory=dict)
     source_goal_id: UUID | None = None
+    source_document_id: UUID | None = None
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

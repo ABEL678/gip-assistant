@@ -67,6 +67,7 @@ class SqlAlchemyPremiseRepository(PremiseRepository):
             data=model.data or {},
             schema=model.schema or {},
             source_goal_id=model.source_goal_id,
+            source_document_id=model.source_document_id,
             created_at=model.created_at,
             updated_at=model.updated_at,
         )
@@ -87,4 +88,5 @@ class SqlAlchemyPremiseRepository(PremiseRepository):
             data=domain.data or {},
             schema=domain.schema or {},
             source_goal_id=domain.source_goal_id,
+            source_document_id=domain.source_document_id,
         )

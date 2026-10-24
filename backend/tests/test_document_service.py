@@ -37,7 +37,9 @@ def document_type(project_id) -> DocumentType:
 
 @pytest.fixture
 def service(repo, document_type_repo):
-    return DocumentService(repo, document_type_repo)
+    return DocumentService(
+        repo, document_type_repo, task_repo=AsyncMock()
+    )
 
 
 # ---------- Создание ----------

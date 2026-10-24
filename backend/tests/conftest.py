@@ -6,6 +6,7 @@ from uuid import UUID, uuid4
 
 import pytest
 
+from backend.src.adapters.db.session import engine
 from backend.src.domain.entities.cross_task import CrossTask
 from backend.src.domain.entities.import_log import ImportLog
 from backend.src.domain.entities.task import Task
@@ -14,6 +15,21 @@ from backend.src.domain.ports.repositories import (
     ImportLogRepository,
     TaskRepository,
 )
+
+
+@pytest.fixture(autouse=True)
+def dispose_engine():
+    """Очищает пул соединений engine после каждого теста.
+
+    Предотвращает flaky-ошибки «Event loop is closed» при
+    совместном запуске интеграционных тестов с реальным PostgreSQL
+    (asyncpg-соединения привязаны к event loop, который закрывается
+    между тестами). async dispose требует async-фикстуру, что вызывает
+    предупреждение pytest-asyncio при sync teardown; sync dispose
+    достаточно для сброса пула соединений.
+    """
+    yield
+    engine.sync_engine.dispose()
 
 
 @pytest.fixture

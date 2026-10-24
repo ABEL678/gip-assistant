@@ -36,6 +36,7 @@ from backend.src.adapters.db.repositories import (
     SqlAlchemyResultRepository,
     SqlAlchemyRevisionDecisionRepository,
     SqlAlchemyRevisionRepository,
+    SqlAlchemyRfiRepository,
     SqlAlchemyStopFlagRepository,
     SqlAlchemyTaskRepository,
 )
@@ -63,6 +64,7 @@ from backend.src.domain.ports.repositories import (
     ResultRepository,
     RevisionDecisionRepository,
     RevisionRepository,
+    RfiRepository,
     StopFlagRepository,
     TaskRepository,
 )
@@ -90,6 +92,8 @@ from backend.src.domain.services import (
     ResultService,
     RevisionDecisionService,
     RevisionService,
+    RfiProposalService,
+    RfiService,
     RuleBasedGoalValidator,
     SimilarityMatrixService,
     StopFlagService,
@@ -214,6 +218,12 @@ def get_action_repo(session: DbSession) -> ActionRepository:
     return SqlAlchemyActionRepository(session)
 
 
+def get_rfi_repo(session: DbSession) -> RfiRepository:
+    return SqlAlchemyRfiRepository(
+        session, SqlAlchemyTaskRepository(session)
+    )
+
+
 ProjectRepoDep = Annotated[ProjectRepository, Depends(get_project_repo)]
 TaskRepoDep = Annotated[TaskRepository, Depends(get_task_repo)]
 CrossTaskRepoDep = Annotated[CrossTaskRepository, Depends(get_cross_task_repo)]
@@ -242,6 +252,7 @@ RevisionDecisionRepoDep = Annotated[
     RevisionDecisionRepository, Depends(get_revision_decision_repo)
 ]
 ActionRepoDep = Annotated[ActionRepository, Depends(get_action_repo)]
+RfiRepoDep = Annotated[RfiRepository, Depends(get_rfi_repo)]
 
 
 # ---------- Domain services ----------
@@ -292,10 +303,12 @@ def get_document_type_service(
 def get_document_service(
     document_repo: DocumentRepoDep,
     document_type_repo: DocumentTypeRepoDep,
+    task_repo: TaskRepoDep,
 ) -> DocumentService:
     return DocumentService(
         repo=document_repo,
         document_type_repo=document_type_repo,
+        task_repo=task_repo,
     )
 
 
@@ -462,6 +475,32 @@ def get_revision_decision_service(
     return RevisionDecisionService(repo=decision_repo)
 
 
+def get_rfi_service(
+    rfi_repo: RfiRepoDep,
+    task_repo: TaskRepoDep,
+    project_repo: ProjectRepoDep,
+    decision_repo: DecisionRepoDep,
+    goal_repo: GoalRepoDep,
+) -> RfiService:
+    return RfiService(
+        task_repo=task_repo,
+        project_repo=project_repo,
+        decision_repo=decision_repo,
+        goal_repo=goal_repo,
+        rfi_repo=rfi_repo,
+    )
+
+
+def get_rfi_proposal_service(
+    decision_repo: DecisionRepoDep,
+    rfi_repo: RfiRepoDep,
+) -> RfiProposalService:
+    return RfiProposalService(
+        decision_repo=decision_repo,
+        rfi_repo=rfi_repo,
+    )
+
+
 ImportServiceDep = Annotated[ImportService, Depends(get_import_service)]
 MatrixServiceDep = Annotated[MatrixService, Depends(get_matrix_service)]
 EntityTypeServiceDep = Annotated[EntityTypeService, Depends(get_entity_type_service)]
@@ -507,3 +546,5 @@ RevisionDecisionServiceDep = Annotated[
     RevisionDecisionService, Depends(get_revision_decision_service)
 ]
 ActionServiceDep = Annotated[ActionService, Depends(get_action_service)]
+RfiServiceDep = Annotated[RfiService, Depends(get_rfi_service)]
+RfiProposalServiceDep = Annotated[RfiProposalService, Depends(get_rfi_proposal_service)]

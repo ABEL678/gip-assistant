@@ -17,8 +17,8 @@ class Task:
     status: TaskStatus = TaskStatus.NOT_STARTED
     assignee_id: UUID | None = None
     deadline: date | None = None
-    section_code: str | None = None        # от кого (источник задания)
-    to_section_code: str | None = None     # кому (получатель задания)
+    section_code: str | None = None  # от кого (источник задания)
+    to_section_code: str | None = None  # кому (получатель задания)
     sort_order: int = 0
     source: str = "manual"
     is_complex: bool = False
@@ -28,6 +28,7 @@ class Task:
     rfi_cause_goal_id: UUID | None = None
     rfi_due_date: date | None = None
     rfi_state: RfiState | None = None
+    premise_ids: list[UUID] = field(default_factory=list)
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

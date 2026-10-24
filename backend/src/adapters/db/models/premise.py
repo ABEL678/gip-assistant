@@ -20,6 +20,7 @@ class PremiseModel(Base, TimestampMixin):
         Index("idx_premises_category", "category"),
         Index("idx_premises_actual", "actual"),
         Index("idx_premises_source_goal", "source_goal_id"),
+        Index("idx_premises_source_document", "source_document_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -48,5 +49,10 @@ class PremiseModel(Base, TimestampMixin):
     source_goal_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("goals.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    source_document_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("documents.id", ondelete="SET NULL"),
         nullable=True,
     )

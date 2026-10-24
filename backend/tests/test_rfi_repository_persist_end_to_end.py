@@ -60,6 +60,11 @@ async def test_rfi_task_save_and_get(mock_session, rfi_task):
     mock_session.flush = AsyncMock()
     mock_session.refresh = AsyncMock()
 
+    # _fetch_premise_ids делает execute() → вернуть пустой список premise_ids
+    mock_result = MagicMock()
+    mock_result.scalars().all.return_value = []
+    mock_session.execute = AsyncMock(return_value=mock_result)
+
     repo = SqlAlchemyTaskRepository(mock_session)
     result = await repo.save(rfi_task)
     assert result.is_rfi is True

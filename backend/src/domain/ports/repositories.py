@@ -405,6 +405,27 @@ class DecisionNormRepository(ABC):
         """Разорвать связь решения с нормой."""
 
 
+class RfiRepository(ABC):
+    """Порт репозитория RFI (Task с is_rfi=true)."""
+
+    @abstractmethod
+    async def list_rfis_by_project(self, project_id: UUID) -> list[Task]: ...
+
+    @abstractmethod
+    async def get_rfi_by_id(self, id: UUID) -> Task | None: ...
+
+    @abstractmethod
+    async def list_by_cause_decision(self, decision_id: UUID) -> list[Task]: ...
+
+    @abstractmethod
+    async def list_by_cause_goal(self, goal_id: UUID) -> list[Task]: ...
+
+    @abstractmethod
+    async def list_overdue(
+        self, today: date, project_id: UUID
+    ) -> list[Task]: ...
+
+
 class RevisionRepository(ABC):
     """Порт репозитория Revision."""
 

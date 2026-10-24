@@ -10,6 +10,7 @@ from backend.src.domain.entities.document import Document
 from backend.src.domain.ports.repositories import (
     DocumentRepository,
     DocumentTypeRepository,
+    TaskRepository,
 )
 from backend.src.domain.value_objects.document import (
     DocPartType,
@@ -27,9 +28,11 @@ class DocumentService:
         self,
         repo: DocumentRepository,
         document_type_repo: DocumentTypeRepository,
+        task_repo: TaskRepository,
     ) -> None:
         self._repo = repo
         self._document_type_repo = document_type_repo
+        self._task_repo = task_repo
 
     async def create(
         self,
@@ -48,11 +51,26 @@ class DocumentService:
         version_parent_id: UUID | None = None,
         replaces_id: UUID | None = None,
         replaced_by_id: UUID | None = None,
+        rfi_id: UUID | None = None,
     ) -> Document:
         """Создать ГОСТ-документ."""
         document_type = await self._document_type_repo.get_by_id(document_type_id)
         if document_type is None:
             raise ValueError(f"Тип документа {document_type_id} не найден")
+
+        # Валидация rfi_id (спека §2.2)
+        if rfi_id is not None:
+            task = await self._task_repo.get_by_id(rfi_id)
+            if task is None:
+                raise ValueError(f"Task {rfi_id} не найден")
+            if not task.is_rfi:
+                raise ValueError(
+                    f"Task {rfi_id} не является RFI (is_rfi=false)"
+                )
+            if task.project_id != project_id:
+                raise ValueError(
+                    f"Task {rfi_id} принадлежит другому проекту"
+                )
 
         document = Document(
             project_id=project_id,
@@ -70,6 +88,7 @@ class DocumentService:
             version_parent_id=version_parent_id,
             replaces_id=replaces_id,
             replaced_by_id=replaced_by_id,
+            rfi_id=rfi_id,
         )
         return await self._repo.save(document)
 
@@ -99,11 +118,30 @@ class DocumentService:
         mark: str | None = None,
         base_designation: str | None = None,
         lifecycle_status: LifecycleStatus | None = None,
+        rfi_id: UUID | None = None,
     ) -> Document | None:
-        """Обновить ГОСТ-документ."""
+        """Обновить ГОСТ-документ.
+
+        Примечание: None-sentinel — None означает «не менять поле».
+        Для очистки rfi_id нужно удалить и создать документ заново.
+        """
         document = await self._repo.get_by_id(id)
         if document is None:
             return None
+
+        # Валидация rfi_id (спека §2.2)
+        if rfi_id is not None:
+            task = await self._task_repo.get_by_id(rfi_id)
+            if task is None:
+                raise ValueError(f"Task {rfi_id} не найден")
+            if not task.is_rfi:
+                raise ValueError(
+                    f"Task {rfi_id} не является RFI (is_rfi=false)"
+                )
+            if task.project_id != document.project_id:
+                raise ValueError(
+                    f"Task {rfi_id} принадлежит другому проекту"
+                )
 
         if document_name is not None:
             document.document_name = document_name
@@ -119,6 +157,8 @@ class DocumentService:
             document.base_designation = base_designation
         if lifecycle_status is not None:
             document.lifecycle_status = lifecycle_status
+        if rfi_id is not None:
+            document.rfi_id = rfi_id
 
         return await self._repo.save(document)
 

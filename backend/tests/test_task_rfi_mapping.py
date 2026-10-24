@@ -1,12 +1,21 @@
 """Smoke-тесты маппинга Task RFI полей (6.12a)."""
 
 from datetime import date
+from unittest.mock import MagicMock
 from uuid import uuid4
+
+import pytest
 
 from backend.src.adapters.db.models.task import Task as TaskModel
 from backend.src.adapters.db.repositories.task_repo import SqlAlchemyTaskRepository
 from backend.src.domain.entities.task import Task
 from backend.src.domain.value_objects.enums import RfiState
+
+
+@pytest.fixture
+def mock_session():
+    """Мок сессии для создания instance SqlAlchemyTaskRepository."""
+    return MagicMock()
 
 
 def test_task_rfi_to_model():
@@ -28,7 +37,7 @@ def test_task_rfi_to_model():
     assert model.rfi_state == "open"
 
 
-def test_task_rfi_to_domain():
+def test_task_rfi_to_domain(mock_session):
     """Model → domain: все 5 полей корректно маппятся."""
     model = TaskModel(
         id=uuid4(),
@@ -40,7 +49,8 @@ def test_task_rfi_to_domain():
         rfi_due_date=date(2026, 12, 31),
         rfi_state="sent",
     )
-    task = SqlAlchemyTaskRepository._to_domain(model)
+    repo = SqlAlchemyTaskRepository(mock_session)
+    task = repo._to_domain(model)
     assert task.is_rfi is True
     assert task.rfi_cause_decision_id == model.rfi_cause_decision_id
     assert task.rfi_cause_goal_id == model.rfi_cause_goal_id
@@ -59,7 +69,7 @@ def test_task_non_rfi_defaults():
     assert model.rfi_state is None
 
 
-def test_task_non_rfi_to_domain():
+def test_task_non_rfi_to_domain(mock_session):
     """Не-RFI модель → domain: rfi_state = None."""
     model = TaskModel(
         id=uuid4(),
@@ -68,12 +78,13 @@ def test_task_non_rfi_to_domain():
         is_rfi=False,
         rfi_state=None,
     )
-    task = SqlAlchemyTaskRepository._to_domain(model)
+    repo = SqlAlchemyTaskRepository(mock_session)
+    task = repo._to_domain(model)
     assert task.is_rfi is False
     assert task.rfi_state is None
 
 
-def test_task_rfi_roundtrip():
+def test_task_rfi_roundtrip(mock_session):
     """Domain → model → domain: поля не теряются."""
     original = Task(
         project_id=uuid4(),
@@ -85,7 +96,8 @@ def test_task_rfi_roundtrip():
         rfi_state=RfiState.ESCALATED,
     )
     model = SqlAlchemyTaskRepository._to_model(original)
-    restored = SqlAlchemyTaskRepository._to_domain(model)
+    repo = SqlAlchemyTaskRepository(mock_session)
+    restored = repo._to_domain(model)
     assert restored.is_rfi == original.is_rfi
     assert restored.rfi_cause_decision_id == original.rfi_cause_decision_id
     assert restored.rfi_cause_goal_id == original.rfi_cause_goal_id

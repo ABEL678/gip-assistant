@@ -478,6 +478,10 @@ DecisionLink), не смешиваются с 6.11a–e.
 - ⚠️ **B027: TaskRepository.get_by_pair без @abstractmethod** — техдолг Этапа 1.
 - ⚠️ **GitHub Actions** для авто-генерации DATABASE.md / API.md — не настроены.
 - ⚠️ **ESLint в frontend** — не настроен (только tsc).
+- ⚠️ **TestGoalPremiseIdsIntegration (test_goals_routes.py)** — fixture использует `session.begin()` → COMMIT на exit, вопреки комментарию «rollback». Данные не утекают при pytest (autouse `dispose_engine` + rollback на уровне сессии), но fixture commit — нарушение изоляции. Чинить — отдельная задача после вехи 4.
+- ⚠️ **Двойная конвенция enum:** `RfiState` использует `.value` (строковые `'open'`, `'closed'`…), `GoalState` / `DecisionState` / `PremiseCategory` — `.name` (`'PLAN'`, `'CONTRACT'`). «Привести к одной (values) — после вехи 4».
+- ⚠️ **N+1 в TaskRepository:** `get_by_project` / `get_by_pair` / `get_overdue` / `get_upcoming` — по одному `_fetch_premise_ids` на каждый RFI-ряд. Батчинг JOIN → batch IN — 6.12e / после вехи 4.
+- ⚠️ **RfiRepository использует private-члены TaskRepository:** `_fetch_premise_ids` и `_to_domain`. При рефакторинге TaskRepository (например, вынос common logic) — проверить RfiRepository на совместимость.
 - ⚠️ **6.11a: `decision_id` в домене Task и маппинге TaskRepository** —
   отклонение от спеки `spec_week_3.md §2.1` (там связь Decision → Task
   только через FK в БД, домен Task про Decision не знает). Причина:

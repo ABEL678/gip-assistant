@@ -3,7 +3,18 @@
 import uuid
 from datetime import date
 
-from sqlalchemy import Boolean, CheckConstraint, Date, Enum, ForeignKey, Index, Integer, String, Text, text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Date,
+    Enum,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    text,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -23,8 +34,14 @@ class Task(Base, TimestampMixin):
         Index("idx_tasks_to_section", "to_section_code"),
         Index("idx_tasks_decision", "decision_id"),
         Index("idx_tasks_rfi_due_date", "rfi_due_date", postgresql_where=text("is_rfi = true")),
-        Index("idx_tasks_rfi_cause_decision", "rfi_cause_decision_id", postgresql_where=text("is_rfi = true")),
-        Index("idx_tasks_rfi_cause_goal", "rfi_cause_goal_id", postgresql_where=text("is_rfi = true")),
+        Index(
+            "idx_tasks_rfi_cause_decision",
+            "rfi_cause_decision_id",
+            postgresql_where=text("is_rfi = true"),
+        ),
+        Index(
+            "idx_tasks_rfi_cause_goal", "rfi_cause_goal_id", postgresql_where=text("is_rfi = true")
+        ),
         Index("idx_tasks_is_rfi", "is_rfi", postgresql_where=text("is_rfi = true")),
         CheckConstraint(
             "(is_rfi = false) OR (rfi_cause_decision_id IS NOT NULL OR rfi_cause_goal_id IS NOT NULL)",
@@ -67,7 +84,9 @@ class Task(Base, TimestampMixin):
         ForeignKey("decisions.id", ondelete="SET NULL"),
         nullable=True,
     )
-    is_rfi: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    is_rfi: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
     rfi_cause_decision_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("decisions.id", ondelete="SET NULL"),
@@ -80,6 +99,11 @@ class Task(Base, TimestampMixin):
     )
     rfi_due_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     rfi_state: Mapped[RfiState | None] = mapped_column(
-        Enum(RfiState, name="rfi_state", create_type=False),
+        Enum(
+            RfiState,
+            name="rfi_state",
+            create_type=False,
+            values_callable=lambda x: [e.value for e in x],
+        ),
         nullable=True,
     )

@@ -22,6 +22,7 @@ class DocumentModel(Base, TimestampMixin):
         Index("idx_documents_status", "lifecycle_status"),
         Index("idx_documents_premise", "premise_id"),
         Index("idx_documents_trigger_action", "trigger_action_id"),
+        Index("idx_documents_rfi", "rfi_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -111,5 +112,10 @@ class DocumentModel(Base, TimestampMixin):
     trigger_action_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("actions.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    rfi_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("tasks.id", ondelete="SET NULL"),
         nullable=True,
     )

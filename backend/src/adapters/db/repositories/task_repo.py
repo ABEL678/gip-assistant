@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.src.adapters.db.models.task import Task as TaskModel
 from backend.src.domain.entities.task import Task
 from backend.src.domain.ports.repositories import TaskRepository
-from backend.src.domain.value_objects.enums import TaskStatus
+from backend.src.domain.value_objects.enums import RfiState, TaskStatus
 
 
 class SqlAlchemyTaskRepository(TaskRepository):
@@ -106,6 +106,12 @@ class SqlAlchemyTaskRepository(TaskRepository):
 
     # ---------- Mapping ----------
 
+    async def _fetch_premise_ids(self, task_id: UUID) -> list[UUID]:
+        """Placeholder: реализация — в 6.12b (JOIN через documents).
+        В 6.12a возвращает [] для всех Task (включая RFI).
+        """
+        return []
+
     @staticmethod
     def _to_domain(model: TaskModel) -> Task:
         return Task(
@@ -122,6 +128,11 @@ class SqlAlchemyTaskRepository(TaskRepository):
             source=model.source,
             is_complex=model.is_complex,
             decision_id=model.decision_id,
+            is_rfi=model.is_rfi,
+            rfi_cause_decision_id=model.rfi_cause_decision_id,
+            rfi_cause_goal_id=model.rfi_cause_goal_id,
+            rfi_due_date=model.rfi_due_date,
+            rfi_state=RfiState(model.rfi_state) if model.rfi_state is not None else None,
             created_at=model.created_at,
             updated_at=model.updated_at,
         )
@@ -142,4 +153,9 @@ class SqlAlchemyTaskRepository(TaskRepository):
             source=domain.source,
             is_complex=domain.is_complex,
             decision_id=domain.decision_id,
+            is_rfi=domain.is_rfi,
+            rfi_cause_decision_id=domain.rfi_cause_decision_id,
+            rfi_cause_goal_id=domain.rfi_cause_goal_id,
+            rfi_due_date=domain.rfi_due_date,
+            rfi_state=domain.rfi_state.value if domain.rfi_state is not None else None,
         )

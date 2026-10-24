@@ -39,6 +39,7 @@ class Document:
     signature_hash: str | None = None
     signature_status: str | None = None
     created_by: UUID | None = None
+    trigger_action_id: UUID | None = None
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

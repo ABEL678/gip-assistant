@@ -4,17 +4,17 @@
 > **Автогенерация:** в MVP-2 файл обновляется автоматически через
 > `sqlacodegen` + GitHub Actions. Пока — вручную.
 
-**Версия:** 1.2
+**Версия:** 1.3
 **Обновлено:** 22.10.2026
 **СУБД:** PostgreSQL 15+
 **ORM:** SQLAlchemy 2.0 async
-**Текущая миграция:** `c52a3c176d47`
+**Текущая миграция:** `c0a9ff2f6038`
 
 ---
 
 ## 1. Обзор
 
-**Всего таблиц:** 27.
+**Всего таблиц:** 27 (без изменений — 6.12a добавляет колонки, не таблицы).
 
 | Группа | Таблицы |
 |--------|---------|
@@ -26,8 +26,8 @@
 | Универсальные сущности | entity_types, entities |
 | Служебные | alembic_version |
 
-**Всего индексов:** 43 (17 PK + 2 UNIQUE + 24 дополнительных).
-Пересчитано после Сессии 5.1 (+17 индексов).
+**Всего индексов:** 47 (17 PK + 2 UNIQUE + 28 дополнительных).
++4 partial-индекса в tasks (6.12a) + 1 в actions + 1 в documents.
 После 6.8a: +3 таблицы (premises, goals, goal_premises) и +1 индекс (idx_goals_verification_status).
 После 6.11a: +3 таблицы (decisions, decision_goals, decision_premises) + колонка tasks.decision_id + enum decision_state.
 
@@ -82,8 +82,13 @@
 | updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
 | to_section_code | VARCHAR(50) | nullable | Раздел-получатель |
 | decision_id | UUID | FK → decisions.id (SET NULL), nullable | Решение |
+| is_rfi | BOOLEAN | NOT NULL, default=false | Флаг RFI (spec_week_4 §2.1) |
+| rfi_cause_decision_id | UUID | FK → decisions.id (SET NULL), nullable | Причина RFI: Decision |
+| rfi_cause_goal_id | UUID | FK → goals.id (SET NULL), nullable | Причина RFI: Goal |
+| rfi_due_date | DATE | nullable | Срок ожидания ответа |
+| rfi_state | rfi_state | nullable | Состояние RFI (enum: open/sent/answered/registered/closed/escalated) |
 
-**Внимание:** `to_section_code` — **последняя колонка** (добавлена миграцией `272f011cf740`). `decision_id` — добавлена миграцией `8aad8fd713f0`.
+**Внимание:** `decision_id` — добавлена миграцией `8aad8fd713f0`. RFI-колонки — миграция `c0a9ff2f6038` (6.12a).
 
 **Индексы:**
 
@@ -94,10 +99,21 @@
 - `idx_tasks_section` (section_code)
 - `idx_tasks_to_section` (to_section_code)
 - `idx_tasks_decision` (decision_id)
+- `idx_tasks_rfi_due_date` (rfi_due_date, partial: `is_rfi = true`)
+- `idx_tasks_rfi_cause_decision` (rfi_cause_decision_id, partial: `is_rfi = true`)
+- `idx_tasks_rfi_cause_goal` (rfi_cause_goal_id, partial: `is_rfi = true`)
+- `idx_tasks_is_rfi` (is_rfi, partial: `is_rfi = true`)
+
+**CHECK:**
+
+- `ck_tasks_rfi_cause`: `(is_rfi = false) OR (rfi_cause_decision_id IS NOT NULL OR rfi_cause_goal_id IS NOT NULL)`
+- `ck_tasks_rfi_state`: `(is_rfi = false AND rfi_state IS NULL) OR (is_rfi = true AND rfi_state IS NOT NULL)`
 
 **FK:**
 
 - `tasks_project_id_fkey` → projects.id (CASCADE)
+- `tasks_rfi_cause_decision_id_fkey` → decisions.id (SET NULL)
+- `tasks_rfi_cause_goal_id_fkey` → goals.id (SET NULL)
 - `tasks_assignee_id_fkey` → executors.id
 
 ### 2.3. cross_tasks
@@ -560,6 +576,35 @@
 | DocPartType | ТЧ, ГЧ | домен (value_objects/document.py) |
 | LifecycleStatus | DRAFT, IN_REVIEW, NORMOCONTROL, APPROVED, ARCHIVED, ANNULLED, REPLACED | домен (value_objects/document.py) |
 | DocumentLinkType | appendix, reference, replaces, version_of | домен (value_objects/document.py) |
+| RfiState | open, sent, answered, registered, closed, escalated | tasks.rfi_state |
+
+---
+
+## 3. Новые таблицы/колонки (6.12a)
+
+### 3.1. actions — новая колонка
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| result_document_id | UUID | FK → documents.id (SET NULL), nullable | Документ-результат Action |
+
+**Индекс:** `idx_actions_result_document`.
+
+### 3.2. documents — новая колонка
+
+| Поле | Тип | Ограничения | Описание |
+|------|-----|-------------|----------|
+| trigger_action_id | UUID | FK → actions.id (SET NULL), nullable | Action, породивший Document |
+
+**Индекс:** `idx_documents_trigger_action`.
+
+### 3.3. rfi_state enum
+
+**Значения:** `open`, `sent`, `answered`, `registered`, `closed`, `escalated`.
+
+**Создание:** `CREATE TYPE rfi_state AS ENUM ('open', 'sent', 'answered', 'registered', 'closed', 'escalated')`.
+
+**Удаление (downgrade):** `DROP TYPE IF EXISTS rfi_state`.
 
 ---
 

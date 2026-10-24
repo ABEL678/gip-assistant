@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from uuid import UUID, uuid4
 
-from backend.src.domain.value_objects.enums import TaskStatus
+from backend.src.domain.value_objects.enums import RfiState, TaskStatus
 
 
 @dataclass
@@ -23,6 +23,11 @@ class Task:
     source: str = "manual"
     is_complex: bool = False
     decision_id: UUID | None = None
+    is_rfi: bool = False
+    rfi_cause_decision_id: UUID | None = None
+    rfi_cause_goal_id: UUID | None = None
+    rfi_due_date: date | None = None
+    rfi_state: RfiState | None = None
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

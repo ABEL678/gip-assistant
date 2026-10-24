@@ -6,8 +6,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** TASKS.md — статус.
 > Если противоречие между TASKS.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.5
-**Обновлено:** 18.10.2026
+**Версия:** 2.6
+**Обновлено:** 22.10.2026
 **Автор:** ГИП, руководитель разработки
 
 ---
@@ -300,7 +300,7 @@
 
 ## 2. В работе (In Progress)
 
-**На 22.10.2026 — Веха 3 (Decision + Norm + DecisionLink).**
+**На 22.10.2026 — Веха 4 (RFI) 6.12a ЗАКРЫТА.**
 
 - ✅ 6.11b — ЗАКРЫТ (22.10.2026).
   - 3 новые сущности: Norm, DecisionLink, DecisionNorm.
@@ -488,8 +488,36 @@ DecisionLink), не смешиваются с 6.11a–e.
   ProjectStandards, Revisions (сессии 6.10d, 6.8i). В 6.11d добавлены 21
   эндпоинт вехи 3 (итого 60 + системные). Полная сверка с фактическими
   роутерами — отдельная задача.
+- ⚠️ **Pre-existing дрейф типов (до 6.12a):** `project_standards.value`
+  (JSON → JSONB), `result_goals.created_at` / `standard_goals.created_at`
+  (TIMESTAMP → DateTime). `alembic check` подтверждает. Миграция 6.12a
+  не трогала. При `alembic revision --autogenerate` в 6.12b–e — **вручную
+  вычищать** этот дрейф из генерата. Отдельная задача «fix pre-existing
+  type drift» — после вехи 4.
+- ⚠️ **Циклические FK `actions ↔ documents` (6.12a, осознанный риск спеки §2.3):**
+  `actions.result_document_id` + `documents.trigger_action_id` порождают
+  SAWarning «unresolvable cycles». Autogenerate **не сравнивает** FK этих
+  таблиц. При изменении FK `actions` / `documents` — **явная миграция**
+  (`op.create_foreign_key` / `op.drop_constraint`), не autogenerate.
 
 ## 5. Журнал (Changelog)
+
+### 22.10.2026 (сессия 6.12a — RFI: модель + миграция + DTO + репо)
+
+- ✅ `RfiState` enum (6 значений: open/sent/answered/registered/closed/escalated).
+- ✅ TaskModel: +5 колонок (is_rfi, rfi_cause_decision_id, rfi_cause_goal_id, rfi_due_date, rfi_state) + 2 CHECK + 4 partial-индекса.
+- ✅ ActionModel: +result_document_id + индекс.
+- ✅ DocumentModel: +trigger_action_id + индекс.
+- ✅ Domain Task: +5 полей (is_rfi, rfi_cause_*, rfi_due_date, rfi_state).
+- ✅ Domain Action: +result_document_id.
+- ✅ Domain Document: +trigger_action_id.
+- ✅ DTO: rfi.py (RfiBase, RfiCreate, RfiUpdate, RfiRead).
+- ✅ TaskRepository: _to_domain/_to_model + 5 полей + _fetch_premise_ids placeholder.
+- ✅ ActionRepository: +result_document_id.
+- ✅ DocumentRepository: +trigger_action_id.
+- ✅ Миграция: `c0a9ff2f6038` (upgrade + downgrade OK).
+- ✅ 12 тестов: test_task_rfi_mapping (5), test_action_document_mapping (4), test_rfi_repository_persist_end_to_end (3).
+- ✅ **Итого в проекте: 404 теста pytest.** Ruff чисто по новым файлам.
 
 ### 22.10.2026 (сессия 6.11e — UI вехи 3)
 
@@ -883,7 +911,7 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 | Метрика | Значение | Цель |
 |---------|----------|------|
-| Тесты pytest (backend) | 392 | — |
+| Тесты pytest (backend) | 404 | — |
 | Тесты (frontend) | 0 | — (UI сброшен) |
 | Таблиц в БД | 24 (+ 3 в миграции 6.11a, + 3 в миграции 6.11b) = 27 | — |
 | Эндпоинтов API | 42 | — |
@@ -898,10 +926,12 @@ DecisionLink), не смешиваются с 6.11a–e.
 | API-клиентов | 10 | — |
 | Хуков TanStack Query | 45 | — |
 | **DOMAIN.md** | **v1.1** | — |
+| **Таблиц в БД** | **27 + 0 (колонки, не таблицы) = 27** | — |
 | **React Flow страницы** | **3** (canvas-demo, timeline-demo, skeleton-demo) | — |
 | **Новых сущностей (Goal/Decision/Action/Norm/RFI)** | **2** | **5** |
 | **Агентов** | **0** | **5** |
 | **UI вехи 3** | **100%** | — |
+| **Веха 4 6.12a** | **ЗАКРЫТА** | — |
 
 ---
 

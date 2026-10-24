@@ -18,6 +18,7 @@ class ActionModel(Base, TimestampMixin):
         Index("idx_actions_task", "task_id"),
         Index("idx_actions_state", "state"),
         Index("idx_actions_deadline", "deadline"),
+        Index("idx_actions_result_document", "result_document_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -45,4 +46,9 @@ class ActionModel(Base, TimestampMixin):
         Enum(ActionState, name="action_state", create_type=False),
         nullable=False,
         default=ActionState.PLAN,
+    )
+    result_document_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("documents.id", ondelete="SET NULL"),
+        nullable=True,
     )

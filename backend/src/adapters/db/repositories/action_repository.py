@@ -64,6 +64,7 @@ class SqlAlchemyActionRepository(ActionRepository):
             deadline=model.deadline,
             responsible_id=model.responsible_id,
             state=ActionState(model.state),
+            result_document_id=model.result_document_id,
             created_at=model.created_at,
             updated_at=model.updated_at,
         )
@@ -79,4 +80,5 @@ class SqlAlchemyActionRepository(ActionRepository):
             deadline=domain.deadline,
             responsible_id=domain.responsible_id,
             state=domain.state.value,
+            result_document_id=domain.result_document_id,
         )

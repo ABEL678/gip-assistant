@@ -151,3 +151,14 @@ class DecisionLinkType(StrEnum):
     SEQUENTIAL = "sequential"  # Последовательная
     PARALLEL = "parallel"  # Параллельная
     NESTED = "nested"  # Вложенная
+
+
+class RfiState(StrEnum):
+    """Состояние RFI (spec_week_4.md §2.4)."""
+
+    OPEN = "open"  # Создан, Actions не начаты
+    SENT = "sent"  # Запрос отправлен, ждём ответ
+    ANSWERED = "answered"  # Ответ получен (Document с rfi_id)
+    REGISTERED = "registered"  # Новые ИД зарегистрированы (Premise с source_document_id)
+    CLOSED = "closed"  # RFI закрыт
+    ESCALATED = "escalated"  # Просрочен, эскалирован

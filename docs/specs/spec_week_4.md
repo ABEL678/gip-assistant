@@ -166,13 +166,13 @@ premises.source_document_id — SET NULL (6.12b).
 backend/src/application/dto/rfi.py:
 
 RfiBase(BaseModel) — rfi_cause_decision_id, rfi_cause_goal_id,
-rfi_due_date, rfi_state (default OPEN), formulation, deadline,
-assignee_id, is_complex (наследуются от Task).
+rfi_due_date, rfi_state (default OPEN), title (в домене Task поле называется title),
+deadline, assignee_id, is_complex (наследуются от Task).
 
 RfiCreate(RfiBase) — project_id передаётся в пути. is_rfi = true
 выставляется сервисом (не из DTO).
 
-RfiUpdate(BaseModel) — все поля optional.
+RfiUpdate(BaseModel) — все поля optional (title, deadline, assignee_id, is_complex, rfi_cause_*, rfi_due_date, rfi_state).
 
 RfiRead(RfiBase) — id, project_id, created_at, updated_at,
 premise_ids (производное через Document — реальный список, не пустой).
@@ -193,7 +193,7 @@ action: Literal["create", "escalate"] — что делать с предлож�
 
 rule: str — decision_без_ид / rfi_просрочен.
 
-formulation, rationale.
+formulation, rationale (эфемерная, не Task; при from-proposal мапится в Task.title).
 
 reason_decision_id (для create), existing_rfi_id (для escalate).
 

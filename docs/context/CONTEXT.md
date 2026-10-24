@@ -7,8 +7,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** CONTEXT.md — краткая выжимка.
 > Если противоречие между CONTEXT.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.13 (22.10.2026)
-**Актуально на:** после сессии 6.11e (веха 3: модель + сервисы + эндпоинты + UI — закрыта)
+**Версия:** 2.14 (22.10.2026)
+**Актуально на:** после сессии 6.12a (веха 4: модель RFI + Document-Action связи — закрыта)
 **Стек:** FastAPI + SQLAlchemy 2.0 async + PostgreSQL 15 + React 18 + TS
 
 ---
@@ -231,6 +231,18 @@
 - ✅ **Роутинг:** App.tsx (+3 маршрута), ProjectPage.tsx (секция «Решения»).
 - ✅ **npm run build** зелёный.
 - **Веха 3 закрыта: 6.11a → 6.11b → 6.11c → 6.11d → 6.11e.**
+
+**Веха 4 — 6.12a (22.10.2026):**
+
+- ✅ `RfiState` enum (6 значений).
+- ✅ TaskModel: +5 колонок + 2 CHECK + 4 partial-индекса.
+- ✅ ActionModel: +result_document_id + индекс.
+- ✅ DocumentModel: +trigger_action_id + индекс.
+- ✅ Domain Task/Action/Document: +5/+1/+1 полей.
+- ✅ DTO: rfi.py (RfiBase/Create/Update/Read).
+- ✅ TaskRepository/ActionRepository/DocumentRepository: обновлены маппинги.
+- ✅ Миграция `c0a9ff2f6038`.
+- ✅ 12 тестов. **404 теста pytest.**
 
 **Веха 1a–1d (октябрь 2026) — ЗАКРЫТО:**
 

@@ -36,6 +36,7 @@ class Action:
     deadline: date | None = None
     responsible_id: UUID | None = None
     state: ActionState = ActionState.PLAN
+    result_document_id: UUID | None = None
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

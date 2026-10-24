@@ -87,6 +87,7 @@ class SqlAlchemyDocumentRepository(DocumentRepository):
             signature_hash=model.signature_hash,
             signature_status=model.signature_status,
             created_by=model.created_by,
+            trigger_action_id=model.trigger_action_id,
             created_at=model.created_at,
             updated_at=model.updated_at,
         )
@@ -118,4 +119,5 @@ class SqlAlchemyDocumentRepository(DocumentRepository):
             signature_hash=domain.signature_hash,
             signature_status=domain.signature_status,
             created_by=domain.created_by,
+            trigger_action_id=domain.trigger_action_id,
         )

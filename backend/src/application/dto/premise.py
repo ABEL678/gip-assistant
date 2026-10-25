@@ -71,6 +71,7 @@ class PremiseUpdate(BaseModel):
     valid_until: Optional[_date] = None
     data: Optional[dict[str, Any]] = None
     source_goal_id: Optional[uuid.UUID] = None
+    source_document_id: Optional[uuid.UUID] = None
     schema_: Optional[dict[str, Any]] = Field(
         None,
         validation_alias=AliasChoices("schema", "field_schema"),

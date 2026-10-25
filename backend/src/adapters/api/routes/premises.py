@@ -52,6 +52,7 @@ async def create_premise(
             valid_until=payload.valid_until,
             data=payload.data,
             schema=payload.schema_,
+            source_document_id=payload.source_document_id,
         )
     except ValueError as err:
         raise HTTPException(

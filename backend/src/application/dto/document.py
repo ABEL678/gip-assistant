@@ -53,6 +53,8 @@ class DocumentUpdate(BaseModel):
     mark: Optional[str] = Field(None, max_length=50)
     base_designation: Optional[str] = Field(None, max_length=200)
     lifecycle_status: Optional[LifecycleStatus] = None
+    rfi_id: Optional[uuid.UUID] = None
+    trigger_action_id: Optional[uuid.UUID] = None
 
 
 class DocumentRead(DocumentBase):

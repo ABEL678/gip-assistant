@@ -54,6 +54,8 @@ async def create_document(
             version_parent_id=payload.version_parent_id,
             replaces_id=payload.replaces_id,
             replaced_by_id=payload.replaced_by_id,
+            rfi_id=payload.rfi_id,
+            trigger_action_id=payload.trigger_action_id,
         )
     except ValueError as err:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)) from err
@@ -134,6 +136,8 @@ async def update_document(
             mark=data.get("mark"),
             base_designation=data.get("base_designation"),
             lifecycle_status=data.get("lifecycle_status"),
+            rfi_id=data.get("rfi_id"),
+            trigger_action_id=data.get("trigger_action_id"),
         )
     except ValueError as err:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err)) from err

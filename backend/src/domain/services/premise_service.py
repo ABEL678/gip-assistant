@@ -29,6 +29,7 @@ class PremiseService:
         project_id: UUID,
         category: PremiseCategory,
         name: str,
+        source_document_id: UUID | None = None,
         **kwargs,
     ) -> Premise:
         """Создать вводную.
@@ -52,6 +53,7 @@ class PremiseService:
             project_id=project_id,
             category=category,
             name=name,
+            source_document_id=source_document_id,
             **kwargs,
         )
         return await self._repo.save(premise)

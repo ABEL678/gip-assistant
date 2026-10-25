@@ -52,6 +52,7 @@ class DocumentService:
         replaces_id: UUID | None = None,
         replaced_by_id: UUID | None = None,
         rfi_id: UUID | None = None,
+        trigger_action_id: UUID | None = None,
     ) -> Document:
         """Создать ГОСТ-документ."""
         document_type = await self._document_type_repo.get_by_id(document_type_id)
@@ -89,6 +90,7 @@ class DocumentService:
             replaces_id=replaces_id,
             replaced_by_id=replaced_by_id,
             rfi_id=rfi_id,
+            trigger_action_id=trigger_action_id,
         )
         return await self._repo.save(document)
 
@@ -119,6 +121,7 @@ class DocumentService:
         base_designation: str | None = None,
         lifecycle_status: LifecycleStatus | None = None,
         rfi_id: UUID | None = None,
+        trigger_action_id: UUID | None = None,
     ) -> Document | None:
         """Обновить ГОСТ-документ.
 
@@ -159,6 +162,8 @@ class DocumentService:
             document.lifecycle_status = lifecycle_status
         if rfi_id is not None:
             document.rfi_id = rfi_id
+        if trigger_action_id is not None:
+            document.trigger_action_id = trigger_action_id
 
         return await self._repo.save(document)
 

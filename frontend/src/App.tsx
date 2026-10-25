@@ -27,6 +27,7 @@ import { SkeletonDemoPage } from "@/pages/SkeletonDemoPage"
 import { DecisionsPage } from "@/pages/DecisionsPage"
 import { NormsPage } from "@/pages/NormsPage"
 import { DecisionLinkPage } from "@/pages/DecisionLinkPage"
+import { RfiPage } from "@/pages/RfiPage"
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
           <Route path="projects/:id/skeleton-demo" element={<SkeletonDemoPage />} />
           <Route path="projects/:id/goals" element={<GoalsPage />} />
           <Route path="projects/:id/decisions" element={<DecisionsPage />} />
+          <Route path="projects/:id/rfis" element={<RfiPage />} />
           <Route path="projects/:id/norms" element={<NormsPage />} />
           <Route path="projects/:id/decision-links" element={<DecisionLinkPage />} />
         </Route>

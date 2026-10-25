@@ -12,7 +12,9 @@ import { useDocumentsByProject } from "@/hooks/useDocuments"
 import { resultApi } from "@/api/resultApi"
 import { actionApi } from "@/api/actionApi"
 import { useDecisions } from "@/hooks/useDecisions"
+import { useRfis } from "@/hooks/useRfis"
 import { projectStandardApi } from "@/api/projectStandardApi"
+import { RFI_STATE_LABELS, formatIsoDate } from "@/api/rfiApi"
 
 import { DocumentCard } from "@/components/DocumentCard"
 
@@ -63,6 +65,8 @@ export function ProjectPage() {
   })
 
   const { data: decisions, isLoading: decisionsLoading } = useDecisions(id!)
+
+  const { data: rfis, isLoading: rfisLoading } = useRfis(id!)
 
   if (isLoading) {
     return <div className="text-muted-foreground">Загрузка проекта...</div>
@@ -424,6 +428,46 @@ export function ProjectPage() {
               <div key={d.id} className="border rounded-lg p-3">
                 <div className="font-medium line-clamp-2">{d.formulation}</div>
                 <div className="text-sm text-muted-foreground">{d.state}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">
+            RFI <span className="text-muted-foreground">({rfis?.length ?? 0})</span>
+          </h2>
+          <Link to={`/projects/${id}/rfis`}>
+            <Button variant="outline">Все RFI</Button>
+          </Link>
+        </div>
+
+        {rfisLoading ? (
+          <p className="text-muted-foreground">Загрузка...</p>
+        ) : !rfis || rfis.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Пока нет RFI
+            <div className="mt-4">
+              <Link to={`/projects/${id}/rfis`}>
+                <Button variant="outline">Перейти к RFI</Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {rfis.slice(0, 3).map((r) => (
+              <div key={r.id} className="border rounded-lg p-3">
+                <div className="font-medium line-clamp-2">{r.title}</div>
+                <div className="text-sm text-muted-foreground">
+                  {RFI_STATE_LABELS[r.rfi_state]}
+                </div>
+                {r.rfi_due_date && (
+                  <div className="text-xs text-muted-foreground">
+                    Срок: {formatIsoDate(r.rfi_due_date)}
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -3,8 +3,8 @@
 > **Назначение:** описание структуры проекта, слоёв, стека и правил.
 > Для ИИ-агентов: что где лежит, куда класть новый код, что нельзя нарушать.
 
-**Версия:** 1.0
-**Обновлено:** 24.10.2026
+**Версия:** 1.1
+**Обновлено:** 25.10.2026
 
 ---
 
@@ -397,7 +397,17 @@
 
 ---
 
-## 7.5. Слой изоляции агентов (Agent Gateway + MCP)
+### 7.5. LLM-адаптеры и админка
+
+**Порт:** `LLMProviderPort` (ABC) — `generate(prompt, system_prompt, project_id)`, `health_check()`.
+**Адаптеры:** `QwenAdapter` (локальная Qwen), `OpenAICompatibleAdapter` (provod.ai, Cloud.ru).
+**Диспетчер:** `RuntimeLLMAdapter` — читает `llm_settings.is_active` (TTL 60s кэш клиентов), создаёт нужный адаптер, проверяет светофор (`Project.data_security_level`).
+
+**Ключи:** `api_key` — Fernet (ключ `LLM_ENCRYPTION_KEY` в `.env`). В БД — `api_key_encrypted` (ciphertext) + `api_key_last4`. Plaintext — только в памяти.
+
+**Админка:** `/api/admin/llm/status|switch|providers|settings`. UI — `AdminLLMPage`. Смена — без перезапуска backend.
+
+### 7.6. Слой изоляции агентов (Agent Gateway + MCP)
 
 **Принцип:** агент не работает с `AsyncSession`, БД или файловой системой
 напрямую. Он работает с узким HTTP-интерфейсом — **Agent Gateway**, который

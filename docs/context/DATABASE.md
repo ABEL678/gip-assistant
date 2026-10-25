@@ -4,8 +4,8 @@
 > **Автогенерация:** в MVP-2 файл обновляется автоматически через
 > `sqlacodegen` + GitHub Actions. Пока — вручную.
 
-**Версия:** 1.3
-**Обновлено:** 22.10.2026
+**Версия:** 1.4
+**Обновлено:** 25.10.2026
 **СУБД:** PostgreSQL 15+
 **ORM:** SQLAlchemy 2.0 async
 **Текущая миграция:** `c0a9ff2f6038`
@@ -55,6 +55,7 @@
 | stage | VARCHAR(10) | NOT NULL, default='PD' | Стадия (EP/PP/PD/RD) |
 | client | VARCHAR(300) | nullable | Заказчик |
 | contract_number | VARCHAR(100) | nullable | № договора |
+| data_security_level | VARCHAR(10) | NOT NULL, default='green' | green/yellow/red (светофор для LLM) |
 | created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
 | updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
 
@@ -552,6 +553,22 @@
 **Ограничения:** UniqueConstraint(source_document_id, target_document_id, link_type).
 
 **Индексы:** `document_links_pkey` (PK), `idx_document_links_source`, `idx_document_links_target`.
+
+### 2.21. llm_settings
+
+**Назначение:** настройки LLM-провайдера (активный провайдер, модель, шифрованный ключ).
+
+| Поле | Тип | Обяз. | Комментарий |
+|---|---|---|---|
+| id | UUID | да | PK |
+| provider | str(50) | да | `qwen` / `openai_compatible` |
+| model_name | str(100) | да | |
+| base_url | str(500) | нет | |
+| api_key_encrypted | bytes | нет | Fernet-ciphertext |
+| api_key_last4 | str(4) | нет | для UI (не секрет) |
+| params | JSON | да | `{temperature, max_tokens}` |
+| is_active | bool | да | partial-index `idx_llm_settings_active` |
+| created_at, updated_at | timestamp | да | |
 
 ---
 

@@ -6,8 +6,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** TASKS.md — статус.
 > Если противоречие между TASKS.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.7
-**Обновлено:** 24.10.2026
+**Версия:** 2.8
+**Обновлено:** 25.10.2026
 **Автор:** ГИП, руководитель разработки
 
 ---
@@ -444,6 +444,14 @@
 - ⏳ Auth (JWT + Argon2) + Telegram-сводка + деплой на VPS.
 - ⏳ Лендинг + комплаенс 152-ФЗ + пилот.
 
+### 6.14 — Админка LLM (4 подсессии)
+
+**6.14 — Админка LLM** (веха 4, после 6.12d, до 6.12e). 4 подсессии:
+- **6.14a** — domain (`LLMSettings`), порт `LLMProviderPort`, модель `llm_settings` (с `api_key_encrypted` + `api_key_last4`), миграция, репо, сервис. +поле `Project.data_security_level`.
+- **6.14b** — адаптеры: `QwenAdapter`, `OpenAICompatibleAdapter`, `RuntimeLLMAdapter` (TTL 60s, светофор по `project.data_security_level`).
+- **6.14c** — DTO, DI, роуты (`/api/admin/llm/status|switch|providers|settings`), тесты.
+- **6.14d** — UI (`AdminLLMPage`), `adminLlmApi.ts`, `useAdminLlm.ts`.
+
 ### Очередь после вехи 3 (доработка вехи 1)
 
 Новые требования, зафиксированные в Дорожной карте 7.0
@@ -505,12 +513,24 @@ DecisionLink), не смешиваются с 6.11a–e.
   (`op.create_foreign_key` / `op.drop_constraint`), не autogenerate.
 - ⚠️ **Безопасность агентов (новое, 24.10.2026):** архитектурный паттерн
   «Agent Gateway + gip-mcp-gateway + песочница + сетевые политики»
-  зафиксирован в `ARCHITECTURE.md §7.5`, `DOMAIN.md §9.2.1`,
+  зафиксирован в `ARCHITECTURE.md §7.6`, `DOMAIN.md §9.2.1`,
   `RULES.md §12.5`. Реализация — в вехе 4 (агент RFI).
   До реализации — агенты работают в режиме «только чтение через
   существующий API», без прямого доступа к БД и без сторонних MCP.
+- ⚠️ **DATABASE.md — pre-existing дубли:** §2.17/§2.18/§2.19 (document_types, documents, document_versions — дважды), два `## 3.`. Чинить — отдельная задача «cleanup DATABASE.md» (после вехи 4).
+- ⚠️ **LLM-ключи (6.14, Б1):** `api_key` — **шифрование** (Fernet, ключ `LLM_ENCRYPTION_KEY` в `.env`). В БД — `api_key_encrypted` (ciphertext), `api_key_last4` (для UI). Plaintext — только в памяти `RuntimeLLMAdapter`. `.env` — не коммитить.
+- ⚠️ **Светофор (6.14, В2):** `Project.data_security_level` (enum `green`/`yellow`/`red`). `RuntimeLLMAdapter.generate(prompt, system_prompt, project_id)` — читает уровень; если `red` — `ValueError`. Regex — **не** используется.
+- ⚠️ **Порядок (6.14, В3):** 6.12d → 6.14a–d → 6.12e. 6.14 — **вне** вехи 3, но **в** вехе 4 (после UI RFI, до агента RFI).
 
 ## 5. Журнал (Changelog)
+
+### 25.10.2026 — docs: LLM admin spec (6.14)
+
+- ✅ `ARCHITECTURE.md §7.5` — «LLM-адаптеры и админка» (`RuntimeLLMAdapter`, Fernet, светофор).
+- ✅ `DATABASE.md §2.21` — `llm_settings` (`api_key_encrypted` + `api_key_last4`).
+- ✅ `RULES.md §12.5.6` — «LLM-настройки и ключи».
+- ✅ `TASKS.md §3` — 6.14 (4 подсессии: 6.14a–d).
+- ✅ `CONTEXT.md` — §5 (порядок: 6.12d → 6.14a–d → 6.12e) + §7 (принцип 16).
 
 ### 24.10.2026 (сессия 6.12c — RFI эндпоинты + DI)
 

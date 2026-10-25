@@ -58,7 +58,7 @@
 ## 4. Что уже в контексте (не надо пересказывать)
 
 - `docs/README.md` — карта документации. **Читать первым.**
-- `docs/context/DOMAIN.md` v1.1 — онтология ядра. **Главный документ.**
+- `docs/context/DOMAIN.md` v1.2 — онтология ядра. **Главный документ.**
 - `docs/Дорожная_карта_7.0.md` — стратегия.
 - `docs/specs/spec_week_4.md` — спека вехи 4 (RFI).
 - `docs/context/CONTEXT.md` v2.17 — резюме продукта.
@@ -86,10 +86,10 @@
 
 ## 6. Ключи / пути / команды
 
-### 6.1. Аудитор GLM-5.3 (GigaCode Ask)
+### 6.1. Аудитор — Kilo Ask (DeepSeek V4.1 Flash)
 
 **Роль:** независимый аудитор кода/плана. Не меняет код. Только отчёт.
-**Модель:** GLM-5.3 через Cloud.ru (GigaCode Ask mode, `reasoning_effort: high`).
+**Модель:** DeepSeek V4.1 Flash (`provod/deepseek-v4.1-flash-1017`), Kilo Ask mode (edit: deny).
 **Промпты:** `docs/tools/AUDIT_PROMPTS.md`.
 
 **Три точки встраивания:**
@@ -98,16 +98,16 @@
 3. **Архитектурный аудит** — раз в веху. Дорого.
 
 **Процесс:**
-1. Координатор (DeepSeek) пишет промпт для GLM.
-2. Человек копирует в GigaCode Ask (модель GLM-5.3).
-3. GLM возвращает отчёт (список проблем).
+1. Координатор (DeepSeek) пишет промпт для аудитора.
+2. Человек запускает его в Kilo Ask (DeepSeek V4.1 Flash).
+3. Аудитор возвращает отчёт (список проблем).
 4. Человек присылает отчёт координатору.
-5. Координатор сверяет, даёт финальный промпт GigaCode (Agent): «исправь / коммить».
+5. Координатор сверяет, даёт финальный промпт Kilo (code): «исправь / коммить».
 
-**Правило:** GigaCode (Agent) не коммитит без аудита GLM (точка 2) — для сессий 6.12a–e. Для мелких правок (docs, косметика) аудит не нужен.
+**Правило:** Kilo (code) не коммитит без аудита (точка 2) — для сессий 6.12a–e. Для мелких правок (docs, косметика) аудит не нужен.
 
 - **Проект:** `C:\Users\abelo\GIP-Assistant\gip-assistant`
-- **Инструменты:** GigaIDE + GLM-5.3 (Cloud.ru). Встроенный терминал GigaIDE висит на Windows — известный баг. Все команды Git/Alembic/pytest — через **внешний CMD**.
+- **Инструменты:** Kilo (code) + Kilo Ask (DeepSeek V4.1 Flash). Все команды Git/Alembic/pytest — через **внешний терминал** (CMD).
 - **Backend (запуск):** `uvicorn backend.src.main:app --reload` (из корня).
 - **Backend (venv):** `cd backend && ..\.venv\Scripts\activate`
 - **Frontend:** `cd frontend && npm run dev`
@@ -127,7 +127,7 @@
     Привет. Продолжаем «ГИП-Ассистент». Прочитай:
     1. docs/context/HANDOFF.md
     2. docs/README.md (карта документации)
-    3. docs/context/DOMAIN.md (v1.1)
+    3. docs/context/DOMAIN.md (v1.2)
     4. docs/specs/spec_week_4.md
     5. docs/context/CONTEXT.md
     6. docs/context/TASKS.md

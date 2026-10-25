@@ -72,11 +72,13 @@ text
 Прямая M:N `rfi_premises` обходила бы Document и теряла бы источник
 («откуда пришёл этот ИД?»). Document — общий предок.
 
-**Новые колонки:**
-- `Premise.source_document_id` (nullable FK → documents SET NULL) —
-  «этот ИД пришёл из документа» (6.12b).
-- `Document.rfi_id` (nullable FK → tasks SET NULL) — «этот документ —
-  ответ на RFI» (6.12b).
+**Новые колонки (из 6.12b):**
+
+| Поле | Тип | Смысл |
+|---|---|---|
+| `Premise.source_document_id` | nullable FK → documents (SET NULL) | «этот ИД пришёл из документа» |
+| `Document.rfi_id` | nullable FK → tasks (SET NULL) | «этот документ — ответ на RFI» |
+| `Document.trigger_action_id` | nullable FK → actions (SET NULL) | «этот документ породил Action» |
 
 **Валидация `Document.rfi_id`** — в `DocumentService`, не в БД:
 при `rfi_id IS NOT NULL` проверить `task.is_rfi = true` и
@@ -230,9 +232,11 @@ list_by_cause_decision(decision_id) -> list[Task].
 
 list_by_cause_goal(goal_id) -> list[Task].
 
-list_overdue(today) -> list[Task] — rfi_due_date < today AND rfi_state NOT IN (closed, registered).
+list_overdue(today, project_id) -> list[Task] — rfi_due_date < today AND rfi_state NOT IN (closed, registered).
 
-_fetch_premise_ids(task_id) -> list[UUID] — JOIN через documents.
+`premise_ids` — через `Document` (см. §2.2). JOIN `_fetch_premise_ids`
+реализован private-методом `TaskRepository`; в контракт `RfiRepository`
+он не входит.
 
 TaskRepository (существующий) — добавить в _to_domain / _to_model
 новые поля (is_rfi, rfi_cause_*, rfi_due_date, rfi_state).
@@ -254,8 +258,9 @@ CRUD RFI.
 
 project_id существует.
 
-Ровно одна причина (rfi_cause_decision_id XOR rfi_cause_goal_id)
-— дублирует CHECK, для чистого ValueError.
+Ровно одна причина (rfi_cause_decision_id XOR rfi_cause_goal_id).
+В БД CHECK допускает OR, сервис строже — XOR. Форма UI должна
+валидировать XOR.
 
 rfi_cause_decision_id / rfi_cause_goal_id — из того же проекта.
 

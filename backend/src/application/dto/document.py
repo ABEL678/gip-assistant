@@ -29,6 +29,8 @@ class DocumentBase(BaseModel):
     version_parent_id: Optional[uuid.UUID] = None
     replaces_id: Optional[uuid.UUID] = None
     replaced_by_id: Optional[uuid.UUID] = None
+    rfi_id: Optional[uuid.UUID] = None
+    trigger_action_id: Optional[uuid.UUID] = None
 
 
 class DocumentCreate(DocumentBase):

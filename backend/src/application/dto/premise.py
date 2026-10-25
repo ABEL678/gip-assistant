@@ -28,6 +28,7 @@ class PremiseSchema(BaseModel):
     valid_until: Optional[_date] = None
     data: dict[str, PremiseDataField] = Field(default_factory=dict)
     source_goal_id: uuid.UUID | None = None
+    source_document_id: uuid.UUID | None = None
     schema_: dict[str, Any] = Field(
         default_factory=dict,
         validation_alias=AliasChoices("schema", "field_schema"),

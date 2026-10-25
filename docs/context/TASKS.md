@@ -6,7 +6,7 @@
 > **Главный документ проекта — `DOMAIN.md`.** TASKS.md — статус.
 > Если противоречие между TASKS.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.8
+**Версия:** 2.9
 **Обновлено:** 25.10.2026
 **Автор:** ГИП, руководитель разработки
 
@@ -452,6 +452,26 @@
 - **6.14c** — DTO, DI, роуты (`/api/admin/llm/status|switch|providers|settings`), тесты.
 - **6.14d** — UI (`AdminLLMPage`), `adminLlmApi.ts`, `useAdminLlm.ts`.
 
+### 6.13 — Дельта-подсессии (расширение вехи 1)
+
+**6.13a** — парсинг PDF/DOCX + поле `text_content` в `DocumentVersion`.
+**6.13b** — `PremiseService.link_document()` (связывание Document ↔ Premise).
+**6.13c** — валидация в GUI (кнопка «Подтвердить» в `PremiseCard`).
+**6.13d** — доработка `RevisionDiffPanel`.
+
+Ссылка: `docs/context/MASTER_PIPELINE.md §3, §4`.
+
+**Порядок:** 6.12d → 6.14a–d → 6.13a–d → 6.12e → 6.12f.
+
+### 6.12e / 6.12f — агент RFI + gip-mcp-gateway
+
+**6.12e** — агент RFI (автономные действия: `list_overdue`, эскалация, лог).
+**6.12f** — `gip-mcp-gateway` (отдельный сервис, FastAPI-контейнер, MCP-протокол, Tools для агента RFI).
+
+Ссылка: `ARCHITECTURE.md §7.6`, `RULES.md §12.5`, `docs/context/MASTER_PIPELINE.md §2 (шаг 6)`.
+
+**Порядок:** 6.12e → 6.12f.
+
 ### Очередь после вехи 3 (доработка вехи 1)
 
 Новые требования, зафиксированные в Дорожной карте 7.0
@@ -521,8 +541,15 @@ DecisionLink), не смешиваются с 6.11a–e.
 - ⚠️ **LLM-ключи (6.14, Б1):** `api_key` — **шифрование** (Fernet, ключ `LLM_ENCRYPTION_KEY` в `.env`). В БД — `api_key_encrypted` (ciphertext), `api_key_last4` (для UI). Plaintext — только в памяти `RuntimeLLMAdapter`. `.env` — не коммитить.
 - ⚠️ **Светофор (6.14, В2):** `Project.data_security_level` (enum `green`/`yellow`/`red`). `RuntimeLLMAdapter.generate(prompt, system_prompt, project_id)` — читает уровень; если `red` — `ValueError`. Regex — **не** используется.
 - ⚠️ **Порядок (6.14, В3):** 6.12d → 6.14a–d → 6.12e. 6.14 — **вне** вехи 3, но **в** вехе 4 (после UI RFI, до агента RFI).
+- ⚠️ **6.13a–d / 6.12f — очередь после вехи 4:** дельта-подсессии (парсинг PDF/DOCX, связывание Document↔Premise, валидация, RevisionDiffPanel) + `gip-mcp-gateway`. См. `docs/context/MASTER_PIPELINE.md`. Не начинать до закрытия 6.12d и 6.14a–d.
 
 ## 5. Журнал (Changelog)
+
+### 25.10.2026 — docs: MASTER_PIPELINE (сквозной пайплайн)
+
+- ✅ `docs/context/MASTER_PIPELINE.md` — 7 шагов (загрузка → парсинг → извлечение LLM → связывание → валидация → агент → ревизии).
+- ✅ `TASKS.md §3` — 6.13a–d (дельта-подсессии), 6.12e / 6.12f (агент RFI + gip-mcp-gateway).
+- ✅ `TASKS.md §4` — known issue (6.13a–d / 6.12f — очередь).
 
 ### 25.10.2026 — docs: LLM admin spec (6.14)
 
@@ -1003,4 +1030,4 @@ DecisionLink), не смешиваются с 6.11a–e.
 
 ---
 
-**Конец TASKS.md v2.5.**
+**Конец TASKS.md v2.9.**

@@ -5,87 +5,84 @@
 > или при приближении к лимиту контекста.
 > Читается первым в новом чате. Позволяет продолжить работу без потери контекста.
 
-**Дата:** 24.10.2026
-**Сессия:** 6.12b → docs: agent security
-**Статус:** Веха 3 ЗАКРЫТА полностью (6.11a → 6.11b → 6.11c → 6.11d → 6.11e). 392 теста, frontend build зелёный.
+**Дата:** 25.10.2026
+**Сессия:** 6.12c → реорганизация docs
+**Статус:** Веха 3 закрыта. Веха 4: 6.12a, 6.12b, 6.12c закрыты. 450 тестов, frontend build зелёный.
 
 ---
 
 ## 1. Что было в прошлой сессии
 
-**Веха 3 — полностью закрыта (22.10.2026):**
+**6.12c — RFI-эндпоинты + DI (24.10.2026):**
 
-- ✅ **6.11a** — модель Decision + миграция `8aad8fd713f0` (298 тестов).
-- ✅ **6.11b** — модели Norm + DecisionLink + DecisionNorm + миграция `c52a3c176d47` (310 тестов).
-- ✅ **6.11c** — 5 сервисов + DecisionProposalService (2 правила) (366 тестов).
-- ✅ **6.11d** — 21 эндпоинт (decisions 7, norms 5, decision-links 5, decision-norms 4) + 26 тестов роутов (392 теста).
-- ✅ **6.11e** — UI: 4 API-клиента, 3 хука, 7 компонентов, 3 страницы (DecisionsPage, NormsPage, DecisionLinkPage), роутинг.
+- ✅ `routes/rfis.py` — 8 эндпоинтов: CRUD + proposals + from-proposal + escalate.
+- ✅ Порядок: `/proposals` и `/from-proposal` объявлены ПЕРЕД `/{id}`.
+- ✅ Ошибки: `ValueError` → 400, `IntegrityError` → 409, not found → 404.
+- ✅ Регистрация в `routes/__init__.py` + `main.py`.
+- ✅ 14 тестов роутов (httpx.AsyncClient + ASGITransport).
+- ✅ **450 тестов pytest.**
 
-**Коммиты вехи 3:** `8fa1bd8` (6.11b), `d35aee4` (6.11c), `ca297f5` (6.11d), `85822e4` (6.11e).
+**Реорганизация документации (25.10.2026):**
 
-**Итог вехи 3:**
-- 392 теста pytest.
-- 27 таблиц в БД.
-- 60+ эндпоинтов API.
-- Весь стек: domain → application → adapters → frontend.
+- ✅ Создан `docs/README.md` — карта документации (4 уровня).
+- ✅ `GIGACODE.md` влит в `AGENTS.md` v1.4; `GIGACODE.md` — заглушка.
+- ✅ `AUDIT_PROMPTS.md` → `docs/tools/`.
+- ✅ `docs/context/README.md` удалён (дубль), полезное — в `docs/README.md`.
+- ✅ Планы 6.12b/6.12c → `docs/tasks/archive/`.
+- ✅ `CONTEXT.md` сокращён до резюме; история — в `TASKS.md` §5.
+
+---
 
 ## 2. Что делаем сейчас
 
-**Веха 3 закрыта. Переход к Вехе 4 (RFI).**
+**Код не в работе.** Следующая кодовая сессия — **6.12d (UI RFI)**.
 
-**Цель вехи 4:** «живые вводные» — RFI как особый Task, Document ↔ Action, агент RFI.
+Перед ней: прочитать `docs/specs/spec_week_4.md` §9 (UI) и `MASTER_PIPELINE.md`,
+проверить, что контракты 8 эндпоинтов из 6.12c не менялись.
 
-**Порядок подсессий (план, не утверждён до спеки):**
-- **6.12a** — модель RFI + миграция + DTO + порты + репозитории.
-- **6.12b** — Document ↔ Action (связь) + «живые вводные» (RFI → Premise).
-- **6.12c** — RfiService + правила (для решения X нет ИД больше N дней).
-- **6.12d** — эндпоинты + DI.
-- **6.12e** — UI (RfiPage, RfiCard, RfiForm).
-- **6.12f** — Агент RFI (первый автономный агент, `DOMAIN.md §9.2`).
-
-**ВАЖНО: спеки на веху 4 НЕТ.** Первый шаг — написать `docs/specs/spec_week_4.md` (по образцу spec_week_1/3). Код — после спеки.
+---
 
 ## 3. Что дальше
 
-1. **Спека вехи 4** (`spec_week_4.md`) — по образцу `spec_week_3.md`, §1–§12.
-2. **6.12a** — модель RFI.
-3. **6.12b** — Document ↔ Action.
-4. **6.12c** — сервис.
-5. **6.12d** — эндпоинты.
-6. **6.12e** — UI.
-7. **6.12f** — агент RFI.
-8. После вехи 4 — «Очередь после вехи 3» (дашборд, скелет, отчёты, экспорт, поиск) — теперь уже «после вехи 4».
+1. **6.12d** — UI RFI: RfiPage, RfiCard, RfiForm, API-клиент, хуки, роутинг.
+2. **6.14a–d** — админка LLM (для демо).
+3. **6.13a–d** — парсинг + связывание + валидация + ревизии.
+4. **6.12e** — агент RFI (первый автономный агент, `DOMAIN.md §9.2`).
+5. **6.12f** — `gip-mcp-gateway` (Agent Gateway + MCP-Tools).
+6. Веха 4 закрывается после 6.12e.
+
+После вехи 4 — «Очередь после вехи 3» (дашборд, скелет, отчёты, экспорт, поиск).
+
+---
 
 ## 4. Что уже в контексте (не надо пересказывать)
 
+- `docs/README.md` — карта документации. **Читать первым.**
 - `docs/context/DOMAIN.md` v1.1 — онтология ядра. **Главный документ.**
 - `docs/Дорожная_карта_7.0.md` — стратегия.
-- `docs/specs/spec_week_3.md` — финальная спека Вехи 3.
-- `docs/context/CONTEXT.md` v2.13 — резюме.
-- `docs/context/TASKS.md` v2.5 — статус.
+- `docs/specs/spec_week_4.md` — спека вехи 4 (RFI).
+- `docs/context/CONTEXT.md` v2.17 — резюме продукта.
+- `docs/context/TASKS.md` v2.10 — статус + журнал.
 - `docs/context/ARCHITECTURE.md` — структура.
 - `docs/context/DATABASE.md` — схема БД.
 - `docs/context/API.md` v1.1 — эндпоинты.
-- `docs/context/RULES.md` — правила.
-- `AGENTS.md` — правила для GigaCode.
-- `GIGACODE.md` v1.3 — правила (адаптация под GigaIDE + GLM-5.3).
+- `docs/context/RULES.md` — правила кода.
+- `docs/context/MASTER_PIPELINE.md` — сквозной пайплайн.
+- `AGENTS.md` v1.4 — правила для ИИ-агентов (единственный источник).
+- `GIGACODE.md` — заглушка, ссылается на `AGENTS.md`.
+
+---
 
 ## 5. Открытые вопросы / блокеры
 
-- [ ] **`decision_id` в домене Task** — отклонение от спеки §2.1 (6.11a). В домене Task есть поле decision_id, но в спеке связь только через FK в БД. Зафиксировано в TASKS.md §4. Решение: узаконить или откатить — в вехе 4 или позже.
+- [ ] **`decision_id` в домене Task** — отклонение от спеки §2.1 (6.11a). В домене есть поле, в спеке связь только через FK. Решение: узаконить или откатить — в вехе 4 или позже.
 - [ ] **API.md baseline** — несвежий (до 6.11d не включал Actions, Results, ProjectStandards, Revisions). Полная сверка с фактическими роутерами — отдельная задача.
-- [ ] **CONTEXT.md** — §4/§6 всё ещё ссылается на `docs/archive/` — почистить.
-- [x] **Agent Gateway + gip-mcp-gateway:** **решено** — единый сервис
-  gip-mcp-gateway (FastAPI-приложение, один контейнер, два модуля:
-  Agent Gateway + MCP-Tools), не модуль backend.
-  Причина: физическая граница (агент не имеет сетевого пути к БД),
-  другая модель угроз, другой жизненный цикл.
-  Реализация — 6.12f (агент RFI).
-- [ ] **Набор Tools в gip-mcp-gateway:** минимальный список для агента
-  RFI (создать RFI, прочитать Decision, прочитать Premise) — утвердить
-  до 6.12f.
+- [ ] **Набор Tools в gip-mcp-gateway:** минимальный список для агента RFI (создать RFI, прочитать Decision, прочитать Premise) — утвердить до 6.12f.
+- [x] **Agent Gateway + gip-mcp-gateway:** решено — единый сервис (FastAPI, один контейнер, два модуля), не модуль backend. Реализация — 6.12f.
 
 **Блокеров нет.**
+
+---
 
 ## 6. Ключи / пути / команды
 
@@ -93,10 +90,10 @@
 
 **Роль:** независимый аудитор кода/плана. Не меняет код. Только отчёт.
 **Модель:** GLM-5.3 через Cloud.ru (GigaCode Ask mode, `reasoning_effort: high`).
-**Промпты:** `docs/context/AUDIT_PROMPTS.md`.
+**Промпты:** `docs/tools/AUDIT_PROMPTS.md`.
 
 **Три точки встраивания:**
-1. **Аудит плана** — перед каждым промптом на реализацию (6.12a–e). Дёшево.
+1. **Аудит плана** — перед каждым промптом на реализацию. Дёшево.
 2. **Аудит кода** — после реализации, до коммита. Средне.
 3. **Архитектурный аудит** — раз в веху. Дорого.
 
@@ -107,37 +104,39 @@
 4. Человек присылает отчёт координатору.
 5. Координатор сверяет, даёт финальный промпт GigaCode (Agent): «исправь / коммить».
 
-**Правило:** GigaCode (Agent) не коммитит без аудита GLM (точка 2) — для сессий 6.12a–e. Для мелких правок (docs, косметика) — аудит не нужен.
+**Правило:** GigaCode (Agent) не коммитит без аудита GLM (точка 2) — для сессий 6.12a–e. Для мелких правок (docs, косметика) аудит не нужен.
 
 - **Проект:** `C:\Users\abelo\GIP-Assistant\gip-assistant`
-- **Инструменты:** GigaIDE + GLM-5.3 (Cloud.ru). Встроенный терминал GigaIDE висит на Windows — известный баг. Все команды Git/Alembic/pytest — через **внешний CMD** (открыть из Пуск, `cd` в проект). Аудитор — GLM-5.3 через GigaCode Ask (см. §6.1).
-- **Backend (запуск):** `uvicorn backend.src.main:app --reload` (из корня, внешний CMD).
+- **Инструменты:** GigaIDE + GLM-5.3 (Cloud.ru). Встроенный терминал GigaIDE висит на Windows — известный баг. Все команды Git/Alembic/pytest — через **внешний CMD**.
+- **Backend (запуск):** `uvicorn backend.src.main:app --reload` (из корня).
 - **Backend (venv):** `cd backend && ..\.venv\Scripts\activate`
 - **Frontend:** `cd frontend && npm run dev`
-- **Тесты:** `pytest backend/tests/ -v` (из корня, внешний CMD).
-- **Alembic:** `cd backend && ..\.venv\Scripts\activate && alembic current` / `alembic upgrade head` (из backend/, внешний CMD).
+- **Тесты:** `pytest backend/tests/ -v` (из корня).
+- **Alembic:** `cd backend && ..\.venv\Scripts\activate && alembic current` / `alembic upgrade head`.
 - **Ruff:** `.venv\Scripts\activate && ruff check backend/`
-- **Docker:** `docker compose -f docker/docker-compose.yml up -d` (из корня, поднимает gip_db на 5555).
+- **Docker:** `docker compose -f docker/docker-compose.yml up -d` (gip_db на 5555).
 - **БД-инспекция:** `docker exec -it gip_db psql -U gip -d gip_assistant -c "..."` (юзер gip, БД gip_assistant).
 - **GitHub:** https://github.com/ABEL678/gip-assistant
 
+---
+
 ## 7. Как продолжить в новом чате
 
-**Первое сообщение (для рутинного чата):**
+**Первое сообщение:**
 
     Привет. Продолжаем «ГИП-Ассистент». Прочитай:
     1. docs/context/HANDOFF.md
-    2. docs/context/DOMAIN.md (v1.1)
-    3. docs/specs/spec_week_3.md (образец для спеки вехи 4)
-    4. docs/context/CONTEXT.md
-    5. docs/context/TASKS.md
-    6. AGENTS.md + GIGACODE.md
+    2. docs/README.md (карта документации)
+    3. docs/context/DOMAIN.md (v1.1)
+    4. docs/specs/spec_week_4.md
+    5. docs/context/CONTEXT.md
+    6. docs/context/TASKS.md
+    7. AGENTS.md
 
-    Веха 3 закрыта (392 passed, миграции 8aad8fd713f0 + c52a3c176d47).
-    Переходим к вехе 4 (RFI). Спеки на веху 4 нет — первый шаг:
-    написать docs/specs/spec_week_4.md по образцу spec_week_3.md.
+    Веха 3 закрыта. Веха 4: 6.12a/b/c закрыты (450 passed, миграция c0a9ff2f6038).
+    Следующий шаг — 6.12d (UI RFI).
 
-    Твоя роль: написать спеку вехи 4, проверить её, дать промпт на 6.12a.
+    Твоя роль: проверить план 6.12d, дать промпт на реализацию.
 
 ---
 

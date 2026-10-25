@@ -30,15 +30,17 @@
 
 ## 4. Что уже в контексте (не надо пересказывать)
 
-- `docs/Дорожная_карта_6.4.md` — стратегия.
-- `docs/ТЗ_4.4.md` — ТЗ.
+- `docs/README.md` — карта документации.
+- `docs/context/DOMAIN.md` — онтология ядра.
+- `docs/Дорожная_карта_7.0.md` — стратегия.
+- `docs/specs/spec_week_[N].md` — спека вехи.
 - `docs/context/CONTEXT.md` — резюме.
 - `docs/context/TASKS.md` — статус.
 - `docs/context/ARCHITECTURE.md` — структура.
 - `docs/context/DATABASE.md` — схема БД.
 - `docs/context/API.md` — эндпоинты.
 - `docs/context/RULES.md` — правила.
-- `AGENTS.md` — правила для GigaCode.
+- `AGENTS.md` — правила для ИИ-агентов.
 
 ## 5. Открытые вопросы / блокеры
 
@@ -64,10 +66,12 @@
 
     Прочитай (по порядку):
     1. docs/context/HANDOFF.md
-    2. docs/context/CONTEXT.md
-    3. docs/context/TASKS.md
-    4. docs/context/ARCHITECTURE.md
-    5. AGENTS.md
+    2. docs/README.md
+    3. docs/context/DOMAIN.md
+    4. docs/context/CONTEXT.md
+    5. docs/context/TASKS.md
+    6. docs/context/ARCHITECTURE.md
+    7. AGENTS.md
 
     Дальше:
     - Мы на сессии [N.M].

@@ -89,8 +89,7 @@ static/
 docs/*
 !docs/context/
 !docs/context/**
-!docs/ТЗ_4.4.md
-!docs/Дорожная_карта_6.4.md
+!docs/README.md
 !docs/Дорожная_карта_7.0.md
 !docs/tasks/
 !docs/tasks/**
@@ -98,9 +97,10 @@ docs/*
 !docs/templates/**
 !docs/specs/
 !docs/specs/**
+!docs/tools/
+!docs/tools/**
 docs/*.docx
 docs/*.doc
-docs/archive/
 
 # Защита: всегда коммитим AI-контекст
 !docs/context/CONTEXT.md
@@ -109,7 +109,6 @@ docs/archive/
 !docs/context/API.md
 !docs/context/RULES.md
 !docs/context/TASKS.md
-!docs/context/README.md
 
 # ============ LLM models (только корневая папка /models) ============
 /models/

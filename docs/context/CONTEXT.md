@@ -112,7 +112,7 @@ ImportLog) + пользовательские (EntityType + Entity в JSONB). П
 5. Система предлагает — ГИП утверждает. Это не таск-трекер.
 6. XML — обязательное требование экспертизы.
 7. AI-контекст — часть продукта.
-8. ИИ-инструменты — только с поддержкой в РФ: GigaCode (PyCharm).
+8. ИИ-инструменты — Kilo Code (DeepSeek V4.1 Flash).
 9. Один шаг за раз, с проверками.
 10. Тесты для бизнес-логики обязательны.
 11. Не коммитить в main напрямую.
@@ -141,7 +141,7 @@ ImportLog) + пользовательские (EntityType + Entity в JSONB). П
 ## 9. Контакты и ссылки
 
 - **GitHub:** https://github.com/ABEL678/gip-assistant (private). **Домен (план):** gip-assistant.ru.
-- **Схемы Минстроя:** https://minstroyrf.gov.ru/tim/xml-skhemy/. **GigaCode:** https://gigacode.ru.
+- **Схемы Минстроя:** https://minstroyrf.gov.ru/tim/xml-skhemy/. **Kilo Code:** https://kilo.ai.
 - **gpt2giga:** https://github.com/ai-forever/gpt2giga. **GigaChat API:** https://developers.sber.ru/portal/products/gigachat-api.
 
 ---

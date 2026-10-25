@@ -64,7 +64,7 @@
 | [`tasks/`](tasks/) | Активные планы сессий. Формат: `<номер>_<название>.md`. |
 | [`tasks/archive/`](tasks/archive/) | Закрытые планы. История решений, не удалять. |
 | [`templates/`](templates/README.md) | Шаблоны `HANDOFF` и промпта задачи. |
-| [`tools/AUDIT_PROMPTS.md`](tools/AUDIT_PROMPTS.md) | Промпты для аудитора GLM-5.3 (GigaCode Ask). |
+| [`tools/AUDIT_PROMPTS.md`](tools/AUDIT_PROMPTS.md) | Промпты для аудитора (Kilo Ask / суб-агент `auditor`). |
 
 ---
 

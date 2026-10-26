@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from backend.src.domain.value_objects.enums import StageType
+from backend.src.domain.value_objects.enums import DataSecurityLevel, StageType
 
 
 @dataclass
@@ -16,6 +16,7 @@ class Project:
     stage: StageType = StageType.PD
     client: str | None = None
     contract_number: str | None = None
+    data_security_level: DataSecurityLevel = DataSecurityLevel.GREEN
     id: UUID = field(default_factory=uuid4)
     created_at: datetime | None = None
     updated_at: datetime | None = None

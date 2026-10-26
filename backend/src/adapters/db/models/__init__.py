@@ -18,6 +18,7 @@ from backend.src.adapters.db.models.executor import Executor
 from backend.src.adapters.db.models.goal import GoalModel
 from backend.src.adapters.db.models.goal_premise import GoalPremiseModel
 from backend.src.adapters.db.models.import_log import ImportLog
+from backend.src.adapters.db.models.llm_settings import LLMSettingsModel
 from backend.src.adapters.db.models.norm import NormModel
 from backend.src.adapters.db.models.premise import PremiseModel
 from backend.src.adapters.db.models.project import Project
@@ -51,6 +52,7 @@ __all__ = [
     "GoalModel",
     "GoalPremiseModel",
     "ImportLog",
+    "LLMSettingsModel",
     "NormModel",
     "PremiseModel",
     "Project",

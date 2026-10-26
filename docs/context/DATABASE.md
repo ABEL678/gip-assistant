@@ -4,17 +4,17 @@
 > **Автогенерация:** в MVP-2 файл обновляется автоматически через
 > `sqlacodegen` + GitHub Actions. Пока — вручную.
 
-**Версия:** 1.4
-**Обновлено:** 25.10.2026
+**Версия:** 1.5
+**Обновлено:** 27.10.2026
 **СУБД:** PostgreSQL 15+
 **ORM:** SQLAlchemy 2.0 async
-**Текущая миграция:** `c0a9ff2f6038`
+**Текущая миграция:** `65999c8dbf97`
 
 ---
 
 ## 1. Обзор
 
-**Всего таблиц:** 27 (без изменений — 6.12a добавляет колонки, не таблицы).
+**Всего таблиц:** 28 (6.14a добавляет `llm_settings`).
 
 | Группа | Таблицы |
 |--------|---------|
@@ -24,9 +24,11 @@
 | Пользователи | users, executors |
 | Импорт | import_logs |
 | Универсальные сущности | entity_types, entities |
+| LLM | llm_settings |
 | Служебные | alembic_version |
 
-**Всего индексов:** 47 (17 PK + 2 UNIQUE + 28 дополнительных).
+**Всего индексов:** 49 (18 PK + 3 UNIQUE + 28 дополнительных).
+6.14a: +1 PK (`llm_settings`) +1 partial unique (`idx_llm_settings_active`).
 +4 partial-индекса в tasks (6.12a) + 1 в actions + 1 в documents.
 После 6.8a: +3 таблицы (premises, goals, goal_premises) и +1 индекс (idx_goals_verification_status).
 После 6.11a: +3 таблицы (decisions, decision_goals, decision_premises) + колонка tasks.decision_id + enum decision_state.
@@ -55,7 +57,7 @@
 | stage | VARCHAR(10) | NOT NULL, default='PD' | Стадия (EP/PP/PD/RD) |
 | client | VARCHAR(300) | nullable | Заказчик |
 | contract_number | VARCHAR(100) | nullable | № договора |
-| data_security_level | VARCHAR(10) | NOT NULL, default='green' | green/yellow/red (светофор для LLM) |
+| data_security_level | data_security_level | NOT NULL, default='green' | enum green/yellow/red (светофор для LLM) |
 | created_at | TIMESTAMPTZ | NOT NULL, default=now() | Создано |
 | updated_at | TIMESTAMPTZ | NOT NULL, default=now() | Обновлено |
 
@@ -561,14 +563,23 @@
 | Поле | Тип | Обяз. | Комментарий |
 |---|---|---|---|
 | id | UUID | да | PK |
-| provider | str(50) | да | `qwen` / `openai_compatible` |
+| provider | llm_provider | да | PG enum: `qwen` / `openai_compatible` |
 | model_name | str(100) | да | |
 | base_url | str(500) | нет | |
-| api_key_encrypted | bytes | нет | Fernet-ciphertext |
+| api_key_encrypted | BYTEA | нет | Fernet-ciphertext |
 | api_key_last4 | str(4) | нет | для UI (не секрет) |
-| params | JSON | да | `{temperature, max_tokens}` |
-| is_active | bool | да | partial-index `idx_llm_settings_active` |
-| created_at, updated_at | timestamp | да | |
+| params | JSONB | да | server_default `'{}'::jsonb` |
+| is_active | bool | да | не более одной активной строки |
+| created_at, updated_at | TIMESTAMPTZ | да | `TimestampMixin` (updated_at + onupdate) |
+
+**CHECK:**
+
+- `ck_llm_settings_key_pair`: `(api_key_encrypted IS NULL) = (api_key_last4 IS NULL)`.
+
+**Индексы:**
+
+- `llm_settings_pkey` (PK);
+- `idx_llm_settings_active` — UNIQUE partial `WHERE is_active = true`.
 
 ---
 
@@ -594,6 +605,8 @@
 | LifecycleStatus | DRAFT, IN_REVIEW, NORMOCONTROL, APPROVED, ARCHIVED, ANNULLED, REPLACED | домен (value_objects/document.py) |
 | DocumentLinkType | appendix, reference, replaces, version_of | домен (value_objects/document.py) |
 | RfiState | open, sent, answered, registered, closed, escalated | tasks.rfi_state |
+| LLMProvider | qwen, openai_compatible | llm_settings.provider |
+| DataSecurityLevel | green, yellow, red | projects.data_security_level |
 
 ---
 

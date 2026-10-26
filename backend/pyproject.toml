@@ -31,6 +31,9 @@ dependencies = [
     "python-jose[cryptography]>=3.3",
     "passlib[argon2]>=1.7",
 
+    # --- Crypto ---
+    "cryptography>=43",
+
     # --- Telegram ---
     "aiogram>=3.15",
     "aiohttp-socks>=0.10",

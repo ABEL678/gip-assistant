@@ -35,6 +35,7 @@ async def create_project(
         stage=payload.stage,
         client=payload.client,
         contract_number=payload.contract_number,
+        data_security_level=payload.data_security_level,
     )
     saved = await repo.save(project)
     return ProjectRead.model_validate(saved, from_attributes=True)

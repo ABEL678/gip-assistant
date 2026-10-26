@@ -21,6 +21,7 @@ from backend.src.domain.entities.entity import Entity
 from backend.src.domain.entities.entity_type import EntityType
 from backend.src.domain.entities.goal import Goal
 from backend.src.domain.entities.import_log import ImportLog
+from backend.src.domain.entities.llm_settings import LLMSettings
 from backend.src.domain.entities.norm import Norm
 from backend.src.domain.entities.premise import Premise
 from backend.src.domain.entities.project import Project
@@ -586,3 +587,31 @@ class ActionRepository(ABC):
     @abstractmethod
     async def delete(self, action_id: UUID) -> None:
         """Удалить действие по ID."""
+
+
+class LLMSettingsRepository(ABC):
+    """Порт репозитория настроек LLM (6.14a)."""
+
+    @abstractmethod
+    async def get_by_id(self, settings_id: UUID) -> LLMSettings | None:
+        """Найти настройки по ID."""
+
+    @abstractmethod
+    async def get_active(self) -> LLMSettings | None:
+        """Активная настройка (is_active = true) или None."""
+
+    @abstractmethod
+    async def list_all(self) -> list[LLMSettings]:
+        """Все настройки, сортировка по created_at DESC."""
+
+    @abstractmethod
+    async def save(self, settings: LLMSettings) -> LLMSettings:
+        """Создать или обновить настройки (merge по id)."""
+
+    @abstractmethod
+    async def delete(self, settings_id: UUID) -> None:
+        """Удалить настройки по ID."""
+
+    @abstractmethod
+    async def deactivate_all(self) -> None:
+        """Снять is_active со всех строк (перед активацией новой)."""

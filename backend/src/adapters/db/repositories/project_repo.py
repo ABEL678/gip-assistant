@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.src.adapters.db.models.project import Project as ProjectModel
 from backend.src.domain.entities.project import Project
 from backend.src.domain.ports.repositories import ProjectRepository
+from backend.src.domain.value_objects.enums import DataSecurityLevel
 
 
 class SqlAlchemyProjectRepository(ProjectRepository):
@@ -50,6 +51,7 @@ class SqlAlchemyProjectRepository(ProjectRepository):
             stage=model.stage,
             client=model.client,
             contract_number=model.contract_number,
+            data_security_level=DataSecurityLevel(model.data_security_level),
             created_at=model.created_at,
             updated_at=model.updated_at,
         )
@@ -63,4 +65,5 @@ class SqlAlchemyProjectRepository(ProjectRepository):
             stage=domain.stage,
             client=domain.client,
             contract_number=domain.contract_number,
+            data_security_level=domain.data_security_level.value,
         )

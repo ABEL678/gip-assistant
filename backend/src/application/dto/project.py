@@ -5,7 +5,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from backend.src.domain.value_objects.enums import StageType
+from backend.src.domain.value_objects.enums import DataSecurityLevel, StageType
 
 
 class ProjectBase(BaseModel):
@@ -16,6 +16,7 @@ class ProjectBase(BaseModel):
     stage: StageType = StageType.PD
     client: str | None = Field(default=None, max_length=300)
     contract_number: str | None = Field(default=None, max_length=100)
+    data_security_level: DataSecurityLevel = DataSecurityLevel.GREEN
 
 
 class ProjectCreate(ProjectBase):
@@ -31,6 +32,7 @@ class ProjectUpdate(BaseModel):
     stage: StageType | None = None
     client: str | None = Field(default=None, max_length=300)
     contract_number: str | None = Field(default=None, max_length=100)
+    data_security_level: DataSecurityLevel | None = None
 
 
 class ProjectRead(ProjectBase):

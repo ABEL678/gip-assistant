@@ -399,11 +399,11 @@
 
 ### 7.5. LLM-адаптеры и админка
 
-**Порт:** `LLMProviderPort` (ABC) — `generate(prompt, system_prompt, project_id)`, `health_check()`.
+**Порт:** `LLMProviderPort` (ABC) — `generate(prompt, system_prompt, *, project_id)`, `health_check()`. `project_id` обязателен: по нему проверяется светофор.
 **Адаптеры:** `QwenAdapter` (локальная Qwen), `OpenAICompatibleAdapter` (provod.ai, Cloud.ru).
 **Диспетчер:** `RuntimeLLMAdapter` — читает `llm_settings.is_active` (TTL 60s кэш клиентов), создаёт нужный адаптер, проверяет светофор (`Project.data_security_level`).
 
-**Ключи:** `api_key` — Fernet (ключ `LLM_ENCRYPTION_KEY` в `.env`). В БД — `api_key_encrypted` (ciphertext) + `api_key_last4`. Plaintext — только в памяти.
+**Ключи:** `api_key` — Fernet (ключ `LLM_ENCRYPTION_KEY` в `.env`). В БД — `api_key_encrypted` (ciphertext) + `api_key_last4`. Plaintext — только в памяти `LLMSettingsService` (при create/update) и `RuntimeLLMAdapter`. Порт шифрования — `SecretCipherPort`, адаптер — `adapters/security/fernet_cipher.py`.
 
 **Админка:** `/api/admin/llm/status|switch|providers|settings`. UI — `AdminLLMPage`. Смена — без перезапуска backend.
 

@@ -6,8 +6,8 @@
 > **Главный документ проекта — `DOMAIN.md`.** TASKS.md — статус.
 > Если противоречие между TASKS.md и DOMAIN.md — верен DOMAIN.md.
 
-**Версия:** 2.11
-**Обновлено:** 25.10.2026
+**Версия:** 2.12
+**Обновлено:** 27.10.2026
 **Автор:** ГИП, руководитель разработки
 
 ---
@@ -300,7 +300,7 @@
 
 ## 2. В работе (In Progress)
 
-**На 25.10.2026 — Веха 4 (RFI): 6.12a–6.12d закрыты; в работе — 6.14a–d.**
+**На 27.10.2026 — Веха 4 (RFI): 6.12a–6.12d закрыты; 6.14a закрыта; в работе — 6.14b–d.**
 
 - ✅ 6.11b — ЗАКРЫТ (22.10.2026).
   - 3 новые сущности: Norm, DecisionLink, DecisionNorm.
@@ -337,8 +337,20 @@
   - 2 изменённых: `App.tsx` (маршрут `projects/:id/rfis`), `ProjectPage.tsx` (секция «RFI»).
   - Локальное скрытие обработанных предложений + «Обновить»; `onError` у всех мутаций.
   - `npm run build` / `npm run lint` — зелёные; pytest — 450 passed.
+- ✅ **6.14a** — слой данных LLM (27.10.2026).
+  - Домен: `LLMSettings`, `LLMProvider` (2), `DataSecurityLevel` (3).
+  - Порты: `LLMProviderPort`, `SecretCipherPort`, `LLMSettingsRepository`.
+  - БД: `llm_settings` (BYTEA-ключ + last4, JSONB, partial unique index), `projects.data_security_level`.
+  - Миграция: `65999c8dbf97` (идемпотентные `CREATE TYPE`).
+  - Адаптеры/сервисы: `FernetCipher`, `SqlAlchemyLLMSettingsRepository`, `LLMSettingsService`.
+  - Тесты: +31; **итого 481 passed**.
 
 ## 3. Дальше (Next)
+
+**6.12d (UI RFI) — ЗАКРЫТА и проверена вручную (27.10.2026).**
+- Создание RFI из формы работает (причина — Goal, срок, состояние).
+- Карточка RFI отображает бейдж, причину, срок, связи.
+- Тестовый проект: `5abc7792-0bdf-4ee9-8c96-4320d16978b2`.
 
 ### Ось времени (план-график)
 
@@ -558,6 +570,17 @@ DecisionLink), не смешиваются с 6.11a–e.
 - ⚠️ **`handledProposals` не сбрасывается при смене `projectId` (6.12d, m7):** коллизий нет (ключи содержат UUID). Сброс — если появится смена проекта внутри страницы.
 
 ## 5. Журнал (Changelog)
+
+### 27.10.2026 (сессия 6.14a — слой данных LLM)
+
+- ✅ Домен: `LLMSettings` (только ciphertext + last4), `LLMProvider`, `DataSecurityLevel`; `Project.data_security_level`.
+- ✅ Порты: `LLMProviderPort`, `SecretCipherPort`, `LLMSettingsRepository` (+`deactivate_all`).
+- ✅ БД: `llm_settings` (PG enum `llm_provider`, JSONB `params`, BYTEA `api_key_encrypted`, CHECK key-pair, partial unique index) + `projects.data_security_level`.
+- ✅ Миграция `65999c8dbf97`; идемпотентные `CREATE TYPE` через `DO $$`.
+- ✅ `FernetCipher`, `SqlAlchemyLLMSettingsRepository`, `LLMSettingsService` (валидации, активация, `get_api_key`).
+- ✅ `cryptography>=43` — прямая зависимость; `LLM_ENCRYPTION_KEY` в настройках.
+- ✅ Тесты: +31 (mapping 8, cipher 7, service 11, persist 4, projects 1); pytest — 481 passed.
+- ✅ По аудиту: минимум ключа 8 символов, `last4` только при длине > 4; `deactivate_all()` в persist-тесте; копия `params` в `_to_model`.
 
 ### 25.10.2026 (сессия 6.12d — UI RFI)
 

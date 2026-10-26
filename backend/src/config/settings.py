@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     TELEGRAM_DIGEST_CRON: str = "0 9 * * *"
     TELEGRAM_PROXY: str = ""
 
+    # --- LLM ---
+    LLM_ENCRYPTION_KEY: str = ""
+
     # --- CORS ---
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
 

@@ -162,3 +162,18 @@ class RfiState(StrEnum):
     REGISTERED = "registered"  # Новые ИД зарегистрированы (Premise с source_document_id)
     CLOSED = "closed"  # RFI закрыт
     ESCALATED = "escalated"  # Просрочен, эскалирован
+
+
+class LLMProvider(StrEnum):
+    """LLM-провайдер (6.14a)."""
+
+    QWEN = "qwen"  # Локальная Qwen
+    OPENAI_COMPATIBLE = "openai_compatible"  # provod.ai, Cloud.ru
+
+
+class DataSecurityLevel(StrEnum):
+    """Уровень периметра данных проекта (светофор для LLM, 6.14a)."""
+
+    GREEN = "green"  # Обезличенные/открытые данные
+    YELLOW = "yellow"  # Спецификации/ВОР/сметы после обезличивания
+    RED = "red"  # Полные комплекты ПД, ПДн, договоры с суммами

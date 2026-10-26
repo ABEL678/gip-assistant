@@ -17,6 +17,7 @@ from backend.src.domain.services.entity_type_service import EntityTypeService
 from backend.src.domain.services.goal_proposal_service import GoalProposalService
 from backend.src.domain.services.goal_service import GoalService
 from backend.src.domain.services.import_service import ImportService
+from backend.src.domain.services.llm_settings_service import LLMSettingsService
 from backend.src.domain.services.matrix_service import MatrixService
 from backend.src.domain.services.norm_service import NormService
 from backend.src.domain.services.premise_service import PremiseService
@@ -48,6 +49,7 @@ __all__ = [
     "GoalProposalService",
     "GoalService",
     "ImportService",
+    "LLMSettingsService",
     "MatrixService",
     "NormService",
     "PremiseService",

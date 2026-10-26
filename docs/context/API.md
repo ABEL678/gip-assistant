@@ -59,6 +59,7 @@
         "stage": "PD",
         "client": "Заказчик",
         "contract_number": "Д-001",
+        "data_security_level": "green",
         "created_at": "2026-10-11T...",
         "updated_at": "2026-10-11T..."
       }
@@ -74,7 +75,8 @@
       "code": "P-001",
       "stage": "PD",
       "client": "Заказчик",
-      "contract_number": "Д-001"
+      "contract_number": "Д-001",
+      "data_security_level": "green"
     }
 
 **Ответ 201:** созданный проект (см. GET).

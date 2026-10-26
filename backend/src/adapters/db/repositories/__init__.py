@@ -42,6 +42,9 @@ from backend.src.adapters.db.repositories.goal_repository import (
 from backend.src.adapters.db.repositories.import_log_repo import (
     SqlAlchemyImportLogRepository,
 )
+from backend.src.adapters.db.repositories.llm_settings_repository import (
+    SqlAlchemyLLMSettingsRepository,
+)
 from backend.src.adapters.db.repositories.norm_repository import (
     SqlAlchemyNormRepository,
 )
@@ -91,6 +94,7 @@ __all__ = [
     "SqlAlchemyEntityTypeRepository",
     "SqlAlchemyGoalRepository",
     "SqlAlchemyImportLogRepository",
+    "SqlAlchemyLLMSettingsRepository",
     "SqlAlchemyNormRepository",
     "SqlAlchemyPremiseRepository",
     "SqlAlchemyProjectRepository",

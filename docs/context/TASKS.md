@@ -300,7 +300,7 @@
 
 ## 2. В работе (In Progress)
 
-**На 27.10.2026 — Веха 4 (RFI): 6.12a–6.12d закрыты; 6.14a закрыта; в работе — 6.14b–d.**
+**На 27.10.2026 — Веха 4 (RFI): 6.12a–6.12d, 6.14a–b закрыты; в работе — 6.14c–d.**
 
 - ✅ 6.11b — ЗАКРЫТ (22.10.2026).
   - 3 новые сущности: Norm, DecisionLink, DecisionNorm.
@@ -338,6 +338,14 @@
   - Локальное скрытие обработанных предложений + «Обновить»; `onError` у всех мутаций.
   - `npm run build` / `npm run lint` — зелёные; pytest — 450 passed.
 - ✅ **6.14a** — слой данных LLM (27.10.2026).
+- ✅ **6.14b** — LLM-адаптеры (27.10.2026).
+  - `QwenAdapter` — адаптер для Qwen через OpenAI-совместимый API.
+  - `OpenAICompatibleAdapter` — универсальный адаптер для OpenAI-совместимых провайдеров.
+  - `RuntimeLLMAdapter` — роутер провайдеров (TTL 60s, светофор по `project.data_security_level`).
+  - Порт `LLMProviderPort`: добавлен `LLMProviderError`, метод `aclose()`.
+  - +39 тестов (qwen 13, openai 13, runtime 13).
+  - **Итого в проекте: 520 тестов pytest.**
+  - Следующий шаг — 6.14c (DTO, DI, роуты, тесты роутов).
   - Домен: `LLMSettings`, `LLMProvider` (2), `DataSecurityLevel` (3).
   - Порты: `LLMProviderPort`, `SecretCipherPort`, `LLMSettingsRepository`.
   - БД: `llm_settings` (BYTEA-ключ + last4, JSONB, partial unique index), `projects.data_security_level`.

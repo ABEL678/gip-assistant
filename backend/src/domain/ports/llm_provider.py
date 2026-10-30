@@ -1,7 +1,11 @@
-"""Порт LLM-провайдера (6.14a)."""
+"""Порт LLM-провайдера (6.14a/6.14b)."""
 
 from abc import ABC, abstractmethod
 from uuid import UUID
+
+
+class LLMProviderError(RuntimeError):
+    """Ошибка LLM-провайдера (сеть, HTTP, формат ответа, настройки)."""
 
 
 class LLMProviderPort(ABC):
@@ -28,3 +32,7 @@ class LLMProviderPort(ABC):
     @abstractmethod
     async def health_check(self) -> bool:
         """Проверить доступность провайдера."""
+
+    async def aclose(self) -> None:
+        """Освободить ресурсы (HTTP-клиент). По умолчанию — no-op."""
+        return None
